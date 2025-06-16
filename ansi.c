@@ -1,9 +1,3 @@
-/*
- * The routines in this file provide support for ANSI style terminals over a
- * serial line.  The serial I/O services are provided by routines in
- * "termio.c".  It compiles into nothing if not an ANSI device.
- */
-
 #include "estruct.h"
 #include "edef.h"
 #include "efunc.h"
@@ -11,12 +5,12 @@
 
 #if ANSI
 
-#define NROW    25		/* Screen size. */
-#define NCOL    80		/* Edit if you want to. */
-
 #define NPAUSE	100		/* # times thru update to pause */
 #define MARGIN	8		/* size of minimim margin and */
 #define SCRSIZ	64		/* scroll size for extended lines */
+
+#define NROW    24
+#define NCOL    80
 
 static void ansiopen(void);
 static void ansikopen(void);
@@ -29,10 +23,6 @@ static void ansirev(int);
 static int ansicres(char *);
 static void ansiparm(int n);
 
-/*
- * Standard terminal interface dispatch table.  Most of the fields point into
- * "termio" code.
- */
 struct terminal term = {
 	NROW - 1,
 	NCOL,
@@ -78,9 +68,6 @@ static void ansieeop(void)
 	ttputc('J');
 }
 
-/* Change reverse video state.
- * state: TRUE = reverse, FALSE = normal
- */
 static void ansirev(int state)
 {
 	ttputc(ESC);
@@ -89,7 +76,6 @@ static void ansirev(int state)
 	ttputc('m');
 }
 
-/* Change screen resolution. */
 static int ansicres(char *res)
 {
 	return TRUE;
@@ -125,7 +111,8 @@ static void ansiopen(void)
 		puts("Shell variable TERM not defined!");
 		exit(1);
 	}
-	if (strcmp(cp, "vt100") != 0) {
+	if ((strncmp(cp, "vt100", 5) != 0) &&
+			(strncmp(cp, "xterm", 5) != 0)) {
 		puts("Terminal type not 'vt100'!");
 		exit(1);
 	}
@@ -134,12 +121,10 @@ static void ansiopen(void)
 	ttopen();
 }
 
-/* Open the keyboard (a noop here). */
 static void ansikopen(void)
 {
 }
 
-/* Close the keyboard (a noop here). */
 static void ansikclose(void)
 {
 }

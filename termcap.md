@@ -1,4 +1,11 @@
+We can use `infocmp` command to list all terminfo names on our system.
+
+```sh
+infocmp -1 | sed 's/[,\\]//g' | awk '{print $1}'
+```
+
 # Legacy `termcap` to Modern `terminfo` Mapping
+
 
 | `termcap` | `terminfo` | Description              |
 | --------- | ---------- | ------------------------ |

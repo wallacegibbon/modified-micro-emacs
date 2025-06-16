@@ -1,10 +1,3 @@
-/*
- * This file use legacy names from `termcap`.  (read ./termcap.md)
- *
- * We can use `infocmp` command to list all terminfo names on our system.
- * $ infocmp -1 | sed 's/[,\\]//g' | awk '{print $1}'
- */
-
 #include "estruct.h"
 #include "edef.h"
 #include "efunc.h"

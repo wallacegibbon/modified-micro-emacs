@@ -2,13 +2,13 @@ UNAME_S := $(shell sh -c 'uname -s 2>/dev/null || echo not')
 BINDIR = /usr/bin
 PROGRAM = me
 SHOWKEYS = showkeys
-USETCAP = 1
+TERMCAP = 1
 
 SRC = main.c buffer.c window.c line.c word.c display.c basic.c random.c \
 	file.c fileio.c input.c search.c isearch.c lock.c region.c spawn.c \
 	ebind.c names.c globals.c wrapper.c memory.c
 
-ifeq ($(USETCAP), 1)
+ifeq ($(TERMCAP), 1)
 SRC += posix.c tcap.c
 else
 SRC += termio.c ansi.c
@@ -18,7 +18,7 @@ OBJ = main.o buffer.o window.o line.o word.o display.o basic.o random.o \
 	file.o fileio.o input.o search.o isearch.o lock.o region.o spawn.o \
 	ebind.o names.o globals.o wrapper.o memory.o
 
-ifeq ($(USETCAP), 1)
+ifeq ($(TERMCAP), 1)
 OBJ += posix.o tcap.o
 else
 OBJ += termio.o ansi.o
@@ -44,7 +44,7 @@ DEFINES += -DPOSIX -DSYSV -D_XOPEN_SOURCE=600 -D_BSD_SOURCE -D_SVID_SOURCE \
 	-D_DARWIN_C_SOURCE
 endif
 
-ifeq ($(USETCAP), 1)
+ifeq ($(TERMCAP), 1)
 DEFINES += -DTCAP
 endif
 
