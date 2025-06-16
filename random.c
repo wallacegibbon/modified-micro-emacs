@@ -215,10 +215,13 @@ int backdel(int f, int n)
 /* Kills from dot to the end of the line */
 int killtext(int f, int n)
 {
+	struct line *nextp;
 	long chunk;
 
 	if (curbp->b_mode & MDVIEW)
 		return rdonly();
+	if (n <= 0)
+		return FALSE;
 
 	/* If last command is not a kill, clear the kill buffer */
 	if ((lastflag & CFKILL) == 0)
@@ -226,10 +229,20 @@ int killtext(int f, int n)
 
 	thisflag |= CFKILL;
 
-	chunk = llength(curwp->w_dotp) - curwp->w_doto;
-	if (chunk == 0)
-		chunk = 1;
-
+	if (f == FALSE) {
+		chunk = llength(curwp->w_dotp) - curwp->w_doto;
+		if (chunk == 0)
+			chunk = 1;
+	} else {
+		chunk = llength(curwp->w_dotp) - curwp->w_doto + 1;
+		nextp = lforw(curwp->w_dotp);
+		while (--n) {
+			if (nextp == curbp->b_linep)
+				break;
+			chunk += llength(nextp) + 1;
+			nextp = lforw(nextp);
+		}
+	}
 	return ldelete(chunk, TRUE);
 }
 
