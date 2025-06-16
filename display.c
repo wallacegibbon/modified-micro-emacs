@@ -474,11 +474,7 @@ static void update_extended(void)
 	vscreen[currow]->v_text[0] = '$';
 }
 
-/*
- * Update a single line.  This does not know how to use insert or delete
- * character sequences; we are using VT52 functionality.  Update the physical
- * row and column variables.  It does try an exploit erase to end of line.
- */
+/* Update the line to terminal.  The physical column will be updated. */
 static int update_line(int row, struct video *vp1, struct video *vp2)
 {
 	char *cp1, *cp2, *cp3, *cp4, *cp5;

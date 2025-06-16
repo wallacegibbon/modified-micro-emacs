@@ -26,10 +26,10 @@
 #define RAMSHOW	1		/* Auto dynamic RAM reporting */
 
 #define VT220	UNIX
-#define VT100	0
-#define ANSI	0
-#define VT52	0
-#define TCAP	UNIX
+
+#ifndef TCAP
+#define ANSI	UNIX
+#endif
 
 #define TYPEAH	1  /* type ahead causes update to be skipped */
 #define VISMAC	0  /* update display during keyboard macros */

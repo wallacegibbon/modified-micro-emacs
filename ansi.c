@@ -6,6 +6,8 @@
 
 #include "estruct.h"
 #include "edef.h"
+#include "efunc.h"
+#include <stdio.h>
 
 #if ANSI
 
@@ -16,21 +18,16 @@
 #define MARGIN	8		/* size of minimim margin and */
 #define SCRSIZ	64		/* scroll size for extended lines */
 
-static void ttopen(void);
-static void ttclose(void);
 static void ansiopen(void);
-static void ansiclose(void);
 static void ansikopen(void);
 static void ansikclose(void);
-static int ttgetc(void);
-static int ttputc(void);
-static void ttflush(void);
 static void ansimove(int, int);
 static void ansieeol(void);
 static void ansieeop(void);
 static void ansibeep(void);
 static void ansirev(int);
 static int ansicres(char *);
+static void ansiparm(int n);
 
 /*
  * Standard terminal interface dispatch table.  Most of the fields point into

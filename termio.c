@@ -1,7 +1,6 @@
-#ifndef POSIX
-
 #include "estruct.h"
 #include "edef.h"
+#include <stdio.h>
 
 #if USG
 
@@ -109,7 +108,7 @@ void ttclose(void)
 #endif
 }
 
-void ttputc(c)
+void ttputc(int c)
 {
 #if UNIX
 	fputc(c, stdout);
@@ -185,5 +184,3 @@ int typahead(void)
 #endif
 }
 #endif
-
-#endif /* POSIX */

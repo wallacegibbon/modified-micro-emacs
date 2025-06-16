@@ -2,20 +2,27 @@ UNAME_S := $(shell sh -c 'uname -s 2>/dev/null || echo not')
 BINDIR = /usr/bin
 PROGRAM = me
 SHOWKEYS = showkeys
+USETCAP = 1
 
 SRC = main.c buffer.c window.c line.c word.c display.c basic.c random.c \
-	posix.c file.c fileio.c input.c search.c isearch.c lock.c \
-	region.c spawn.c tcap.c ebind.c names.c globals.c \
-	wrapper.c memory.c
+	file.c fileio.c input.c search.c isearch.c lock.c region.c spawn.c \
+	ebind.c names.c globals.c wrapper.c memory.c
 
-#SRC += termio.c ansi.c
+ifeq ($(USETCAP), 1)
+SRC += posix.c tcap.c
+else
+SRC += termio.c ansi.c
+endif
 
 OBJ = main.o buffer.o window.o line.o word.o display.o basic.o random.o \
-	posix.o file.o fileio.o input.o search.o isearch.o lock.o \
-	region.o spawn.o tcap.o ebind.o names.o globals.o \
-	wrapper.o memory.o
+	file.o fileio.o input.o search.o isearch.o lock.o region.o spawn.o \
+	ebind.o names.o globals.o wrapper.o memory.o
 
-#OBJ += termio.o ansi.o
+ifeq ($(USETCAP), 1)
+OBJ += posix.o tcap.o
+else
+OBJ += termio.o ansi.o
+endif
 
 CC = gcc
 WARNINGS = -Wall -Wextra -Wstrict-prototypes -Wno-unused-parameter
@@ -24,17 +31,21 @@ WARNINGS = -Wall -Wextra -Wstrict-prototypes -Wno-unused-parameter
 CFLAGS = -O2 $(WARNINGS) -g
 
 ifeq ($(UNAME_S), Linux)
-DEFINES = -DPOSIX -DUSG -D_XOPEN_SOURCE=600 -D_GNU_SOURCE
+DEFINES += -DPOSIX -DUSG -D_XOPEN_SOURCE=600 -D_GNU_SOURCE
 endif
 
 ifeq ($(UNAME_S), FreeBSD)
-DEFINES = -DPOSIX -DSYSV -D_XOPEN_SOURCE=600 -D_BSD_SOURCE -D_SVID_SOURCE \
+DEFINES += -DPOSIX -DSYSV -D_XOPEN_SOURCE=600 -D_BSD_SOURCE -D_SVID_SOURCE \
 	-D_FREEBSD_C_SOURCE
 endif
 
 ifeq ($(UNAME_S), Darwin)
-DEFINES = -DPOSIX -DSYSV -D_XOPEN_SOURCE=600 -D_BSD_SOURCE -D_SVID_SOURCE \
+DEFINES += -DPOSIX -DSYSV -D_XOPEN_SOURCE=600 -D_BSD_SOURCE -D_SVID_SOURCE \
 	-D_DARWIN_C_SOURCE
+endif
+
+ifeq ($(USETCAP), 1)
+DEFINES += -DTCAP
 endif
 
 LIBS = -ltinfo
