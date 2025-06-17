@@ -5,18 +5,18 @@ SHOWKEYS = showkeys
 TERMCAP = 0
 
 ifeq ($(TERMCAP), 1)
-TERM = tcap
+TTYPE = tcap
 else
-TERM = tansi
+TTYPE = tansi
 endif
 
 SRC = main.c buffer.c window.c line.c word.c display.c basic.c random.c \
 	file.c fileio.c input.c search.c isearch.c lock.c region.c spawn.c \
-	$(TERM).c posix.c ebind.c names.c globals.c wrapper.c memory.c
+	$(TTYPE).c posix.c ebind.c names.c globals.c wrapper.c memory.c
 
 OBJ = main.o buffer.o window.o line.o word.o display.o basic.o random.o \
 	file.o fileio.o input.o search.o isearch.o lock.o region.o spawn.o \
-	$(TERM).o posix.o ebind.o names.o globals.o wrapper.o memory.o
+	$(TTYPE).o posix.o ebind.o names.o globals.o wrapper.o memory.o
 
 CC = gcc
 WARNINGS = -Wall -Wextra -Wstrict-prototypes -Wno-unused-parameter
@@ -49,7 +49,7 @@ $(PROGRAM): $(OBJ)
 	@echo "	LINK	$@"
 	@$(CC) $(LDFLAGS) $(DEFINES) -o $@ $^ $(LIBS)
 
-$(SHOWKEYS): showkeys.o posix.o globals.o $(TERM).o
+$(SHOWKEYS): showkeys.o posix.o globals.o $(TTYPE).o
 	@echo "	LINK	$@"
 	@$(CC) $(LDFLAGS) $(DEFINES) -o $@ $^ $(LIBS)
 
