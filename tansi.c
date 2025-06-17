@@ -3,14 +3,10 @@
 #include "efunc.h"
 #include <stdio.h>
 
-#if ANSI
+#if USE_ANSI
 
-#define NPAUSE	100		/* # times thru update to pause */
-#define MARGIN	8		/* size of minimim margin and */
 #define SCRSIZ	64		/* scroll size for extended lines */
-
-#define NROW    24
-#define NCOL    80
+#define MARGIN	8		/* size of minimim margin and */
 
 static void ansiopen(void);
 static void ansikopen(void);
@@ -24,11 +20,9 @@ static int ansicres(char *);
 static void ansiparm(int n);
 
 struct terminal term = {
-	NROW - 1,
-	NCOL,
+	0, 0,			/* These 2 values are set at open time. */
 	MARGIN,
 	SCRSIZ,
-	NPAUSE,
 	ansiopen,
 	ttclose,
 	ansikopen,
@@ -43,6 +37,31 @@ struct terminal term = {
 	ansirev,
 	ansicres
 };
+
+static void ansiopen(void)
+{
+#if UNIX
+	char *cp;
+	int cols, rows;
+
+	if ((cp = getenv("TERM")) == NULL) {
+		puts("Shell variable TERM not defined!");
+		exit(1);
+	}
+	if ((strncmp(cp, "vt100", 5) != 0) &&
+			(strncmp(cp, "xterm", 5) != 0) &&
+			(strncmp(cp, "linux", 5) != 0)) {
+		puts("Terminal type not 'vt100'!");
+		exit(1);
+	}
+
+	getscreensize(&cols, &rows);
+	term.t_nrow = atleast(rows - 1, SCR_MIN_ROWS - 1);
+	term.t_ncol = atleast(cols, SCR_MIN_COLS);
+#endif
+	revexist = TRUE;
+	ttopen();
+}
 
 static void ansimove(int row, int col)
 {
@@ -100,25 +119,6 @@ static void ansiparm(int n)
 		ttputc((q % 10) + '0');
 	}
 	ttputc((n % 10) + '0');
-}
-
-static void ansiopen(void)
-{
-#if UNIX
-	char *cp;
-
-	if ((cp = getenv("TERM")) == NULL) {
-		puts("Shell variable TERM not defined!");
-		exit(1);
-	}
-	if ((strncmp(cp, "vt100", 5) != 0) &&
-			(strncmp(cp, "xterm", 5) != 0)) {
-		puts("Terminal type not 'vt100'!");
-		exit(1);
-	}
-#endif
-	revexist = TRUE;
-	ttopen();
 }
 
 static void ansikopen(void)

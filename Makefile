@@ -1,28 +1,22 @@
-UNAME_S := $(shell sh -c 'uname -s 2>/dev/null || echo not')
+UNAME_S := $(shell sh -c 'uname -s 2>/dev/null || echo Unknown')
 BINDIR = /usr/bin
 PROGRAM = me
 SHOWKEYS = showkeys
-TERMCAP = 1
+TERMCAP = 0
+
+ifeq ($(TERMCAP), 1)
+TERM = tcap
+else
+TERM = tansi
+endif
 
 SRC = main.c buffer.c window.c line.c word.c display.c basic.c random.c \
 	file.c fileio.c input.c search.c isearch.c lock.c region.c spawn.c \
-	ebind.c names.c globals.c wrapper.c memory.c
-
-ifeq ($(TERMCAP), 1)
-SRC += posix.c tcap.c
-else
-SRC += termio.c ansi.c
-endif
+	$(TERM).c posix.c ebind.c names.c globals.c wrapper.c memory.c
 
 OBJ = main.o buffer.o window.o line.o word.o display.o basic.o random.o \
 	file.o fileio.o input.o search.o isearch.o lock.o region.o spawn.o \
-	ebind.o names.o globals.o wrapper.o memory.o
-
-ifeq ($(TERMCAP), 1)
-OBJ += posix.o tcap.o
-else
-OBJ += termio.o ansi.o
-endif
+	$(TERM).o posix.o ebind.o names.o globals.o wrapper.o memory.o
 
 CC = gcc
 WARNINGS = -Wall -Wextra -Wstrict-prototypes -Wno-unused-parameter
@@ -45,18 +39,17 @@ DEFINES += -DPOSIX -DSYSV -D_XOPEN_SOURCE=600 -D_BSD_SOURCE -D_SVID_SOURCE \
 endif
 
 ifeq ($(TERMCAP), 1)
-DEFINES += -DTCAP
+DEFINES += -DUSE_TERMCAP
+LIBS += -ltinfo
+#LIBS += -ltermcap
+#LIBS += -L/usr/lib/termcap -ltermcap
 endif
-
-LIBS = -ltinfo
-#LIBS = -ltermcap
-#LIBS = -L/usr/lib/termcap -ltermcap
 
 $(PROGRAM): $(OBJ)
 	@echo "	LINK	$@"
 	@$(CC) $(LDFLAGS) $(DEFINES) -o $@ $^ $(LIBS)
 
-$(SHOWKEYS): showkeys.o tcap.o posix.o globals.o
+$(SHOWKEYS): showkeys.o posix.o globals.o $(TERM).o
 	@echo "	LINK	$@"
 	@$(CC) $(LDFLAGS) $(DEFINES) -o $@ $^ $(LIBS)
 
@@ -78,7 +71,6 @@ install: $(PROGRAM)
 
 names.o: edef.h efunc.h estruct.h line.h
 ebind.o: edef.h efunc.h estruct.h line.h
-ansi.o: ansi.c estruct.h edef.h
 basic.o: basic.c estruct.h edef.h line.h
 buffer.o: buffer.c estruct.h edef.h line.h
 display.o: display.c estruct.h edef.h line.h
@@ -94,9 +86,9 @@ random.o: random.c estruct.h edef.h line.h
 region.o: region.c estruct.h edef.h line.h
 search.o: search.c estruct.h edef.h line.h
 spawn.o: spawn.c estruct.h edef.h
-tcap.o: tcap.c estruct.h edef.h
-termio.o: termio.c estruct.h edef.h
 window.o: window.c estruct.h edef.h line.h
 word.o: word.c estruct.h edef.h line.h
 globals.o: estruct.h edef.h
 memory.o: estruct.h edef.h
+tansi.o: tansi.c estruct.h edef.h
+tcap.o: tcap.c estruct.h edef.h

@@ -1,7 +1,7 @@
 ## Introduction
 
-This is a tiny emacs-like editor modified from
-[uEmacs/PK 4.0](https://github.com/torvalds/uemacs).
+This is a tiny emacs-like editor modified from [uEmacs/PK 4.0][uemacs/pk],
+I call it **M**dified Micro **E**macs (`me`).
 
 
 ## Goal
@@ -10,10 +10,21 @@ This is a tiny emacs-like editor modified from
 - Be tiny. (by removing unecessary parts like the script engine)
 
 
+## Build
+
+The default build works on all ANSI-compatible terminals.  It do not rely on
+`termcap` or `terminfo`.
+
+We can also build it with `termcap` or `terminfo` to support more terminals:
+
+```sh
+make TERMCAP=1
+```
+
+
 ## Miscellaneous
 
-We can make `me` (**M**odified micro **E**macs) the default `editor` of the
-system with `update-alternatives`.
+We can make `me` the default `editor` of the system with `update-alternatives`:
 
 To get the priority of `editor`:
 ```sh
@@ -29,6 +40,7 @@ If the priority 100 is still too low, set it manually:
 sudo update-alternatives --set editor /usr/bin/me
 ```
 
+
 ## Debug
 
 There is a program for getting raw input from terminal, which is useful for
@@ -37,3 +49,6 @@ debugging.  Build it like this:
 ```sh
 make showkeys
 ```
+
+
+[uemacs/pk]: https://github.com/torvalds/uemacs

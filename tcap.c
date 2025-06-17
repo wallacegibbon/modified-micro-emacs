@@ -5,15 +5,10 @@
 #include <signal.h>
 #include <stdio.h>
 
-#if TCAP
+#if USE_TERMCAP
 
-#ifdef SIGWINCH
-#include <sys/ioctl.h>
-#endif
-
-#define NPAUSE	10    /* # times thru update to pause. */
-#define MARGIN	8
 #define SCRSIZ	64
+#define MARGIN	8
 
 static void tcapkopen(void);
 static void tcapkclose(void);
@@ -32,13 +27,10 @@ static void tcapclose(void);
 static char tcapbuf[TCAPSLEN];
 static char *UP, PC, *CM, *CE, *CL, *SO, *SE, *TI, *TE;
 
-static void getscreensize(int *widthp, int *heightp);
-
 struct terminal term = {
-	0, 0,		/* These 2 values are set at open time. */
+	0, 0,			/* These 2 values are set at open time. */
 	MARGIN,
 	SCRSIZ,
-	NPAUSE,
 	tcapopen,
 	tcapclose,
 	tcapkopen,
@@ -70,7 +62,6 @@ static void tcapopen(void)
 		exit(1);
 	}
 
-	/* Get screen size from system, or else from termcap. */
 	getscreensize(&cols, &rows);
 	term.t_nrow = atleast(rows - 1, SCR_MIN_ROWS - 1);
 	term.t_ncol = atleast(cols, SCR_MIN_COLS);
@@ -107,22 +98,6 @@ static void tcapopen(void)
 		exit(1);
 	}
 	ttopen();
-}
-
-static void getscreensize(int *widthp, int *heightp)
-{
-#ifdef TIOCGWINSZ
-	struct winsize size;
-	*widthp = 0;
-	*heightp = 0;
-	if (ioctl(0, TIOCGWINSZ, &size) < 0)
-		return;
-	*widthp = size.ws_col;
-	*heightp = size.ws_row;
-#else
-	*widthp = 0;
-	*heightp = 0;
-#endif
 }
 
 static void tcapclose(void)

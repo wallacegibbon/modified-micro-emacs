@@ -18,6 +18,7 @@
 #include <stdio.h>
 #include <termios.h>
 #include <unistd.h>
+#include <sys/ioctl.h>
 
 /*
  * Since Mac OS X's termios.h doesn't have the following 2 macros, define them.
@@ -157,6 +158,22 @@ int typahead(void)
 	x = 0;
 #endif
 	return x;
+}
+
+void getscreensize(int *widthp, int *heightp)
+{
+#ifdef TIOCGWINSZ
+	struct winsize size;
+	*widthp = 0;
+	*heightp = 0;
+	if (ioctl(0, TIOCGWINSZ, &size) < 0)
+		return;
+	*widthp = size.ws_col;
+	*heightp = size.ws_row;
+#else
+	*widthp = 0;
+	*heightp = 0;
+#endif
 }
 
 #endif /* POSIX */

@@ -27,8 +27,8 @@
 
 #define VT220	UNIX
 
-#ifndef TCAP
-#define ANSI	UNIX
+#ifndef USE_TERMCAP
+#define USE_ANSI	1
 #endif
 
 #define TYPEAH	1  /* type ahead causes update to be skipped */
@@ -193,7 +193,6 @@ struct terminal {
 	short t_ncol;		/* current Number of columns. */
 	short t_margin;		/* min margin for extended lines */
 	short t_scrsiz;		/* size of scroll region " */
-	int t_pause;		/* # times thru update to pause */
 
 	void (*t_open)(void);	/* Open terminal at the start. */
 	void (*t_close)(void);	/* Close terminal at end. */

@@ -106,6 +106,7 @@ int ttputc(int c);
 void ttflush(void);
 int ttgetc(void);
 int typahead(void);
+void getscreensize(int *widthp, int *heightp);
 
 /* input.c */
 int mlyesno(char *prompt);
