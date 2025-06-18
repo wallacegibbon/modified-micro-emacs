@@ -5,59 +5,35 @@
 #include "wrapper.h"
 
 /*
- * Reposition dot in the current window to line "n".  If the argument is
- * positive, it is that line.  If it is negative it is that line from the
- * bottom.  If it is 0 the window is centered (this is what the standard
- * redisplay code does).  With no argument it defaults to 0.
- */
-int reposition(int f, int n)
-{
-	if (f == FALSE)		/* default to 0 to center screen */
-		n = 0;
-	curwp->w_force = n;
-	curwp->w_flag |= WFFORCE;
-	return TRUE;
-}
-
-/*
- * Refresh the screen.  With no argument, it just does the refresh.  With an
- * argument it recenters "." in the current window.
+ * With no argument, it just does the refresh.  With an argument "n",
+ * reposition dot to line "n" of the screen.
  */
 int redraw(int f, int n)
 {
 	if (f == FALSE) {
 		sgarbf = TRUE;
 	} else {
-		curwp->w_force = 0;	/* Center dot. */
+		curwp->w_force = n;	/* Center dot. */
 		curwp->w_flag |= WFFORCE;
 	}
-
 	return TRUE;
 }
 
 /*
- * The command make the next window (next => down the screen) the current
- * window.  There are no real errors, although the command does nothing if
- * there is only 1 window on the screen.
- *
- * with an argument this command finds the <n>th window from the top
+ * The command make the next window the current window.
+ * With an positive argument, finds the <n>th window from the top.
+ * With a negative argument, finds the <n>th window from the bottom
  */
 int nextwind(int f, int n)
 {
 	struct window *wp;
-	int nwindows;			/* total number of windows */
+	int nwindows;
 
 	if (f) {
-
-		/* first count the # of windows */
 		nwindows = 1;
 		for (wp = wheadp; wp->w_wndp != NULL; wp = wp->w_wndp)
 			++nwindows;
 
-		/*
-		 * if the argument is negative, it is the nth window
-		 * from the bottom of the screen
-		 */
 		if (n < 0)
 			n = nwindows + n + 1;
 
@@ -75,16 +51,11 @@ int nextwind(int f, int n)
 	}
 	curwp = wp;
 	curbp = wp->w_bufp;
-	cknewwindow();
 	update_modelines();
 	return TRUE;
 }
 
-/*
- * This command makes the previous window (previous => up the screen) the
- * current window.  There arn't any errors, although the command does not do a
- * lot if there is 1 window.
- */
+/* The reverse of nextwind */
 int prevwind(int f, int n)
 {
 	struct window *wp1, *wp2;
@@ -104,63 +75,7 @@ int prevwind(int f, int n)
 
 	curwp = wp1;
 	curbp = wp1->w_bufp;
-	cknewwindow();
 	update_modelines();
-	return TRUE;
-}
-
-/*
- * This command moves the current window down by "arg" lines.  Recompute the
- * top line in the window.  The move up and move down code is almost completely
- * the same; most of the work has to do with reframing the window, and picking
- * a new dot.  We share the code by having "move down" just be an interface to
- * "move up".  Magic.
- */
-int mvdnwind(int f, int n)
-{
-	return mvupwind(f, -n);
-}
-
-/*
- * Move the current window up by "arg" lines.  Recompute the new top line of
- * the window.  Look to see if "." is still on the screen.  If it is, you win.
- * If it isn't, then move "." to center it in the new framing of the window
- * (this command does not really move "."; it moves the frame).
- */
-int mvupwind(int f, int n)
-{
-	struct line *lp;
-	int i;
-
-	lp = curwp->w_linep;
-
-	if (n < 0) {
-		while (n++ && lp != curbp->b_linep)
-			lp = lforw(lp);
-	} else {
-		while (n-- && lback(lp) != curbp->b_linep)
-			lp = lback(lp);
-	}
-
-	curwp->w_linep = lp;
-	curwp->w_flag |= WFHARD;	/* Mode line is OK. */
-
-	for (i = 0; i < curwp->w_ntrows; ++i) {
-		if (lp == curwp->w_dotp)
-			return TRUE;
-		if (lp == curbp->b_linep)
-			break;
-		lp = lforw(lp);
-	}
-
-	lp = curwp->w_linep;
-	i = curwp->w_ntrows / 2;
-
-	while (i-- && lp != curbp->b_linep)
-		lp = lforw(lp);
-
-	curwp->w_dotp = lp;
-	curwp->w_doto = 0;
 	return TRUE;
 }
 
@@ -215,8 +130,6 @@ int onlywind(int f, int n)
 /*
  * Delete the current window, placing its space in the window above,
  * or, if it is the top window, the window below.
- *
- * int f, n;	arguments are ignored for this command
  */
 int delwind(int f, int n)
 {
@@ -282,7 +195,6 @@ int delwind(int f, int n)
 	curwp = wp;
 	wp->w_flag |= WFHARD;
 	curbp = wp->w_bufp;
-	cknewwindow();
 	update_modelines();
 	return TRUE;
 }
@@ -435,19 +347,6 @@ int shrinkwind(int f, int n)
 	return TRUE;
 }
 
-int resize_cur_wind(int f, int n)
-{
-	int clines;
-	if (f == FALSE)
-		return TRUE;
-
-	clines = curwp->w_ntrows;
-	if (clines == n)
-		return TRUE;
-
-	return enlargewind(TRUE, n - clines);
-}
-
 /*
  * Pick a window for a pop-up.  Split the screen if there is only one window.
  * Pick the uppermost window that isn't the current window.  An LRU algorithm
@@ -558,9 +457,4 @@ int getwpos(void)
 	}
 
 	return sline;
-}
-
-void cknewwindow(void)
-{
-	/* Nothing yet */
 }

@@ -8,7 +8,7 @@
 #include <unistd.h>
 #include <sys/stat.h>
 
-#define LOCK_POSTFIX ".lock~"
+#define LOCK_POSTFIX	".lock~"
 
 /* lock name buffer shared by dolock and undolock */
 static char lname_buf[NFILEN + 8];	/* filename + LOCK_POSTFIX */

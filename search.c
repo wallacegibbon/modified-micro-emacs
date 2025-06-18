@@ -120,7 +120,7 @@ static int readpattern(char *prompt, char *apat, int srch)
 void savematch(void)
 {
 	struct line *curline;	/* line of last match */
-	int curoff;		/* offset "      " */
+	int curoff;		/* offset of last match */
 	char *ptr;		/* pointer to last match string */
 	unsigned int j;
 
@@ -151,7 +151,6 @@ void rvstrcpy(char *rvstr, char *str)
 	*rvstr = '\0';
 }
 
-/* search and replace with query. */
 int qreplace(int f, int n)
 {
 	return replaces(TRUE, f, n);
@@ -232,11 +231,10 @@ static int replaces(int kind, int f, int n)
 		if (kind) {
 			mlwrite(tpat, pat, rpat);
 qprompt:
-			update(TRUE);	/* show the proposed place to change */
-			c = tgetc();	/* and input */
-			mlwrite("");	/* and clear it */
+			update(TRUE);
+			c = tgetc();
+			mlwrite("");
 
-			/* And respond appropriately. */
 			last_char = c;
 			switch (c) {
 			case 'y':
@@ -259,6 +257,7 @@ qprompt:
 			default:
 				TTbeep();
 				/* fallthrough */
+
 			case '?':
 				mlwrite("(Y)es, (N)o, (!)Do rest, (^G)Abort, (?)Help: ");
 				goto qprompt;

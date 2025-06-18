@@ -32,10 +32,6 @@ int main(int argc, char **argv)
 	int c = 0, c1, i;
 	fn_t execfunc;
 
-#if BSD
-	sleep(1);	/* Time for window manager. */
-#endif
-
 #if UNIX
 #ifdef SIGWINCH
 	signal(SIGWINCH, sizesignal);
@@ -193,14 +189,12 @@ void edinit(char *bname)
 	wp->w_markp = NULL;
 	wp->w_marko = 0;
 	wp->w_toprow = 0;
-	wp->w_ntrows = term.t_nrow - 1;	/* "-1" for message line. */
+	wp->w_ntrows = term.t_nrow - 1;	/* "-1" for mode line. */
 	wp->w_force = 0;
 	wp->w_flag = WFMODE | WFHARD;	/* Full. */
 }
 
-/*
- * This function looks a key binding up in the binding table
- */
+/* This function looks a key binding up in the binding table. */
 int (*getbind(int c))(int, int)
 {
 	struct key_tab *ktp = keytab;
@@ -224,7 +218,7 @@ int execute(int c, int f, int n)
 	int status;
 	fn_t execfunc;
 
-	/* if the keystroke is a bound function...do it */
+	/* If the keystroke is a bound function.  Do it. */
 	execfunc = getbind(c);
 	if (execfunc != NULL) {
 		thisflag = 0;
@@ -256,7 +250,7 @@ int execute(int c, int f, int n)
 
 	status = linsert(n, c);
 
-	/* check auto-save mode and save the file if needed */
+	/* Check auto-save mode and save the file if needed */
 	if (status == TRUE && (curbp->b_mode & MDASAVE)) {
 		if (--gacount == 0) {
 			update(TRUE);

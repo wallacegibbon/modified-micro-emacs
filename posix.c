@@ -4,8 +4,6 @@
  * All operating systems.
  */
 
-#ifdef POSIX
-
 #include "estruct.h"
 #include "edef.h"
 #include "efunc.h"
@@ -144,5 +142,3 @@ void getscreensize(int *widthp, int *heightp)
 	*heightp = 0;
 #endif
 }
-
-#endif /* POSIX */

@@ -32,10 +32,8 @@ int prevbuffer(int f, int n)
 
 int nextbuffer(int f, int n)
 {
-	struct buffer *bp = NULL;  /* eligable buffer to switch to */
-	struct buffer *bbp;        /* eligable buffer to switch to */
+	struct buffer *bp = NULL, *bbp;
 
-	/* make sure the arg is legit */
 	if (f == FALSE)
 		n = 1;
 	if (n < 1)
@@ -43,7 +41,6 @@ int nextbuffer(int f, int n)
 
 	bbp = curbp;
 	while (n-- > 0) {
-		/* advance to the next buffer */
 		bp = bbp->b_bufp;
 
 		/* cycle through the buffers to find an eligable one */
@@ -56,18 +53,13 @@ int nextbuffer(int f, int n)
 			/* don't get caught in an infinite loop! */
 			if (bp == bbp)
 				return FALSE;
-
 		}
-
 		bbp = bp;
 	}
-
 	return swbuffer(bp);
 }
 
-/*
- * make buffer BP current
- */
+/* make buffer BP current. */
 int swbuffer(struct buffer *bp)
 {
 	struct window *wp;
@@ -79,7 +71,6 @@ int swbuffer(struct buffer *bp)
 		curbp->b_marko = curwp->w_marko;
 	}
 
-	/* Switch */
 	prevbp = curbp;
 	curbp = bp;
 
@@ -99,7 +90,6 @@ int swbuffer(struct buffer *bp)
 		curwp->w_doto = bp->b_doto;
 		curwp->w_markp = bp->b_markp;
 		curwp->w_marko = bp->b_marko;
-		cknewwindow();
 		return TRUE;
 	}
 	for (wp = wheadp; wp != NULL; wp = wp->w_wndp) {
@@ -111,17 +101,9 @@ int swbuffer(struct buffer *bp)
 			break;
 		}
 	}
-	cknewwindow();
 	return TRUE;
 }
 
-/*
- * Dispose of a buffer, by name.
- * Ask for the name.  Look it up (don't get too upset if it isn't there at all!).
- * Get quite upset if the buffer is being displayed.
- * Clear the buffer (ask if the buffer has been changed).
- * Then free the header line and the buffer header.
- */
 int killbuffer(int f, int n)
 {
 	struct buffer *bp;
@@ -133,8 +115,8 @@ int killbuffer(int f, int n)
 	if ((bp = bfind(bufn, FALSE, 0)) == NULL)
 		return TRUE;
 
-	if (bp->b_flag & BFINVS)	/* Deal with special buffers */
-		return TRUE;	/* by doing nothing. */
+	if (bp->b_flag & BFINVS)
+		return TRUE;
 
 	return zotbuf(bp);
 }
@@ -220,11 +202,7 @@ int listbuffers(int f, int n)
 /*
  * This routine rebuilds the text in the special secret buffer that holds the
  * buffer list.  It is called by the list buffers command.
- * Return TRUE if everything works.
- * Return FALSE if there is an error (if there is no memory).
  * Iflag indicates wether to list hidden buffers.
- *
- * int iflag;		list hidden buffer flag
  */
 int makelist(int iflag)
 {
@@ -239,7 +217,7 @@ int makelist(int iflag)
 	if ((line = malloc(term.t_ncol)) == NULL)
 		return FALSE;
 
-	blistp->b_flag &= ~BFCHG;	/* Don't complain! */
+	blistp->b_flag &= ~BFCHG;
 	if ((s = bclear(blistp)) != TRUE)	/* Blow old text away */
 		return s;
 	strcpy(blistp->b_fname, "");
@@ -332,7 +310,7 @@ int makelist(int iflag)
 			return FALSE;
 		bp = bp->b_bufp;
 	}
-	return TRUE;		/* All done */
+	return TRUE;
 }
 
 void e_ltoa(char *buf, int width, long num)

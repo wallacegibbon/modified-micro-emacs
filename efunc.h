@@ -9,12 +9,9 @@ int delbword(int f, int n);
 int inword(void);
 
 /* window.c */
-int reposition(int f, int n);
 int redraw(int f, int n);
 int nextwind(int f, int n);
 int prevwind(int f, int n);
-int mvdnwind(int f, int n);
-int mvupwind(int f, int n);
 int onlywind(int f, int n);
 int delwind(int f, int n);
 int splitwind(int f, int n);
@@ -22,7 +19,6 @@ int enlargewind(int f, int n);
 int shrinkwind(int f, int n);
 int scrnextup(int f, int n);
 int scrnextdw(int f, int n);
-int resize_cur_wind(int f, int n);
 int adjust_on_scr_resize(void);
 int getwpos(void);
 void cknewwindow(void);

@@ -27,10 +27,6 @@ int spawncli(int f, int n)
 #endif
 	sgarbf = TRUE;
 
-	/*
-	sleep(2);
-	*/
-
 	TTopen();
 	update(TRUE);
 

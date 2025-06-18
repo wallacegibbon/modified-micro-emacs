@@ -49,7 +49,6 @@ struct key_tab keytab[] = {
 	{META | 0x7F, delbword},
 
 	{META | CTL | 'H', delbword},
-	{META | CTL | 'L', reposition},
 	{META | CTL | 'M', delgmode},
 	{META | CTL | 'V', scrnextdw},
 	{META | CTL | 'Z', scrnextup},
@@ -70,7 +69,6 @@ struct key_tab keytab[] = {
 	{CTLX | 'M', setemode},
 	{CTLX | 'O', nextwind},
 	{CTLX | 'P', prevwind},
-	{CTLX | 'W', resize_cur_wind},
 	{CTLX | 'X', nextbuffer},
 	{CTLX | 'Z', enlargewind},
 
@@ -80,8 +78,6 @@ struct key_tab keytab[] = {
 	{CTLX | CTL | 'I', insfile},
 	{CTLX | CTL | 'L', lowerregion},
 	{CTLX | CTL | 'M', delmode},
-	{CTLX | CTL | 'N', mvdnwind},
-	{CTLX | CTL | 'P', mvupwind},
 	{CTLX | CTL | 'R', fileread},
 	{CTLX | CTL | 'S', filesave},
 	{CTLX | CTL | 'U', upperregion},

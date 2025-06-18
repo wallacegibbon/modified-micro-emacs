@@ -29,10 +29,8 @@ int insfile(int f, int n)
 		return rdonly();
 	if ((s = mlreply("Insert file: ", fname, NFILEN)) != TRUE)
 		return s;
-	if ((s = ifile(fname)) != TRUE)
-		return s;
 
-	return reposition(TRUE, -1);
+	return ifile(fname);
 }
 
 /*
@@ -87,7 +85,6 @@ int getfile(char *fname, int lockfl)
 				lp = lback(lp);
 			curwp->w_linep = lp;
 			curwp->w_flag |= WFMODE | WFHARD;
-			cknewwindow();
 			mlwrite("(Old buffer)");
 			return TRUE;
 		}
@@ -121,7 +118,6 @@ int getfile(char *fname, int lockfl)
 	curbp->b_nwnd++;
 
 	s = readin(fname, lockfl);
-	cknewwindow();
 	return s;
 }
 

@@ -9,10 +9,11 @@
  */
 int reeat_char = -1;
 
-static inline void ttputs(char *s)
+static inline void TTputs(char *s)
 {
+	int (*p)(int) = TTputc;
 	while (*s)
-		TTputc(*s++);
+		p(*s++);
 }
 
 /* Get a key from the terminal driver, resolve any keyboard macro action */
@@ -84,8 +85,7 @@ int getcmd(void)
 	c = get1key();
 
 	/* process META prefix */
-
-	/* META is not like CTLX, a META may not be a META, it can be a CSI */
+	/* META is more complex than CTLX because of CSI */
 
 	if (c == METAC) {
 proc_metac:
@@ -161,15 +161,15 @@ int getstring(char *prompt, char *buf, int nbuf, int eolchar)
 
 		} else if ((c == 0x7F || c == '\b') && quotef == FALSE) {
 			if (cpos != 0) {
-				ttputs("\b \b");
+				TTputs("\b \b");
 				--ttcol;
 
 				if (buf[--cpos] < 0x20) {
-					ttputs("\b \b");
+					TTputs("\b \b");
 					--ttcol;
 				}
 				if (buf[cpos] == '\n') {
-					ttputs("\b\b  \b\b");
+					TTputs("\b\b  \b\b");
 					ttcol -= 2;
 				}
 
