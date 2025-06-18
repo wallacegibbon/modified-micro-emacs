@@ -9,6 +9,7 @@
 #define MARGIN	8		/* size of minimim margin and */
 
 static void ansiopen(void);
+static void ansiclose(void);
 static void ansimove(int, int);
 static void ansieeol(void);
 static void ansieeop(void);
@@ -18,12 +19,16 @@ static int ansicres(char *);
 
 static void ansiparm(int n);
 
+/* Not ANSI, but supported by many terminals. */
+static void alternate_screen_init(void);
+static void alternate_screen_end(void);
+
 struct terminal term = {
 	0, 0,			/* These 2 values are set at open time. */
 	MARGIN,
 	SCRSIZ,
 	ansiopen,
-	ttclose,
+	ansiclose,
 	ttgetc,
 	ttputc,
 	ttflush,
@@ -35,9 +40,21 @@ struct terminal term = {
 	ansicres
 };
 
+static inline void ttputs(char *s)
+{
+	while (*s)
+		ttputc(*s++);
+}
+
+static inline int ansi_compatible(const char *name)
+{
+	return !strncmp(name, "vt100", 5) ||
+		!strncmp(name, "xterm", 5) ||
+		!strncmp(name, "linux", 5);
+}
+
 static void ansiopen(void)
 {
-#if UNIX
 	char *cp;
 	int cols, rows;
 
@@ -45,49 +62,63 @@ static void ansiopen(void)
 		puts("Shell variable TERM not defined!");
 		exit(1);
 	}
-	if ((strncmp(cp, "vt100", 5) != 0) &&
-			(strncmp(cp, "xterm", 5) != 0) &&
-			(strncmp(cp, "linux", 5) != 0)) {
-		puts("Terminal type not 'vt100'!");
+	if (!ansi_compatible(cp)) {
+		puts("Terminal type not ANSI-compatible!");
 		exit(1);
 	}
 
 	getscreensize(&cols, &rows);
 	term.t_nrow = atleast(rows - 1, SCR_MIN_ROWS - 1);
 	term.t_ncol = atleast(cols, SCR_MIN_COLS);
-#endif
-	revexist = TRUE;
+
 	ttopen();
+	alternate_screen_init();
+	ttflush();
+
+	revexist = TRUE;
+	sgarbf = TRUE;
+}
+
+static void ansiclose(void)
+{
+	ansimove(term.t_nrow, 0);
+	alternate_screen_end();
+	ttflush();
+	ttclose();
 }
 
 static void ansimove(int row, int col)
 {
-	ttputc(ESC);
-	ttputc('[');
+	ttputs("\033[");
 	ansiparm(row + 1);
 	ttputc(';');
 	ansiparm(col + 1);
 	ttputc('H');
 }
 
+static void alternate_screen_init(void)
+{
+	ttputs("\033[?1049h");
+}
+
+static void alternate_screen_end(void)
+{
+	ttputs("\033[?1049l");
+}
+
 static void ansieeol(void)
 {
-	ttputc(ESC);
-	ttputc('[');
-	ttputc('K');
+	ttputs("\033[K");
 }
 
 static void ansieeop(void)
 {
-	ttputc(ESC);
-	ttputc('[');
-	ttputc('J');
+	ttputs("\033[J");
 }
 
 static void ansirev(int is_rev)
 {
-	ttputc(ESC);
-	ttputc('[');
+	ttputs("\033[");
 	ttputc(is_rev ? '7' : '0');
 	ttputc('m');
 }
@@ -106,13 +137,11 @@ static void ansibeep(void)
 static void ansiparm(int n)
 {
 	int q, r;
-
 	q = n / 10;
 	if (q != 0) {
 		r = q / 10;
-		if (r != 0) {
+		if (r != 0)
 			ttputc((r % 10) + '0');
-		}
 		ttputc((q % 10) + '0');
 	}
 	ttputc((n % 10) + '0');

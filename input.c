@@ -9,7 +9,11 @@
  */
 int reeat_char = -1;
 
-void ttputs(char *s);
+static inline void ttputs(char *s)
+{
+	while (*s)
+		TTputc(*s++);
+}
 
 /* Get a key from the terminal driver, resolve any keyboard macro action */
 int tgetc(void)
@@ -257,10 +261,3 @@ int ctoec(int c)
 	return c;
 }
 
-void ttputs(char *s)
-{
-	if (s != NULL) {
-		while (*s)
-			TTputc(*s++);
-	}
-}

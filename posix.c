@@ -2,9 +2,6 @@
  * The functions in this file negotiate with the operating system for
  * characters, and write characters in a barely buffered fashion on the display.
  * All operating systems.
- *
- * Based on termio.c, with all the old cruft removed, and fixed for termios
- * rather than the old termio.
  */
 
 #ifdef POSIX
@@ -20,9 +17,7 @@
 #include <unistd.h>
 #include <sys/ioctl.h>
 
-/*
- * Since Mac OS X's termios.h doesn't have the following 2 macros, define them.
- */
+/* Mac OS X's termios.h doesn't have the following 2 macros, define them. */
 #if defined(_DARWIN_C_SOURCE) || defined(_FREEBSD_C_SOURCE)
 #define OLCUC 0000002
 #define XCASE 0000004
@@ -44,11 +39,6 @@ static char tobuf[TBUFSIZ];		/* terminal output buffer */
 void ttopen(void)
 {
 	tcgetattr(0, &otermios);	/* save old settings */
-
-	/*
-	 * base new settings on old ones - don't change things
-	 * we don't know about
-	 */
 	ntermios = otermios;
 
 	/* raw CR/NL etc input handling, but keep ISTRIP if we're on a 7-bit line */
@@ -92,45 +82,12 @@ void ttclose(void)
 	tcsetattr(0, TCSADRAIN, &otermios);	/* restore terminal settings */
 }
 
-/* Write a character to the display. */
 int ttputc(int c)
 {
 	fputc(c, stdout);
 	return 0;
 }
 
-/*
- * Flush terminal buffer.  Does real work where the terminal output is buffered
- * up.  A no-operation on systems where byte at a time terminal I/O is done.
- */
-void ttflush(void)
-{
-/*
- * Add some terminal output success checking, sometimes an orphaned
- * process may be left looping on SunOS 4.1.
- *
- * How to recover here, or is it best just to exit and lose
- * everything?
- *
- * jph, 8-Oct-1993
- * Jani Jaakkola suggested using select after EAGAIN but let's just wait a bit
- *
- */
-	int status;
-
-	status = fflush(stdout);
-	while (status < 0 && errno == EAGAIN) {
-		sleep(1);
-		status = fflush(stdout);
-	}
-	if (status < 0)
-		exit(15);
-}
-
-/*
- * Read a character from the terminal, performing no editing and doing no echo.
- * (For the `ENTER` key, `read` get 13, while `getch` get 10)
- */
 int ttgetc(void)
 {
 	static unsigned char buf[32];
@@ -144,6 +101,18 @@ int ttgetc(void)
 	}
 
 	return buf[cursor++];
+}
+
+void ttflush(void)
+{
+	int status;
+	status = fflush(stdout);
+	while (status < 0 && errno == EAGAIN) {
+		sleep(1);
+		status = fflush(stdout);
+	}
+	if (status < 0)
+		exit(15);
 }
 
 /* Check to see if any characters are already in the keyboard buffer. */

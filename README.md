@@ -12,10 +12,10 @@ I call it **M**dified Micro **E**macs (`me`).
 
 ## Build
 
-We can also build this program without `termcap` or `terminfo`:
+Build this program with `termcap` or `terminfo` for non-ANSI terminals:
 
 ```sh
-make ANSITERM=1
+make USE_TERMCAP=1
 ```
 
 In this case, only ANSI compatible terminals are supported, and functions

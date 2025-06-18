@@ -42,17 +42,22 @@ struct terminal term = {
 	tcapcres,
 };
 
+static inline void putpad(char *str)
+{
+	tputs(str, 1, ttputc);
+}
+
 static void init_termcap(void)
 {
 	char *p = tcapbuf;
 
-	CM = tgetstr("cm", &p);		/* Cursor move */
-	CL = tgetstr("cl", &p);		/* Clear screen */
-	CE = tgetstr("ce", &p);		/* Clear to end of line */
-	SO = tgetstr("so", &p);		/* Begin standout mode */
-	SE = tgetstr("se", &p);		/* End standout mode */
-	TI = tgetstr("ti", &p);		/* Enter alternate screen */
-	TE = tgetstr("te", &p);		/* Exit alternate screen */
+	CM = tgetstr("cm", &p);	/* Cursor move */
+	CL = tgetstr("cl", &p);	/* Clear screen */
+	CE = tgetstr("ce", &p);	/* Clear to end of line */
+	SO = tgetstr("so", &p);	/* Begin standout mode */
+	SE = tgetstr("se", &p);	/* End standout mode */
+	TI = tgetstr("ti", &p);	/* Enter alternate screen */
+	TE = tgetstr("te", &p);	/* Exit alternate screen */
 
 	if (p >= &tcapbuf[TCAPSLEN]) {
 		fputs("Terminal description too big!\n", stderr);
@@ -71,24 +76,18 @@ static void init_termcap(void)
 		eolexist = FALSE;
 }
 
-static inline void putpad(char *str)
-{
-	tputs(str, 1, ttputc);
-}
-
 static void tcapopen(void)
 {
 	char tcbuf[1024];
-	char *s;
+	char *cp;
 	int cols, rows;
 
-	if ((s = getenv("TERM")) == NULL) {
+	if ((cp = getenv("TERM")) == NULL) {
 		fputs("Environment variable TERM not defined!", stderr);
 		exit(1);
 	}
-
-	if ((tgetent(tcbuf, s)) != 1) {
-		fprintf(stderr, "Unknown terminal type %s!", s);
+	if ((tgetent(tcbuf, cp)) != 1) {
+		fprintf(stderr, "Unknown terminal type %s!", cp);
 		exit(1);
 	}
 
@@ -99,17 +98,15 @@ static void tcapopen(void)
 	init_termcap();
 
 	ttopen();
-
 	putpad(TI);
 	ttflush();
-	ttrow = 999;
-	ttcol = 999;
+
 	sgarbf = TRUE;
 }
 
 static void tcapclose(void)
 {
-	putpad(tgoto(CM, 0, term.t_nrow));
+	tcapmove(term.t_nrow, 0);
 	putpad(TE);
 	ttflush();
 	ttclose();
