@@ -67,33 +67,19 @@ int get1key(void)
 
 #define NULLPROC_KEYS	(CTLX | META | CTL | 'Z')
 
-static int transform_csi_1(int ch)
+/* CSI arguments are like "12;3;45", "38:2:255:0", we don't need them here */
+static int drain_csi_args(int ch)
 {
-	switch (ch) {
-	case 0x41:	return CTL | 'P';
-	case 0x42:	return CTL | 'N';
-	case 0x43:	return CTL | 'F';
-	case 0x44:	return CTL | 'B';
-	case 0x46:	return CTL | 'E';
-	case 0x48:	return CTL | 'A';
-	default:	return NULLPROC_KEYS;
-	}
-}
+	while (isdigit(ch) || ch == ';' || ch == ':')
+		ch = get1key();
 
-static int transform_csi_2(int ch)
-{
-	switch (ch) {
-	case 0x33:	return CTL | 'D';
-	case 0x35:	return CTL | 'Z';
-	case 0x36:	return CTL | 'V';
-	default:	return NULLPROC_KEYS;
-	}
+	return NULLPROC_KEYS;
 }
 
 /* Get a command from the keyboard.  Process all applicable prefix keys. */
 int getcmd(void)
 {
-	int c, c2, cmask = 0;
+	int c, cmask = 0;
 
 	c = get1key();
 
@@ -105,22 +91,12 @@ int getcmd(void)
 proc_metac:
 		c = get1key();
 
-		/* For VT220, We need to handle CSI (starts with `ESC [`) */
-#if VT220
-		/* CAUTION: Only parts of CSI cursor commands are handled */
-		/* `ESC O` is used by some terminals */
+#if VT220	/* Handle some CSI to support mouse/touchpad scrolling */
 		if (c == '[' || c == 'O') {
-			c = get1key();
-			if (c >= 0x41 && c <= 0x48) {
-				return cmask | transform_csi_1(c);
-			} else if (c >= 0x31 && c <= 0x39) {
-				c2 = get1key();
-				if (c2 == 0x7E)
-					return cmask | transform_csi_2(c);
-				else
-					return NULLPROC_KEYS;
-			} else {
-				return NULLPROC_KEYS;
+			switch ((c = get1key())) {
+			case 0x41:	return CTL | 'P';
+			case 0x42:	return CTL | 'N';
+			default:	return drain_csi_args(c);
 			}
 		} else if (c == METAC) {
 			cmask |= META;
