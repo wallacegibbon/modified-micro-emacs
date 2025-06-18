@@ -6,75 +6,41 @@
 
 /*
  * With no argument, it just does the refresh.  With an argument "n",
- * reposition dot to line "n" of the screen.
+ * reposition dot to line "n" of the screen.  (n == 0 means centering it)
  */
 int redraw(int f, int n)
 {
 	if (f == FALSE) {
 		sgarbf = TRUE;
 	} else {
-		curwp->w_force = n;	/* Center dot. */
+		curwp->w_force = n;
 		curwp->w_flag |= WFFORCE;
 	}
 	return TRUE;
 }
 
-/*
- * The command make the next window the current window.
- * With an positive argument, finds the <n>th window from the top.
- * With a negative argument, finds the <n>th window from the bottom
- */
+/* Make the nth next window the current window. */
 int nextwind(int f, int n)
 {
 	struct window *wp;
-	int nwindows;
+	if (wheadp->w_wndp == NULL)
+		return FALSE;
+	if (n <= 0)
+		return FALSE;
 
-	if (f) {
-		nwindows = 1;
-		for (wp = wheadp; wp->w_wndp != NULL; wp = wp->w_wndp)
-			++nwindows;
-
-		if (n < 0)
-			n = nwindows + n + 1;
-
-		/* if an argument, give them that window from the top */
-		if (n > 0 && n <= nwindows) {
+	wp = curwp;
+	while (n--) {
+		if ((wp = wp->w_wndp) == NULL)
 			wp = wheadp;
-			while (--n)
-				wp = wp->w_wndp;
-		} else {
-			mlwrite("Window number out of range");
-			return FALSE;
-		}
-	} else if ((wp = curwp->w_wndp) == NULL) {
-		wp = wheadp;
 	}
+
+	if (wp == curwp) {
+		mlwrite("Already in this window");
+		return TRUE;
+	}
+
 	curwp = wp;
 	curbp = wp->w_bufp;
-	update_modelines();
-	return TRUE;
-}
-
-/* The reverse of nextwind */
-int prevwind(int f, int n)
-{
-	struct window *wp1, *wp2;
-
-	/* if we have an argument, we mean the nth window from the bottom */
-	if (f)
-		return nextwind(f, -n);
-
-	wp1 = wheadp;
-	wp2 = curwp;
-
-	if (wp1 == wp2)
-		wp2 = NULL;
-
-	while (wp1->w_wndp != wp2)
-		wp1 = wp1->w_wndp;
-
-	curwp = wp1;
-	curbp = wp1->w_bufp;
 	update_modelines();
 	return TRUE;
 }
@@ -133,11 +99,9 @@ int onlywind(int f, int n)
  */
 int delwind(int f, int n)
 {
-	struct window *wp;	/* window to recieve deleted space */
-	struct window *lwp;	/* ptr window before curwp */
-	int target;		/* target line to search for */
+	struct window *wp, *lwp;
+	int target;
 
-	/* if there is only one window, don't delete it */
 	if (wheadp->w_wndp == NULL) {
 		mlwrite("Can not delete this window");
 		return FALSE;
@@ -200,11 +164,10 @@ int delwind(int f, int n)
 }
 
 /*
- * Split the current window.  A window smaller than 3 lines cannot be
- * split.  An argument of 1 forces the cursor into the upper window, an
- * argument of two forces the cursor to the lower window.  The only
- * other error that is possible is a "malloc" failure allocating the
- * structure for the new window.
+ * Split the current window.  A window smaller than 3 lines cannot be splited.
+ * An argument of 1 forces the cursor into the upper window, an argument of 2
+ * forces the cursor to the lower window.  The only other error that is
+ * possible is a "malloc" failure allocating the structure for the new window.
  */
 int splitwind(int f, int n)
 {
@@ -369,18 +332,30 @@ struct window *wpopup(void)
 /* scroll the next window up (back) a page */
 int scrnextup(int f, int n)
 {
+	struct window *wp = curwp;
+
 	nextwind(FALSE, 1);
 	backpage(f, n);
-	prevwind(FALSE, 1);
+
+	curwp = wp;
+	curbp = wp->w_bufp;
+	update_modelines();
+
 	return TRUE;
 }
 
 /* scroll the next window down (forward) a page */
 int scrnextdw(int f, int n)
 {
+	struct window *wp = curwp;
+
 	nextwind(FALSE, 1);
 	forwpage(f, n);
-	prevwind(FALSE, 1);
+
+	curwp = wp;
+	curbp = wp->w_bufp;
+	update_modelines();
+
 	return TRUE;
 }
 

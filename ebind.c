@@ -39,7 +39,7 @@ struct key_tab keytab[] = {
 	{META | 'G', gotoline},
 	{META | 'L', lowerword},
 	{META | 'M', setgmode},
-	{META | 'P', prevbuffer},
+	{META | 'P', lastbuffer},
 	{META | 'U', upperword},
 	{META | 'W', copyregion},
 #if NAMED_CMD
@@ -58,7 +58,6 @@ struct key_tab keytab[] = {
 	{CTLX | '=', showcpos},
 	{CTLX | '(', ctlxlp},
 	{CTLX | ')', ctlxrp},
-	{CTLX | '^', enlargewind},
 	{CTLX | '0', delwind},
 	{CTLX | '1', onlywind},
 	{CTLX | '2', splitwind},
@@ -68,7 +67,6 @@ struct key_tab keytab[] = {
 	{CTLX | 'K', killbuffer},
 	{CTLX | 'M', setemode},
 	{CTLX | 'O', nextwind},
-	{CTLX | 'P', prevwind},
 	{CTLX | 'X', nextbuffer},
 	{CTLX | 'Z', enlargewind},
 

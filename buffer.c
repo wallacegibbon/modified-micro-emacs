@@ -22,7 +22,7 @@ int usebuffer(int f, int n)
 	return swbuffer(bp);
 }
 
-int prevbuffer(int f, int n)
+int lastbuffer(int f, int n)
 {
 	if (prevbp != NULL)
 		return swbuffer(prevbp);

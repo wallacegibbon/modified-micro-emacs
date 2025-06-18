@@ -11,7 +11,6 @@ int inword(void);
 /* window.c */
 int redraw(int f, int n);
 int nextwind(int f, int n);
-int prevwind(int f, int n);
 int onlywind(int f, int n);
 int delwind(int f, int n);
 int splitwind(int f, int n);
@@ -120,7 +119,7 @@ int namedcmd(int f, int n);
 /* buffer.c */
 int usebuffer(int f, int n);
 int nextbuffer(int f, int n);
-int prevbuffer(int f, int n);
+int lastbuffer(int f, int n);
 int swbuffer(struct buffer *bp);
 int killbuffer(int f, int n);
 int zotbuf(struct buffer *bp);

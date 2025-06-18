@@ -54,18 +54,16 @@ Case word capitalize .. Meta  C
 -------------------------------------------------------------------------------
 =>                      WINDOW COMMANDS
 Split current window ..   ^X  2         Next window ...........   ^X  O
-Delete other windows ..   ^X  1         Previous window .......   ^X  P
-Delete window .........   ^X  0         Scroll next up ........ Meta ^Z
-Grow window ...........   ^X  Z         Scroll next down ...... Meta ^V
-Shrink window .........   ^X ^Z         Resize window .........   ^X  W
-Move window up ........   ^X ^P
-Move window down ......   ^X ^N
+Delete other windows ..   ^X  1         Scroll next up ........ Meta ^Z
+Delete window .........   ^X  0         Scroll next down ...... Meta ^V
+Grow window ...........   ^X  Z
+Shrink window .........   ^X ^Z
 -------------------------------------------------------------------------------
 =>                      BUFFER COMMANDS
 Next buffer ...........   ^X  X         Filter buffer .........   ^X  #
 Select buffer .........   ^X  B         Pipe command ..........   ^X  @
 List buffers ..........   ^X ^B         Buffer position .......   ^X  =
-Delete buffer .........   ^X  K
+Delete buffer .........   ^X  K         Last buffer ........... Meta  P
 -------------------------------------------------------------------------------
 =>                      SEARCHING AND REPLACING
 Incremental search           ^S     ::  Search next ^X, stop Enter, cancel ^G.
@@ -87,7 +85,6 @@ Execute macro .........   ^X  E
 -------------------------------------------------------------------------------
 =>                      MISCELLANEOUS
 Universal argument ....      ^U         Set mark .............. Meta Space
-Clear and redraw ......      ^L         Exchange point and mark   ^X ^X
-Redraw display ........ Meta ^L
+Redraw display ........      ^L         Exchange point and mark   ^X ^X
 Execute named command . Meta  X
 -------------------------------------------------------------------------------
