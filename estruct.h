@@ -27,9 +27,7 @@
 
 #define VT220	UNIX
 
-#ifndef USE_TERMCAP
-#define USE_ANSI	1
-#endif
+#define USE_ANSI	(!USE_TERMCAP)
 
 #define TYPEAH	1  /* type ahead causes update to be skipped */
 #define VISMAC	0  /* update display during keyboard macros */
