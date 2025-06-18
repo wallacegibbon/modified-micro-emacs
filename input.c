@@ -70,10 +70,22 @@ int get1key(void)
 static int transform_csi_1(int ch)
 {
 	switch (ch) {
-	case 'A':	return CTL | 'P';
-	case 'B':	return CTL | 'N';
-	case 'C':	return CTL | 'F';
-	case 'D':	return CTL | 'B';
+	case 0x41:	return CTL | 'P';
+	case 0x42:	return CTL | 'N';
+	case 0x43:	return CTL | 'F';
+	case 0x44:	return CTL | 'B';
+	case 0x46:	return CTL | 'E';
+	case 0x48:	return CTL | 'A';
+	default:	return NULLPROC_KEYS;
+	}
+}
+
+static int transform_csi_2(int ch)
+{
+	switch (ch) {
+	case 0x33:	return CTL | 'D';
+	case 0x35:	return CTL | 'Z';
+	case 0x36:	return CTL | 'V';
 	default:	return NULLPROC_KEYS;
 	}
 }
@@ -81,8 +93,9 @@ static int transform_csi_1(int ch)
 /* Get a command from the keyboard.  Process all applicable prefix keys. */
 int getcmd(void)
 {
-	int c = get1key();
-	int cmask = 0;
+	int c, c2, cmask = 0;
+
+	c = get1key();
 
 	/* process META prefix */
 
@@ -98,10 +111,17 @@ proc_metac:
 		/* `ESC O` is used by some terminals */
 		if (c == '[' || c == 'O') {
 			c = get1key();
-			if (c >= 'A' && c <= 'F')
+			if (c >= 0x41 && c <= 0x48) {
 				return cmask | transform_csi_1(c);
-			else
+			} else if (c >= 0x31 && c <= 0x39) {
+				c2 = get1key();
+				if (c2 == 0x7E)
+					return cmask | transform_csi_2(c);
+				else
+					return NULLPROC_KEYS;
+			} else {
 				return NULLPROC_KEYS;
+			}
 		} else if (c == METAC) {
 			cmask |= META;
 			goto proc_metac;
