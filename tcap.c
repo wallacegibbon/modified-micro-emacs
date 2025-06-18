@@ -10,22 +10,20 @@
 #define SCRSIZ	64
 #define MARGIN	8
 
-static void tcapkopen(void);
-static void tcapkclose(void);
+static void tcapopen(void);
+static void tcapclose(void);
 static void tcapmove(int, int);
 static void tcapeeol(void);
 static void tcapeeop(void);
 static void tcapbeep(void);
 static void tcaprev(int);
 static int tcapcres(char *);
-static void putpad(char *str);
 
-static void tcapopen(void);
-static void tcapclose(void);
-
-#define TCAPSLEN 315
+/* On my test on Ubuntu 24.04 x86-64 Gnome terminal, tcapbuf takes 76 bytes */
+#define TCAPSLEN 128
 static char tcapbuf[TCAPSLEN];
-static char *UP, PC, *CM, *CE, *CL, *SO, *SE, *TI, *TE;
+
+static char *CM, *CE, *CL, *SO, *SE, *TI, *TE;
 
 struct terminal term = {
 	0, 0,			/* These 2 values are set at open time. */
@@ -33,8 +31,6 @@ struct terminal term = {
 	SCRSIZ,
 	tcapopen,
 	tcapclose,
-	tcapkopen,
-	tcapkclose,
 	ttgetc,
 	ttputc,
 	ttflush,
@@ -46,19 +42,53 @@ struct terminal term = {
 	tcapcres,
 };
 
+static void init_termcap(void)
+{
+	char *p = tcapbuf;
+
+	CM = tgetstr("cm", &p);		/* Cursor move */
+	CL = tgetstr("cl", &p);		/* Clear screen */
+	CE = tgetstr("ce", &p);		/* Clear to end of line */
+	SO = tgetstr("so", &p);		/* Begin standout mode */
+	SE = tgetstr("se", &p);		/* End standout mode */
+	TI = tgetstr("ti", &p);		/* Enter alternate screen */
+	TE = tgetstr("te", &p);		/* Exit alternate screen */
+
+	if (p >= &tcapbuf[TCAPSLEN]) {
+		fputs("Terminal description too big!\n", stderr);
+		exit(1);
+	}
+
+	if (CM == NULL || CL == NULL) {
+		fputs("Incomplete termcap entry\n", stderr);
+		exit(1);
+	}
+
+	if (SO != NULL)
+		revexist = TRUE;
+
+	if (CE == NULL)
+		eolexist = FALSE;
+}
+
+static inline void putpad(char *str)
+{
+	tputs(str, 1, ttputc);
+}
+
 static void tcapopen(void)
 {
 	char tcbuf[1024];
-	char *tv_stype, *t, *p;
+	char *s;
 	int cols, rows;
 
-	if ((tv_stype = getenv("TERM")) == NULL) {
+	if ((s = getenv("TERM")) == NULL) {
 		fputs("Environment variable TERM not defined!", stderr);
 		exit(1);
 	}
 
-	if ((tgetent(tcbuf, tv_stype)) != 1) {
-		fprintf(stderr, "Unknown terminal type %s!", tv_stype);
+	if ((tgetent(tcbuf, s)) != 1) {
+		fprintf(stderr, "Unknown terminal type %s!", s);
 		exit(1);
 	}
 
@@ -66,38 +96,15 @@ static void tcapopen(void)
 	term.t_nrow = atleast(rows - 1, SCR_MIN_ROWS - 1);
 	term.t_ncol = atleast(cols, SCR_MIN_COLS);
 
-	p = tcapbuf;
-	t = tgetstr("pc", &p);
-	PC = t ? *t : 0;
-	CL = tgetstr("cl", &p);
-	CM = tgetstr("cm", &p);
-	CE = tgetstr("ce", &p);
-	UP = tgetstr("up", &p);
-	SE = tgetstr("se", &p);
-	SO = tgetstr("so", &p);
-	if (SO != NULL)
-		revexist = TRUE;
-	if (tgetnum("sg") > 0) {	/* can reverse be used? */
-		revexist = FALSE;
-		SE = NULL;
-		SO = NULL;
-	}
-	TI = tgetstr("ti", &p);	/* terminal init and exit */
-	TE = tgetstr("te", &p);
+	init_termcap();
 
-	if (CL == NULL || CM == NULL || UP == NULL) {
-		fputs("Incomplete termcap entry\n", stderr);
-		exit(1);
-	}
-
-	if (CE == NULL)	/* will we be able to use clear to EOL? */
-		eolexist = FALSE;
-
-	if (p >= &tcapbuf[TCAPSLEN]) {
-		fputs("Terminal description too big!\n", stderr);
-		exit(1);
-	}
 	ttopen();
+
+	putpad(TI);
+	ttflush();
+	ttrow = 999;
+	ttcol = 999;
+	sgarbf = TRUE;
 }
 
 static void tcapclose(void)
@@ -106,21 +113,6 @@ static void tcapclose(void)
 	putpad(TE);
 	ttflush();
 	ttclose();
-}
-
-static void tcapkopen(void)
-{
-	putpad(TI);
-	ttflush();
-	ttrow = 999;
-	ttcol = 999;
-	sgarbf = TRUE;
-}
-
-static void tcapkclose(void)
-{
-	putpad(TE);
-	ttflush();
 }
 
 static void tcapmove(int row, int col)
@@ -138,22 +130,11 @@ static void tcapeeop(void)
 	putpad(CL);
 }
 
-/*
- * Change reverse video status
- *
- * @state: FALSE = normal video, TRUE = reverse video.
- */
-static void tcaprev(int state)
+static void tcaprev(int is_rev)
 {
-	if (state) {
-		if (SO != NULL)
-			putpad(SO);
-	} else if (SE != NULL) {
-		putpad(SE);
-	}
+	putpad(is_rev ? SO : SE);
 }
 
-/* Change screen resolution. */
 static int tcapcres(char *res)
 {
 	return TRUE;
@@ -162,11 +143,6 @@ static int tcapcres(char *res)
 static void tcapbeep(void)
 {
 	ttputc(BELL);
-}
-
-static void putpad(char *str)
-{
-	tputs(str, 1, ttputc);
 }
 
 #endif

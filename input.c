@@ -9,7 +9,7 @@
  */
 int reeat_char = -1;
 
-void tputs(char *s);
+void ttputs(char *s);
 
 /* Get a key from the terminal driver, resolve any keyboard macro action */
 int tgetc(void)
@@ -161,15 +161,15 @@ int getstring(char *prompt, char *buf, int nbuf, int eolchar)
 
 		} else if ((c == 0x7F || c == '\b') && quotef == FALSE) {
 			if (cpos != 0) {
-				tputs("\b \b");
+				ttputs("\b \b");
 				--ttcol;
 
 				if (buf[--cpos] < 0x20) {
-					tputs("\b \b");
+					ttputs("\b \b");
 					--ttcol;
 				}
 				if (buf[cpos] == '\n') {
-					tputs("\b\b  \b\b");
+					ttputs("\b\b  \b\b");
 					ttcol -= 2;
 				}
 
@@ -257,7 +257,7 @@ int ctoec(int c)
 	return c;
 }
 
-void tputs(char *s)
+void ttputs(char *s)
 {
 	if (s != NULL) {
 		while (*s)

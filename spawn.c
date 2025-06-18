@@ -17,7 +17,6 @@ int spawncli(int f, int n)
 	movecursor(term.t_nrow, 0);
 	TTflush();
 	TTclose();
-	TTkclose();
 	if ((cp = getenv("SHELL")) != NULL && *cp != '\0')
 		r = system(cp);
 	else
@@ -33,44 +32,7 @@ int spawncli(int f, int n)
 	*/
 
 	TTopen();
-	TTkopen();
 	update(TRUE);
-
-	if (r == 0)
-		return TRUE;
-
-	mlwrite("Failed running external command");
-	return FALSE;
-#endif
-}
-
-/*
- * Run a one-liner in a subjob.  When the command returns, wait for a single
- * character to be typed, then mark the screen as garbage so a full repaint is
- * done.
- */
-int spawn(int f, int n)
-{
-	char line[NLINE];
-	int s, r;
-
-#if UNIX
-	if ((s = mlreply("!", line, NLINE)) != TRUE)
-		return s;
-	TTflush();
-	TTclose();
-	TTkclose();
-	r = system(line);
-	fflush(stdout);
-	TTopen();
-
-	mlputs("(End)");
-	TTflush();
-	while ((s = tgetc()) != '\r' && s != ' ');
-	mlputs("\r\n");
-
-	TTkopen();
-	sgarbf = TRUE;
 
 	if (r == 0)
 		return TRUE;
@@ -113,12 +75,10 @@ int pipecmd(int f, int n)
 #if UNIX
 	TTflush();
 	TTclose();
-	TTkclose();
 	strcat(line, ">");
 	strcat(line, filename);
 	r = system(line);
 	TTopen();
-	TTkopen();
 	TTflush();
 	sgarbf = TRUE;
 	s = TRUE;
@@ -183,14 +143,12 @@ int filter_buffer(int f, int n)
 	TTputc('\n');			/* Already have '\r' */
 	TTflush();
 	TTclose();
-	TTkclose();
 	strcat(line, "<");
 	strcat(line, filename_in);
 	strcat(line, ">");
 	strcat(line, filename_out);
 	r = system(line);
 	TTopen();
-	TTkopen();
 	TTflush();
 	sgarbf = TRUE;
 	s = TRUE;

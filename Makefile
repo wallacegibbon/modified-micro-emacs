@@ -2,9 +2,9 @@ UNAME_S := $(shell sh -c 'uname -s 2>/dev/null || echo Unknown')
 BINDIR = /usr/bin
 PROGRAM = me
 SHOWKEYS = showkeys
-TERMCAP = 0
+ANSITERM = 0
 
-ifeq ($(TERMCAP), 1)
+ifeq ($(ANSITERM), 0)
 TTYPE = tcap
 else
 TTYPE = tansi
@@ -38,8 +38,8 @@ DEFINES += -DPOSIX -DSYSV -D_XOPEN_SOURCE=600 -D_BSD_SOURCE -D_SVID_SOURCE \
 	-D_DARWIN_C_SOURCE
 endif
 
-ifeq ($(TERMCAP), 1)
-DEFINES += -DUSE_TERMCAP
+ifeq ($(ANSITERM), 0)
+DEFINES += -DUSE_TERMCAP=1
 LIBS += -ltinfo
 #LIBS += -ltermcap
 #LIBS += -L/usr/lib/termcap -ltermcap

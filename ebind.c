@@ -54,7 +54,6 @@ struct key_tab keytab[] = {
 	{META | CTL | 'V', scrnextdw},
 	{META | CTL | 'Z', scrnextup},
 
-	{CTLX | '!', spawn},
 	{CTLX | '@', pipecmd},
 	{CTLX | '#', filter_buffer},
 	{CTLX | '=', showcpos},

@@ -315,7 +315,6 @@ int quit(int f, int n)
 			TTputc('\n');
 			TTputc('\r');
 			TTclose();
-			TTkclose();
 			exit(1);
 		}
 #endif

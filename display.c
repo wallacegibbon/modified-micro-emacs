@@ -90,7 +90,6 @@ static void screen_init(void)
 void vtinit(void)
 {
 	TTopen();
-	TTkopen();
 	TTrev(FALSE);
 	screen_init();
 }
@@ -119,7 +118,6 @@ void vttidy(void)
 	movecursor(term.t_nrow, 0);
 	TTflush();
 	TTclose();
-	TTkclose();
 	r = write(1, "\r", 1);
 	(void)r;
 }

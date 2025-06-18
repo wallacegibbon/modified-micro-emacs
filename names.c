@@ -77,7 +77,6 @@ struct name_bind names[] = {
 	{"scroll-next-down", scrnextdw},
 	{"select-buffer", usebuffer},
 	{"set-mark", setmark},
-	{"shell-command", spawn},
 	{"shrink-window", shrinkwind},
 	{"split-current-window", splitwind},
 	{"view-file", viewfile},

@@ -196,8 +196,6 @@ struct terminal {
 
 	void (*t_open)(void);	/* Open terminal at the start. */
 	void (*t_close)(void);	/* Close terminal at end. */
-	void (*t_kopen)(void);	/* Open keyboard */
-	void (*t_kclose)(void);	/* close keyboard */
 	int (*t_getchar)(void);	/* Get character from keyboard. */
 	int (*t_putchar)(int);	/* Put character to display. */
 	void (*t_flush)(void);	/* Flush output buffers. */
@@ -212,8 +210,6 @@ struct terminal {
 
 #define TTopen		(term.t_open)
 #define TTclose		(term.t_close)
-#define TTkopen		(term.t_kopen)
-#define TTkclose	(term.t_kclose)
 #define TTgetc		(term.t_getchar)
 #define TTputc		(term.t_putchar)
 #define TTflush		(term.t_flush)

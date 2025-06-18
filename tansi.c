@@ -9,14 +9,13 @@
 #define MARGIN	8		/* size of minimim margin and */
 
 static void ansiopen(void);
-static void ansikopen(void);
-static void ansikclose(void);
 static void ansimove(int, int);
 static void ansieeol(void);
 static void ansieeop(void);
 static void ansibeep(void);
 static void ansirev(int);
 static int ansicres(char *);
+
 static void ansiparm(int n);
 
 struct terminal term = {
@@ -25,8 +24,6 @@ struct terminal term = {
 	SCRSIZ,
 	ansiopen,
 	ttclose,
-	ansikopen,
-	ansikclose,
 	ttgetc,
 	ttputc,
 	ttflush,
@@ -87,11 +84,11 @@ static void ansieeop(void)
 	ttputc('J');
 }
 
-static void ansirev(int state)
+static void ansirev(int is_rev)
 {
 	ttputc(ESC);
 	ttputc('[');
-	ttputc(state ? '7' : '0');
+	ttputc(is_rev ? '7' : '0');
 	ttputc('m');
 }
 
@@ -119,14 +116,6 @@ static void ansiparm(int n)
 		ttputc((q % 10) + '0');
 	}
 	ttputc((n % 10) + '0');
-}
-
-static void ansikopen(void)
-{
-}
-
-static void ansikclose(void)
-{
 }
 
 #endif

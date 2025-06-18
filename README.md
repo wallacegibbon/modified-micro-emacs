@@ -12,15 +12,14 @@ I call it **M**dified Micro **E**macs (`me`).
 
 ## Build
 
-The default build works on all ANSI-compatible terminals.  It do not rely on
-`termcap` or `terminfo`.
-
-We can also build it with `termcap` or `terminfo` to support more terminals:
+We can also build this program without `termcap` or `terminfo`:
 
 ```sh
-make TERMCAP=1
+make ANSITERM=1
 ```
 
+In this case, only ANSI compatible terminals are supported, and functions
+like mouse scrolling may not work on some terminals.
 
 ## Miscellaneous
 
