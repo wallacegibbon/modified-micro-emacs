@@ -101,7 +101,6 @@ void ttclose(void);
 int ttputc(int c);
 void ttflush(void);
 int ttgetc(void);
-int typahead(void);
 void getscreensize(int *widthp, int *heightp);
 
 /* input.c */

@@ -113,20 +113,6 @@ void ttflush(void)
 		exit(15);
 }
 
-/* Check to see if any characters are already in the keyboard buffer. */
-int typahead(void)
-{
-	int x;			/* holds # of pending chars */
-
-#ifdef FIONREAD
-	if (ioctl(0, FIONREAD, &x) < 0)
-		x = 0;
-#else
-	x = 0;
-#endif
-	return x;
-}
-
 void getscreensize(int *widthp, int *heightp)
 {
 #ifdef TIOCGWINSZ

@@ -29,7 +29,6 @@
 
 #define USE_ANSI	(!USE_TERMCAP)
 
-#define TYPEAH	1  /* type ahead causes update to be skipped */
 #define VISMAC	0  /* update display during keyboard macros */
 
 #ifdef SVR4

@@ -28,9 +28,8 @@ int main(int argc, char **argv)
 	struct buffer *firstbp = NULL, *bp;
 	char bname[NBUFN];
 	int firstfile = TRUE, viewflag = FALSE, gotoflag = FALSE, gline = 0;
-	int f, n;
 	int c = 0, c1, i;
-	fn_t execfunc;
+	int f, n;
 
 #if UNIX
 #ifdef SIGWINCH
@@ -89,27 +88,9 @@ int main(int argc, char **argv)
 	}
 
 loop:
-
-#if TYPEAH
-	if (typahead()) {
-		c1 = getcmd();
-		update(FALSE);
-		do {
-			if (c == c1 && (execfunc = getbind(c1)) != NULL
-					&& execfunc != newline)
-				c1 = getcmd();
-			else
-				break;
-		} while (typahead());
-		c = c1;
-	} else {
-		update(FALSE);
-		c = getcmd();
-	}
-#else
 	update(FALSE);
 	c = getcmd();
-#endif
+
 	/* if there is something on the command line, clear it */
 	if (mpresf != FALSE) {
 		mlerase();
