@@ -19,16 +19,30 @@ int redraw(int f, int n)
 	return TRUE;
 }
 
-/* Make the nth next window the current window. */
+static int count_window(void)
+{
+	struct window *wp = wheadp;
+	int n = 1;
+	while ((wp = wp->w_wndp) != NULL)
+		++n;
+	return n;
+}
+
+/* Make the nth next window (or -nth prev window) the current window. */
 int nextwind(int f, int n)
 {
-	struct window *wp;
+	struct window *wp = curwp;
+	int wcount;
+
 	if (wheadp->w_wndp == NULL)
 		return FALSE;
-	if (n <= 0)
-		return FALSE;
 
-	wp = curwp;
+	wcount = count_window();
+
+	n %= wcount;
+	if (n < 0)
+		n += wcount;
+
 	while (n--) {
 		if ((wp = wp->w_wndp) == NULL)
 			wp = wheadp;
@@ -43,6 +57,11 @@ int nextwind(int f, int n)
 	curbp = wp->w_bufp;
 	update_modelines();
 	return TRUE;
+}
+
+int prevwind(int f, int n)
+{
+	return nextwind(f, -n);
 }
 
 /*
@@ -332,30 +351,18 @@ struct window *wpopup(void)
 /* scroll the next window up (back) a page */
 int scrnextup(int f, int n)
 {
-	struct window *wp = curwp;
-
 	nextwind(FALSE, 1);
 	backpage(f, n);
-
-	curwp = wp;
-	curbp = wp->w_bufp;
-	update_modelines();
-
+	prevwind(FALSE, 1);
 	return TRUE;
 }
 
 /* scroll the next window down (forward) a page */
 int scrnextdw(int f, int n)
 {
-	struct window *wp = curwp;
-
 	nextwind(FALSE, 1);
 	forwpage(f, n);
-
-	curwp = wp;
-	curbp = wp->w_bufp;
-	update_modelines();
-
+	prevwind(FALSE, 1);
 	return TRUE;
 }
 

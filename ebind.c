@@ -67,6 +67,7 @@ struct key_tab keytab[] = {
 	{CTLX | 'K', killbuffer},
 	{CTLX | 'M', setemode},
 	{CTLX | 'O', nextwind},
+	{CTLX | 'P', prevwind},
 	{CTLX | 'X', nextbuffer},
 	{CTLX | 'Z', enlargewind},
 
