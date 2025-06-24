@@ -83,7 +83,7 @@ int lowerregion(int f, int n)
 		} else {
 			c = lgetc(linep, loffs);
 			if (c >= 'A' && c <= 'Z')
-				lputc(linep, loffs, c + 'a' - 'A');
+				lputc(linep, loffs, c ^ DIFCASE);
 			++loffs;
 		}
 	}

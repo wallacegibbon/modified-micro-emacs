@@ -19,14 +19,12 @@ static inline void TTputs(char *s)
 /* Get a key from the terminal driver, resolve any keyboard macro action */
 int tgetc(void)
 {
-	int c;
-
-	if ((c = reeat_char) != -1) {
+	int c = reeat_char;
+	if (c != -1) {
 		reeat_char = -1;
 		return c;
 	}
 
-	/* if we are playing a keyboard macro back */
 	if (kbdmode == PLAY) {
 		if (kbdptr < kbdend)
 			return (int)*kbdptr++;
@@ -49,8 +47,6 @@ int tgetc(void)
 	if (kbdmode == RECORD) {
 		*kbdptr++ = c;
 		kbdend = kbdptr;
-
-		/* don't overrun the buffer */
 		if (kbdptr == &kbdm[NKBDM - 1]) {
 			kbdmode = STOP;
 			TTbeep();
@@ -68,48 +64,46 @@ int get1key(void)
 
 #define NULLPROC_KEYS	(CTLX | META | CTL | 'Z')
 
-/* CSI arguments are like "12;3;45", "38:2:255:0", we don't need them here */
-static int drain_csi_args(int ch)
+/* Handle enough escape sequences to support mouse/touchpad scrolling */
+static int handle_special_esc(void)
 {
-	while (isdigit(ch) || ch == ';' || ch == ':')
-		ch = get1key();
+	int ch;
 
-	return NULLPROC_KEYS;
+	/* Drain CSI arguments (like "12;3;45" or "38:2:255:0") */
+	do {
+		ch = get1key();
+	} while (isdigit(ch) || ch == ';' || ch == ':');
+
+	switch (ch) {
+	case 'A':	return CTL | 'P';
+	case 'B':	return CTL | 'N';
+	default:	return NULLPROC_KEYS;
+	}
 }
 
 /* Get a command from the keyboard.  Process all applicable prefix keys. */
 int getcmd(void)
 {
-	int c, cmask = 0;
+	int cmask = 0, c;
 
 	c = get1key();
 
 	/* process META prefix */
-	/* META is more complex than CTLX because of CSI */
-
 	if (c == METAC) {
 proc_metac:
 		c = get1key();
-
-#if VT220	/* Handle some CSI to support mouse/touchpad scrolling */
-		if (c == '[' || c == 'O') {
-			switch ((c = get1key())) {
-			case 0x41:	return CTL | 'P';
-			case 0x42:	return CTL | 'N';
-			default:	return drain_csi_args(c);
-			}
-		} else if (c == METAC) {
+#if VT220
+		if (c == '[' || c == 'O')
+			return handle_special_esc();
+		if (c == METAC) {
 			cmask |= META;
 			goto proc_metac;
 		}
 #endif
-
 		cmask |= META;
 		if (c == CTLXC)
 			goto proc_ctlxc;
-		if (islower(c))
-			c ^= DIFCASE;
-		return cmask | c;
+		return cmask | ensure_upper(c);
 	}
 
 	/* process CTLX prefix */
@@ -119,9 +113,7 @@ proc_ctlxc:
 		cmask |= CTLX;
 		if (c == METAC)
 			goto proc_metac;
-		if (islower(c))
-			c ^= DIFCASE;
-		return cmask | c;
+		return cmask | ensure_upper(c);
 	}
 
 	/* otherwise, just return it */
@@ -256,4 +248,3 @@ int ctoec(int c)
 		c = CTL | (c + '@');
 	return c;
 }
-

@@ -5,18 +5,18 @@ SHOWKEYS = showkeys
 USE_TERMCAP = 0
 
 ifeq ($(USE_TERMCAP), 1)
-TTYPE = tcap
+TT = termcap
 else
-TTYPE = tansi
+TT = ansi
 endif
 
 SRC = main.c buffer.c window.c line.c word.c display.c basic.c random.c \
 	file.c fileio.c input.c search.c isearch.c lock.c region.c spawn.c \
-	$(TTYPE).c posix.c ebind.c names.c globals.c wrapper.c memory.c
+	$(TT).c posix.c ebind.c names.c globals.c wrapper.c memory.c
 
 OBJ = main.o buffer.o window.o line.o word.o display.o basic.o random.o \
 	file.o fileio.o input.o search.o isearch.o lock.o region.o spawn.o \
-	$(TTYPE).o posix.o ebind.o names.o globals.o wrapper.o memory.o
+	$(TT).o posix.o ebind.o names.o globals.o wrapper.o memory.o
 
 CC = gcc
 WARNINGS = -Wall -Wextra -Wstrict-prototypes -Wno-unused-parameter
@@ -49,7 +49,7 @@ $(PROGRAM): $(OBJ)
 	@echo "	LINK	$@"
 	@$(CC) $(LDFLAGS) $(DEFINES) -o $@ $^ $(LIBS)
 
-$(SHOWKEYS): showkeys.o posix.o globals.o $(TTYPE).o
+$(SHOWKEYS): showkeys.o posix.o globals.o $(TT).o
 	@echo "	LINK	$@"
 	@$(CC) $(LDFLAGS) $(DEFINES) -o $@ $^ $(LIBS)
 
@@ -90,5 +90,5 @@ window.o: window.c estruct.h edef.h line.h
 word.o: word.c estruct.h edef.h line.h
 globals.o: estruct.h edef.h
 memory.o: estruct.h edef.h
-tansi.o: tansi.c estruct.h edef.h
-tcap.o: tcap.c estruct.h edef.h
+ansi.o: ansi.c estruct.h edef.h
+termcap.o: termcap.c estruct.h edef.h

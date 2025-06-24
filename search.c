@@ -72,15 +72,10 @@ fail:
  */
 int eq(unsigned char bc, unsigned char pc)
 {
-	if ((curwp->w_bufp->b_mode & MDEXACT) == 0) {
-		if (islower(bc))
-			bc ^= DIFCASE;
-
-		if (islower(pc))
-			pc ^= DIFCASE;
-	}
-
-	return bc == pc;
+	if ((curwp->w_bufp->b_mode & MDEXACT) == 0)
+		return ensure_upper(bc) == ensure_upper(pc);
+	else
+		return bc == pc;
 }
 
 /*

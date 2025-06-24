@@ -111,6 +111,16 @@
 #define isalpha(c)	(islower(c) || isupper(c))
 #define isdigit(c)	('0' <= (c) && (c) <= '9')
 
+static inline int ensure_lower(int c)
+{
+	return isupper(c) ? c ^ DIFCASE : c;
+}
+
+static inline int ensure_upper(int c)
+{
+	return islower(c) ? c ^ DIFCASE : c;
+}
+
 #if RAMSIZE
 #define malloc	allocate
 #define free	release

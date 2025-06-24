@@ -12,14 +12,18 @@ I call it **M**dified Micro **E**macs (`me`).
 
 ## Build
 
-Build this program with `termcap` or `terminfo` for non-ANSI terminals:
+The default build uses ANSI control sequences directly.  You don't need extra
+ libraries besides libc to run this program.
+
+If you want to support non-ANSI terminals, build this program with `terminfo`.
 
 ```sh
 make USE_TERMCAP=1
 ```
 
-In this case, only ANSI compatible terminals are supported, and functions
-like mouse scrolling may not work on some terminals.
+> The deprecated `termcap` is supported, too.  But you need to change the
+> Makefile to use `termcap`.
+
 
 ## Miscellaneous
 
@@ -42,12 +46,16 @@ sudo update-alternatives --set editor /usr/bin/me
 
 ## Debug
 
-There is a program for getting raw input from terminal, which is useful for
-debugging.  Build it like this:
+There is a program `showkeys` for getting raw input from terminal,
+which is useful for debugging.  Build it:
 
 ```sh
 make showkeys
 ```
 
+And run it:
+```sh
+./showkeys
+```
 
 [uemacs/pk]: https://github.com/torvalds/uemacs

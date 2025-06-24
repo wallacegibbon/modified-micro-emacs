@@ -70,7 +70,7 @@ int upperword(int f, int n)
 		while (inword() == TRUE) {
 			c = lgetc(curwp->w_dotp, curwp->w_doto);
 			if (islower(c)) {
-				c -= 'a' - 'A';
+				c ^= DIFCASE;
 				lputc(curwp->w_dotp, curwp->w_doto, c);
 				lchange(WFHARD);
 			}
@@ -103,7 +103,7 @@ int lowerword(int f, int n)
 		while (inword() == TRUE) {
 			c = lgetc(curwp->w_dotp, curwp->w_doto);
 			if (isupper(c)) {
-				c += 'a' - 'A';
+				c ^= DIFCASE;
 				lputc(curwp->w_dotp, curwp->w_doto, c);
 				lchange(WFHARD);
 			}
@@ -137,7 +137,7 @@ int capword(int f, int n)
 		if (inword() == TRUE) {
 			c = lgetc(curwp->w_dotp, curwp->w_doto);
 			if (islower(c)) {
-				c -= 'a' - 'A';
+				c ^= DIFCASE;
 				lputc(curwp->w_dotp, curwp->w_doto, c);
 				lchange(WFHARD);
 			}
@@ -146,7 +146,7 @@ int capword(int f, int n)
 			while (inword() == TRUE) {
 				c = lgetc(curwp->w_dotp, curwp->w_doto);
 				if (isupper(c)) {
-					c += 'a' - 'A';
+					c ^= DIFCASE;
 					lputc(curwp->w_dotp, curwp->w_doto, c);
 					lchange(WFHARD);
 				}

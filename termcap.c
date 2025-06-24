@@ -19,7 +19,7 @@ static void tcapbeep(void);
 static void tcaprev(int);
 static int tcapcres(char *);
 
-/* On my test on Ubuntu 24.04 x86-64 Gnome terminal, tcapbuf takes 76 bytes */
+/* On Ubuntu 24.04 x86-64 GNOME Terminal, tcapbuf takes 76 bytes */
 #define TCAPSLEN 128
 static char tcapbuf[TCAPSLEN];
 
