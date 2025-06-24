@@ -75,7 +75,6 @@ static void ansiopen(void)
 	alternate_screen_init();
 	ttflush();
 
-	revexist = TRUE;
 	sgarbf = TRUE;
 }
 
@@ -96,6 +95,7 @@ static void ansimove(int row, int col)
 	ttputc('H');
 }
 
+/* The following 2 are not in ANSI, but useful in modern terminals */
 static void alternate_screen_init(void)
 {
 	ttputs("\033[?1049h");

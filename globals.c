@@ -13,9 +13,6 @@ int *kbdend = kbdm;		/* ptr to end of the keyboard */
 int kbdmode = STOP;		/* current keyboard macro mode */
 int kbdrep;			/* number of repetitions */
 
-int eolexist = TRUE;		/* does clear to EOL exist */
-int revexist = FALSE;		/* does reverse video exist? */
-
 int gmode = MDASAVE;		/* global editor mode */
 
 int gasave = 256;		/* global ASAVE size */

@@ -64,16 +64,10 @@ static void init_termcap(void)
 		exit(1);
 	}
 
-	if (CM == NULL || CL == NULL) {
+	if (CM == NULL || CL == NULL || CE == NULL || SO == NULL) {
 		fputs("Incomplete termcap entry\n", stderr);
 		exit(1);
 	}
-
-	if (SO != NULL)
-		revexist = TRUE;
-
-	if (CE == NULL)
-		eolexist = FALSE;
 }
 
 static void tcapopen(void)

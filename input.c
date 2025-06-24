@@ -65,7 +65,7 @@ int get1key(void)
 #define NULLPROC_KEYS	(CTLX | META | CTL | 'Z')
 
 /*
- * The escape sequence is a historical mess of `CSI`, `SS3`, `VT52`, etc.
+ * Escape sequences are messes of `CSI`, `SS3`, .... and non-standard stuff.
  * We only handle a tiny subset of them to support mouse/touchpad scrolling.
  */
 static int handle_special_esc(void)
@@ -73,9 +73,8 @@ static int handle_special_esc(void)
 	int c;
 
 	/* We do not need CSI arguments (like "12;3;45") in input. */
-	do {
-		c = get1key();
-	} while (isdigit(c) || c == ';');
+	do c = get1key();
+	while (isdigit(c) || c == ';');
 
 	/* Linux TTY emit `\033[[A` on F1.  non-standard */
 	if (c == '[') {

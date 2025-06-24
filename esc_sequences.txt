@@ -1,0 +1,11 @@
+Escape Sequences
+
+	CSI (Control Sequence Introducer)	\033[
+		SGR (Select Graphic Rendition)	\033[m
+		Cursor Movement			\033[H
+		Erase Operations		\033[J
+		...
+
+	OSC (Operating System Command)		\033]
+	SS3 (Single Shift 3)			\033O
+	...

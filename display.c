@@ -561,7 +561,7 @@ partial_update:
 	cp5 = cp3;
 
 	/* Erase to EOL ? */
-	if (nbflag == FALSE && eolexist == TRUE && (req != TRUE)) {
+	if (nbflag == FALSE && req != TRUE) {
 		while (cp5 != cp1 && cp5[-1] == ' ')
 			--cp5;
 
@@ -609,12 +609,7 @@ static void modeline(struct window *wp)
 	vscreen[n]->v_flag |= VFCHG | VFREQ;
 	vtmove(n, 0);
 
-	if (wp == curwp)
-		lchar = '-';
-	else if (revexist)
-		lchar = ' ';
-	else
-		lchar = '-';
+	lchar = (wp == curwp) ? '-' : ' ';
 
 	bp = wp->w_bufp;
 	vtputc(lchar);
@@ -793,24 +788,14 @@ void movecursor(int row, int col)
 	}
 }
 
-/*
- * Erase the message line.  This is a special routine because the message line
- * is not considered to be part of the virtual screen.  It always works
- * immediately; the terminal buffer is flushed via a call to the flusher.
- */
+
+/* the message line is not considered to be part of the virtual screen. */
+
+/* Erase the message line. */
 void mlerase(void)
 {
-	int i;
-
 	movecursor(term.t_nrow, 0);
-	if (eolexist == TRUE) {
-		TTeeol();
-	} else {
-		for (i = 0; i < term.t_ncol - 1; ++i)
-			TTputc(' ');
-		movecursor(term.t_nrow, 1);	/* force the move! */
-		movecursor(term.t_nrow, 0);
-	}
+	TTeeol();
 	TTflush();
 	mpresf = FALSE;
 }
@@ -818,19 +803,11 @@ void mlerase(void)
 /*
  * Write a message into the message line.  Keep track of the physical cursor
  * position.  A small class of printf like format items is handled.
- * Assumes the stack grows down; this assumption is made by the "++" in the
- * argument scan loop.  Set the "message line" flag TRUE.
  */
 int mlwrite(const char *fmt, ...)
 {
 	va_list ap;
 	int n = 0, c, tmp;
-
-	/* if we can not erase to end-of-line, do it manually */
-	if (eolexist == FALSE) {
-		mlerase();
-		TTflush();
-	}
 
 	movecursor(term.t_nrow, 0);
 	va_start(ap, fmt);
@@ -875,10 +852,7 @@ int mlwrite(const char *fmt, ...)
 	}
 	va_end(ap);
 
-	/* if we can, erase to the end of screen */
-	if (eolexist == TRUE)
-		TTeeol();
-
+	TTeeol();
 	TTflush();
 	mpresf = TRUE;
 	return n;
