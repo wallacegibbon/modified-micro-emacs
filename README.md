@@ -4,24 +4,25 @@ This is a tiny emacs-like editor modified from [uEmacs/PK 4.0][uemacs/pk],
 I call it **M**dified Micro **E**macs (`me`).
 
 
-## Goal
+## Goals
 
 - Be more compatible with GNU emacs.
 - Be tiny. (by removing unecessary parts like the script engine)
+- Fix all bugs.
 
 
 ## Build
 
-The default build uses ANSI control sequences directly.  You don't need extra
- libraries besides libc to run this program.
+The default build uses ANSI control sequences directly.  We don't need extra
+libraries besides `libc` to run this program.
 
-If you want to support non-ANSI terminals, build this program with `terminfo`.
+To support non-ANSI terminals, build this program with `terminfo`.
 
 ```sh
 make USE_TERMCAP=1
 ```
 
-> The deprecated `termcap` is supported, too.  But you need to change the
+> The deprecated `termcap` is supported, too.  But we need to change the
 > Makefile to use `termcap`.
 
 
