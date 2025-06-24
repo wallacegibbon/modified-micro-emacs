@@ -64,17 +64,26 @@ int get1key(void)
 
 #define NULLPROC_KEYS	(CTLX | META | CTL | 'Z')
 
-/* Handle enough escape sequences to support mouse/touchpad scrolling */
+/*
+ * The escape sequence is a historical mess of `CSI`, `SS3`, `VT52`, etc.
+ * We only handle a tiny subset of them to support mouse/touchpad scrolling.
+ */
 static int handle_special_esc(void)
 {
-	int ch;
+	int c;
 
-	/* Drain CSI arguments (like "12;3;45" or "38:2:255:0") */
+	/* We do not need CSI arguments (like "12;3;45") in input. */
 	do {
-		ch = get1key();
-	} while (isdigit(ch) || ch == ';' || ch == ':');
+		c = get1key();
+	} while (isdigit(c) || c == ';');
 
-	switch (ch) {
+	/* Linux TTY emit `\033[[A` on F1.  non-standard */
+	if (c == '[') {
+		get1key();
+		return NULLPROC_KEYS;
+	}
+
+	switch (c) {
 	case 'A':	return CTL | 'P';
 	case 'B':	return CTL | 'N';
 	default:	return NULLPROC_KEYS;
@@ -92,7 +101,7 @@ int getcmd(void)
 	if (c == METAC) {
 proc_metac:
 		c = get1key();
-#if VT220
+#if UNIX
 		if (c == '[' || c == 'O')
 			return handle_special_esc();
 		if (c == METAC) {

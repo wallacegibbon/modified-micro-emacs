@@ -25,11 +25,7 @@
 #define RAMSIZE	1		/* Dynamic RAM memory usage tracking */
 #define RAMSHOW	1		/* Auto dynamic RAM reporting */
 
-#define VT220	UNIX
-
-#define USE_ANSI	(!USE_TERMCAP)
-
-#define VISMAC	0  /* update display during keyboard macros */
+#define VISMAC	0		/* update display during keyboard macros */
 
 #ifdef SVR4
 #define FILOCK  1

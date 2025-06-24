@@ -4,13 +4,13 @@
 
 int main(void)
 {
-	int ch;
+	int c;
 	TTopen();
 	for (;;) {
-		ch = TTgetc();
-		if (ch == 3 /* Ctrl + C */)
+		c = TTgetc();
+		if (c == 3 /* Ctrl + C */)
 			break;
-		printf("<%02X>", ch);
+		printf("<%02X>", c);
 		fflush(stdout);
 	}
 	TTclose();

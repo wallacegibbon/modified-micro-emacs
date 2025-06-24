@@ -3,7 +3,7 @@
 #include "efunc.h"
 #include <stdio.h>
 
-#if USE_ANSI
+#if !USE_TERMCAP
 
 #define SCRSIZ	64		/* scroll size for extended lines */
 #define MARGIN	8		/* size of minimim margin and */
