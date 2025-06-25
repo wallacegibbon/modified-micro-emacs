@@ -384,29 +384,33 @@ static void update_pos(void)
 	}
 }
 
+static void update_de_extend_wind(struct window *wp)
+{
+	struct line *lp;
+	int i = wp->w_toprow;
+	int j = i + wp->w_ntrows;
+
+	for (lp = wp->w_linep; i < j; ++i, lp = lforw(lp)) {
+		if (!(vscreen[i]->v_flag & VFEXT))
+			continue;
+		if ((lp == wp->w_dotp) && (curcol >= term.t_ncol - 1))
+			continue;
+
+		/* Have VFEXT flag, and curcol is small, de-extend */
+		vtmove(i, 0);
+		show_line(lp);
+		vteeol();
+		vscreen[i]->v_flag &= ~VFEXT;
+		vscreen[i]->v_flag |= VFCHG;
+	}
+}
+
 /* de-extend any line that derserves it */
 static void update_de_extend(void)
 {
 	struct window *wp;
-	struct line *lp;
-	int i, j;
-
-	for (wp = wheadp; wp != NULL; wp = wp->w_wndp) {
-		i = wp->w_toprow;
-		j = i + wp->w_ntrows;
-		for (lp = wp->w_linep; i < j; lp = lforw(lp), ++i) {
-			if (vscreen[i]->v_flag & VFEXT) {
-				if ((wp != curwp) || (lp != wp->w_dotp) ||
-						(curcol < term.t_ncol - 1)) {
-					vtmove(i, 0);
-					show_line(lp);
-					vteeol();
-					vscreen[i]->v_flag &= ~VFEXT;
-					vscreen[i]->v_flag |= VFCHG;
-				}
-			}
-		}
-	}
+	for (wp = wheadp; wp != NULL; wp = wp->w_wndp)
+		update_de_extend_wind(wp);
 }
 
 /*
@@ -426,17 +430,16 @@ void update_garbage(void)
 			txt[j] = ' ';
 	}
 
-	movecursor(0, 0);	/* Erase the screen. */
+	movecursor(0, 0);
 	TTeeop();
-	sgarbf = FALSE;		/* Erase-page clears */
-	mpresf = FALSE;		/* the message area. */
+	sgarbf = FALSE;
+	mpresf = FALSE;
 }
 
-static int flush_to_physcr()
+static int flush_to_physcr(void)
 {
 	struct video *vp1;
 	int i;
-
 	for (i = 0; i < screen_rows; ++i) {
 		vp1 = vscreen[i];
 		if (vp1->v_flag & VFCHG)
