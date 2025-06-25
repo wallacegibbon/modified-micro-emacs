@@ -400,7 +400,7 @@ int cexit(int status)
 	/* and the kill buffer */
 	kdelete();
 	/* and the video buffers */
-	vtfree();
+	vtdeinit();
 #undef exit
 	exit(status);
 }

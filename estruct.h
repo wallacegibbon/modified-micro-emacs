@@ -156,7 +156,6 @@ struct window {
 #define WFKILLS 0x40		/* Something was deleted */
 #define WFINS   0x80		/* Something was inserted */
 
-
 /*
  * Buffers may be "Inactive" which means the files associated with them
  * have not been read in yet.  These get read in at "use buffer" time.

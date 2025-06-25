@@ -74,7 +74,7 @@ int cexit(int status);
 
 /* display.c */
 void vtinit(void);
-void vtfree(void);
+void vtdeinit(void);
 void vttidy(void);
 void vtmove(int row, int col);
 int update(int force);

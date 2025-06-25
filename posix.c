@@ -30,7 +30,6 @@ static struct termios ntermios;		/* charactoristics to use inside */
 #define TBUFSIZ 128
 static char tobuf[TBUFSIZ];		/* terminal output buffer */
 
-
 /*
  * This function is called once to set up the terminal device streams.
  */

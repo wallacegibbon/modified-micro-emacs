@@ -80,21 +80,7 @@ static void screen_init(void)
 	}
 }
 
-/*
- * Initialize the data structures used by the display code.  The edge vectors
- * used to access the screens are set up.  The operating system's terminal I/O
- * channel is set up.  All the other things get initialized at compile time.
- * The original window has "WFCHG" set, so that it will get completely redrawn
- * on the first call to "update".
- */
-void vtinit(void)
-{
-	TTopen();
-	TTrev(FALSE);
-	screen_init();
-}
-
-void vtfree(void)
+static void screen_deinit(void)
 {
 	int i;
 	for (i = 0; i < screen_rows; ++i) {
@@ -103,6 +89,19 @@ void vtfree(void)
 	}
 	free(vscreen);
 	free(pscreen);
+}
+
+void vtinit(void)
+{
+	TTopen();
+	TTrev(FALSE);
+	screen_init();
+}
+
+void vtdeinit(void)
+{
+	screen_deinit();
+	TTclose();
 }
 
 /*
@@ -275,7 +274,6 @@ static int reframe(struct window *wp)
 				}
 				return TRUE;
 			}
-
 			/* if we are at the end of the file, reframe */
 			if (lp == wp->w_bufp->b_linep)
 				break;
@@ -359,7 +357,6 @@ static void update_all(struct window *wp)
 	}
 }
 
-
 /*
  * Update the position of the hardware cursor and handle extended lines.
  * This is the only update for simple moves.
@@ -390,10 +387,12 @@ static void update_pos(void)
 static void update_de_extend(void)
 {
 	struct window *wp;
+	struct line *lp;
+	int i, j;
 
 	for (wp = wheadp; wp != NULL; wp = wp->w_wndp) {
-		struct line *lp = wp->w_linep;
-		int i = wp->w_toprow, j = i + wp->w_ntrows;
+		i = wp->w_toprow;
+		j = i + wp->w_ntrows;
 		for (lp = wp->w_linep; i < j; lp = lforw(lp), ++i) {
 			if (vscreen[i]->v_flag & VFEXT) {
 				if ((wp != curwp) || (lp != wp->w_dotp) ||
@@ -767,10 +766,8 @@ void movecursor(int row, int col)
 	}
 }
 
+/* The message line is not considered to be part of the virtual screen. */
 
-/* the message line is not considered to be part of the virtual screen. */
-
-/* Erase the message line. */
 void mlerase(void)
 {
 	movecursor(term.t_nrow, 0);
@@ -779,10 +776,6 @@ void mlerase(void)
 	mpresf = FALSE;
 }
 
-/*
- * Write a message into the message line.  Keep track of the physical cursor
- * position.  A small class of printf like format items is handled.
- */
 int mlwrite(const char *fmt, ...)
 {
 	va_list ap;
@@ -837,11 +830,6 @@ int mlwrite(const char *fmt, ...)
 	return n;
 }
 
-/*
- * Write out a string.  Update the physical cursor position.  This assumes that
- * the characters in the string all have width "1"; if this is not the case
- * things will get screwed up a little.
- */
 int mlputs(char *s)
 {
 	int n = 0, c, tmp;
@@ -853,10 +841,6 @@ int mlputs(char *s)
 	return n;
 }
 
-/*
- * Write out an integer, in the specified radix.  Update the physical cursor
- * position.
- */
 static int mlputi(int i, int r)
 {
 	int q, n = 0;
@@ -875,9 +859,6 @@ static int mlputi(int i, int r)
 	return n + 1;
 }
 
-/*
- * do the same except as a long integer.
- */
 static int mlputli(long l, int r)
 {
 	long q, n = 0;
@@ -924,7 +905,7 @@ void sizesignal(int signr)
 
 	errno = old_errno;
 
-	/* Ensure that `newscreensize` will be called */
+	/* Make `newscreensize` called in all cases */
 	if (!is_updating)
 		update(TRUE);
 }
@@ -937,11 +918,10 @@ static void newscreensize(void)
 	TTclose();
 	TTopen();
 
-	vtfree();
+	screen_deinit();
 	screen_init();
 
 	adjust_on_scr_resize();
-
 	update(TRUE);
 }
 
