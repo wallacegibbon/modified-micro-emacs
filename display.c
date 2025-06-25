@@ -919,11 +919,12 @@ static void newscreensize(void)
 
 	screen_size_changed = 0;
 
+	screen_deinit();
+
 	/* Re-open the terminal to get the new size of the screen */
 	TTclose();
 	TTopen();
 
-	screen_deinit();
 	screen_init();
 
 	adjust_on_scr_resize();
