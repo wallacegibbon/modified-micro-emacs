@@ -33,7 +33,7 @@ int ffclose(void)
 	eofflag = FALSE;
 
 #if UNIX
-	if (fclose(ffp) != FALSE) {
+	if (fclose(ffp) != 0) {
 		mlwrite("Error closing file");
 		return FIOERR;
 	}

@@ -63,8 +63,7 @@ static void init_termcap(void)
 		fputs("Terminal description too big!\n", stderr);
 		exit(1);
 	}
-
-	if (CM == NULL || CL == NULL || CE == NULL || SO == NULL) {
+	if (CM == NULL || CL == NULL) {
 		fputs("Incomplete termcap entry\n", stderr);
 		exit(1);
 	}

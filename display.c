@@ -475,11 +475,14 @@ static void update_extended(void)
 /* Update the line to terminal.  The physical column will be updated. */
 static int update_line(int row, struct video *vp1, struct video *vp2)
 {
-	char *cp1, *cp2, *cp3, *cp4, *cp5;
-	int rev, req, nbflag, should_send_rev;
+	char *cp1, *cp2, *cp3, *cp4;
+	int rev, req, should_send_rev;
 
-	cp1 = vp1->v_text;
-	cp2 = vp2->v_text;
+	cp1 = &vp1->v_text[0];
+	cp2 = &vp2->v_text[0];
+
+	cp3 = &vp1->v_text[term.t_ncol];
+	cp4 = &vp2->v_text[term.t_ncol];
 
 	/*
 	 * This is why we need 2 flags for `rev`:
@@ -514,7 +517,6 @@ full_update:
 		TTrev(TRUE);
 
 	/* Dump virtual line to both physical line and the terminal */
-	cp3 = &vp1->v_text[term.t_ncol];
 	while (cp1 < cp3) {
 		TTputc(*cp1);
 		++ttcol;
@@ -534,55 +536,32 @@ full_update:
 	return TRUE;
 
 partial_update:
-	/* advance past any common chars at the left */
-	while (cp1 != &vp1->v_text[term.t_ncol] && *cp1 == *cp2) {
+	/* Ignore common chars on the left */
+	while (cp1 != cp3 && *cp1 == *cp2) {
 		++cp1;
 		++cp2;
 	}
 
 	/* if both lines are the same, no update needs to be done */
-	if (cp1 == &vp1->v_text[term.t_ncol]) {
+	if (cp1 == cp3) {
 		vp1->v_flag &= ~VFCHG;
 		return TRUE;
 	}
 
-	/* find out if there is a match on the right */
-	nbflag = FALSE;
-	cp3 = &vp1->v_text[term.t_ncol];
-	cp4 = &vp2->v_text[term.t_ncol];
-
+	/* Ignore common chars on the right */
 	while (cp3[-1] == cp4[-1]) {
 		--cp3;
 		--cp4;
-		if (cp3[0] != ' ')	/* Note if any nonblank */
-			nbflag = TRUE;	/* in right match. */
 	}
 
-	cp5 = cp3;
-
-	/* Erase to EOL ? */
-	if (nbflag == FALSE && req != TRUE) {
-		while (cp5 != cp1 && cp5[-1] == ' ')
-			--cp5;
-
-		if (cp3 - cp5 <= 3)	/* Use only if erase is */
-			cp5 = cp3;	/* fewer characters. */
-	}
-
-	movecursor(row, cp1 - &vp1->v_text[0]);	/* Go to start of line. */
+	movecursor(row, cp1 - &vp1->v_text[0]);
 	if (should_send_rev)
 		TTrev(TRUE);
 
-	while (cp1 != cp5) {	/* Ordinary. */
+	while (cp1 != cp3) {
 		TTputc(*cp1);
 		++ttcol;
 		*cp2++ = *cp1++;
-	}
-
-	if (cp5 != cp3) {	/* Erase. */
-		TTeeol();
-		while (cp1 != cp3)
-			*cp2++ = *cp1++;
 	}
 
 	if (should_send_rev)
