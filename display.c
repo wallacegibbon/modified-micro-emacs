@@ -27,7 +27,6 @@ struct video {
 
 static struct video **vscreen;	/* Virtual screen. */
 static struct video **pscreen;	/* Physical screen. */
-static int screen_rows, screen_cols;
 
 #if UNIX
 #include <signal.h>
@@ -69,22 +68,19 @@ static struct video *video_new(size_t text_size)
 static void screen_init(void)
 {
 	int i;
-	screen_rows = atleast(term.t_nrow, SCR_MIN_ROWS - 1);
-	screen_cols = atleast(term.t_ncol, SCR_MIN_COLS);
+	vscreen = xmalloc(term.t_nrow * sizeof(struct video *));
+	pscreen = xmalloc(term.t_nrow * sizeof(struct video *));
 
-	vscreen = xmalloc(screen_rows * sizeof(struct video *));
-	pscreen = xmalloc(screen_rows * sizeof(struct video *));
-
-	for (i = 0; i < screen_rows; ++i) {
-		vscreen[i] = video_new(screen_cols);
-		pscreen[i] = video_new(screen_cols);
+	for (i = 0; i < term.t_nrow; ++i) {
+		vscreen[i] = video_new(term.t_ncol);
+		pscreen[i] = video_new(term.t_ncol);
 	}
 }
 
 static void screen_deinit(void)
 {
 	int i;
-	for (i = 0; i < screen_rows; ++i) {
+	for (i = 0; i < term.t_nrow; ++i) {
 		free(vscreen[i]);
 		free(pscreen[i]);
 	}
@@ -191,6 +187,7 @@ int update(int force)
 #endif
 
 #if SIGWINCH
+	/* It's NOT safe to change screen size from here. */
 	is_updating = 1;
 #endif
 
@@ -240,6 +237,7 @@ int update(int force)
 	TTflush();
 
 #if SIGWINCH
+	/* It's safe to change screen size now. */
 	is_updating = 0;
 
 	if (screen_size_changed)
@@ -376,7 +374,7 @@ static void update_pos(void)
 		curcol = next_col(curcol, lgetc(lp, i));
 
 	/* if extended, flag so and update the virtual line image */
-	if (curcol >= screen_cols - 1) {
+	if (curcol >= term.t_ncol - 1) {
 		vscreen[currow]->v_flag |= (VFEXT | VFCHG);
 		update_extended();
 	} else {
@@ -422,7 +420,7 @@ void update_garbage(void)
 	char *txt;
 	int i, j;
 
-	for (i = 0; i < screen_rows; ++i) {
+	for (i = 0; i < term.t_nrow; ++i) {
 		vscreen[i]->v_flag |= VFCHG;
 		vscreen[i]->v_flag &= ~VFREV;
 		txt = pscreen[i]->v_text;
@@ -440,7 +438,7 @@ static int flush_to_physcr(void)
 {
 	struct video *vp1;
 	int i;
-	for (i = 0; i < screen_rows; ++i) {
+	for (i = 0; i < term.t_nrow; ++i) {
 		vp1 = vscreen[i];
 		if (vp1->v_flag & VFCHG)
 			update_line(i, vp1, pscreen[i]);
@@ -916,6 +914,9 @@ void sizesignal(int signr)
 
 static void newscreensize(void)
 {
+	if (screen_size_changed == 0)
+		return;
+
 	screen_size_changed = 0;
 
 	/* Re-open the terminal to get the new size of the screen */
