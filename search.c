@@ -245,7 +245,7 @@ qprompt:
 				kind = FALSE;
 				break;
 
-			case BELL:
+			case 0x07: /* ASCII code of ^G is 0x07 ('\a') */
 				mlwrite("%d substitutions", numsub);
 				return FALSE;
 

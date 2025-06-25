@@ -83,7 +83,6 @@ void update_modelines(void);
 void movecursor(int row, int col);
 void mlerase(void);
 int mlwrite(const char *fmt, ...);
-int mlputs(char *s);
 void sizesignal(int signr);
 int put_c(unsigned char c, int (*p)(int));
 int next_col(int col, unsigned char c);

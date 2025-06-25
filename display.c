@@ -50,6 +50,7 @@ static void update_extended(void);
 static void update_de_extend(void);
 static void update_pos(void);
 
+static int mlputs(char *s);
 static int mlputi(int i, int r);
 static int mlputli(long l, int r);
 static int mlputf(int s);
@@ -830,7 +831,7 @@ int mlwrite(const char *fmt, ...)
 	return n;
 }
 
-int mlputs(char *s)
+static int mlputs(char *s)
 {
 	int n = 0, c, tmp;
 	while ((c = *s++) != 0) {

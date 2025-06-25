@@ -154,12 +154,10 @@ int getstring(char *prompt, char *buf, int nbuf, int eolchar)
 			return TRUE;
 		}
 
-		if (expc == ABORTC && quotef == FALSE) {
-			ctrlg(FALSE, 0);
-			TTflush();
-			return ABORT;
+		if (expc == ABORTC && quotef == FALSE)
+			return ctrlg(FALSE, 0);
 
-		} else if ((c == 0x7F || c == '\b') && quotef == FALSE) {
+		if ((c == 0x7F || c == '\b') && quotef == FALSE) {
 			if (cpos != 0) {
 				TTputs("\b \b");
 				--ttcol;
@@ -172,7 +170,6 @@ int getstring(char *prompt, char *buf, int nbuf, int eolchar)
 					TTputs("\b\b  \b\b");
 					ttcol -= 2;
 				}
-
 				TTflush();
 			}
 

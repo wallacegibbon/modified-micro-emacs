@@ -92,18 +92,14 @@ loop:
 	c = getcmd();
 
 	/* if there is something on the command line, clear it */
-	if (mpresf != FALSE) {
+	if (mpresf != FALSE)
 		mlerase();
-		update(FALSE);
-	}
 
 	f = FALSE;
 	n = 1;
 
 	/* do META-# processing if needed */
-
 	c1 = c & ~META;
-
 	if ((c & META) && isdigit(c1)) {
 		f = TRUE;
 		n = 0;
@@ -116,7 +112,6 @@ loop:
 	}
 
 	/* do ^U repeat argument processing */
-
 	if (c == REPTC) {
 		i = 0;	/* A sign for the first loop */
 		f = TRUE;
