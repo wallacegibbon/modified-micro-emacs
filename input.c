@@ -235,7 +235,6 @@ int mlyesno(char *prompt)
 		case 'Y': case 'y':	return TRUE;
 		case 'N': case 'n':	return FALSE;
 		case ABORTC:		return ABORT;
-		default:		/*ignore*/
 		}
 	}
 }

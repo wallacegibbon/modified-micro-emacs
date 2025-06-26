@@ -15,8 +15,10 @@
 void *malloc(unsigned long);
 void free(void *);
 
+#ifndef __clang__
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+#endif
 
 static inline size_t allocated_size(void *p)
 {
@@ -41,6 +43,8 @@ void release(void *mp)
 	free(mp);
 }
 
+#ifndef __clang__
 #pragma GCC diagnostic pop
+#endif
 
 #endif

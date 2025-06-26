@@ -3,6 +3,7 @@ BINDIR = /usr/bin
 PROGRAM = me
 SHOWKEYS = showkeys
 USE_TERMCAP = 0
+CC = gcc
 
 ifeq ($(USE_TERMCAP), 1)
 TT = termcap
@@ -18,7 +19,6 @@ OBJ = main.o buffer.o window.o line.o word.o display.o basic.o random.o \
 	file.o fileio.o input.o search.o isearch.o lock.o region.o spawn.o \
 	$(TT).o posix.o ebind.o names.o globals.o wrapper.o memory.o
 
-CC = gcc
 WARNINGS = -Wall -Wextra -Wstrict-prototypes -Wno-unused-parameter
 
 #CFLAGS = -O0 $(WARNINGS) -g
