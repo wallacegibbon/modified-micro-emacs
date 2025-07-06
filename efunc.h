@@ -162,7 +162,7 @@ int shellprog(char *cmd);
 int execprog(char *cmd);
 
 /* search.c */
-int scanner(const char *patrn, int direct, int beg_or_end);
+int scanner(const char *pattern, int direct, int beg_or_end);
 int eq(unsigned char bc, unsigned char pc);
 void savematch(void);
 void rvstrcpy(char *rvstr, char *str);
@@ -174,7 +174,7 @@ int boundry(struct line *curline, int curoff, int dir);
 int risearch(int f, int n);
 int fisearch(int f, int n);
 int isearch(int f, int n);
-int scanmore(char *patrn, int dir);
+int scanmore(char *pattern, int dir);
 int promptpattern(const char *prompt, const char *pat);
 int get_char(void);
 

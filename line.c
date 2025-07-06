@@ -15,12 +15,6 @@
 
 #define BLOCK_SIZE 16 /* Line block chunk size. */
 
-/*
- * This routine allocates a block of memory large enough to hold a struct line
- * containing "used" characters.  The block is always rounded up a bit.  Return
- * a pointer to the new block, or NULL if there isn't any memory left.  Print a
- * message in the message line if no space.
- */
 struct line *lalloc(int used)
 {
 	struct line *lp;
@@ -39,18 +33,13 @@ struct line *lalloc(int used)
 	return lp;
 }
 
-/*
- * Delete line "lp".  Fix all of the links that might point at it (they are
- * moved to offset 0 of the next line.  Unlink the line from whatever buffer it
- * might be in.  Release the memory.  The buffers are updated too; the magic
- * conditions described in the above comments don't hold here.
- */
+/* Delete line "lp".  Fix all of the links that might point at it. */
 void lfree(struct line *lp)
 {
 	struct buffer *bp;
 	struct window *wp;
 
-	for (wp = wheadp; wp != NULL; wp = wp->w_wndp) {
+	for_each_wind(wp) {
 		if (wp->w_linep == lp)
 			wp->w_linep = lp->l_fp;
 		if (wp->w_dotp == lp) {
@@ -62,7 +51,7 @@ void lfree(struct line *lp)
 			wp->w_marko = 0;
 		}
 	}
-	for (bp = bheadp; bp != NULL; bp = bp->b_bufp) {
+	for_each_buff(bp) {
 		if (bp->b_nwnd == 0) {
 			if (bp->b_dotp == lp) {
 				bp->b_dotp = lp->l_fp;
@@ -96,7 +85,7 @@ void lchange(int flag)
 		flag |= WFMODE;	/* update mode lines. */
 		curbp->b_flag |= BFCHG;
 	}
-	for (wp = wheadp; wp != NULL; wp = wp->w_wndp) {
+	for_each_wind(wp) {
 		if (wp->w_bufp == curbp)
 			wp->w_flag |= flag;
 	}
@@ -189,7 +178,7 @@ int linsert(int n, int c)
 	for (i = 0; i < n; ++i)
 		lp2->l_text[doto + i] = c;
 
-	for (wp = wheadp; wp != NULL; wp = wp->w_wndp) {
+	for_each_wind(wp) {
 		if (wp->w_linep == lp1)
 			wp->w_linep = lp2;
 		if (wp->w_dotp == lp1) {
@@ -241,7 +230,7 @@ int lnewline(void)
 	lp1->l_bp = lp2;
 	lp2->l_bp->l_fp = lp2;
 	lp2->l_fp = lp1;
-	for (wp = wheadp; wp != NULL; wp = wp->w_wndp) {
+	for_each_wind(wp) {
 		if (wp->w_linep == lp1)
 			wp->w_linep = lp2;
 		if (wp->w_dotp == lp1) {
@@ -309,7 +298,7 @@ int ldelete(long n, int kflag)
 		while (cp2 != &dotp->l_text[dotp->l_used])
 			*cp1++ = *cp2++;
 		dotp->l_used -= chunk;
-		for (wp = wheadp; wp != NULL; wp = wp->w_wndp) {
+		for_each_wind(wp) {
 			if (wp->w_dotp == dotp && wp->w_doto >= doto) {
 				wp->w_doto -= chunk;
 				if (wp->w_doto < doto)
@@ -355,7 +344,7 @@ int ldelnewline(void)
 		cp2 = &lp2->l_text[0];
 		while (cp2 != &lp2->l_text[lp2->l_used])
 			*cp1++ = *cp2++;
-		for (wp = wheadp; wp != NULL; wp = wp->w_wndp) {
+		for_each_wind(wp) {
 			if (wp->w_linep == lp2)
 				wp->w_linep = lp1;
 			if (wp->w_dotp == lp2) {
@@ -386,7 +375,7 @@ int ldelnewline(void)
 	lp3->l_fp = lp2->l_fp;
 	lp2->l_fp->l_bp = lp3;
 	lp3->l_bp = lp1->l_bp;
-	for (wp = wheadp; wp != NULL; wp = wp->w_wndp) {
+	for_each_wind(wp) {
 		if (wp->w_linep == lp1 || wp->w_linep == lp2)
 			wp->w_linep = lp3;
 		if (wp->w_dotp == lp1) {
@@ -466,7 +455,7 @@ int yank(int f, int n)
 		return TRUE;	/* not an error, just nothing */
 
 	while (n--) {
-		for (kp = kbufh; kp != NULL; kp = kp->d_next) {
+		for_each_kbuf(kp) {
 			i = kp->d_next == NULL ? kused : KBLOCK;
 			sp = kp->d_chunk;
 			while (i--) {

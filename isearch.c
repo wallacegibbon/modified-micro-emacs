@@ -13,10 +13,6 @@ int fisearch(int f, int n)
 	int curoff = curwp->w_doto;
 
 	if (!(isearch(f, n))) {
-		/*
-		 * When search failed, restore the original position.
-		 * (This is necessary when we use ^G to cancel a search)
-		 */
 		curwp->w_dotp = curline;
 		curwp->w_doto = curoff;
 		curwp->w_flag |= WFMOVE;
@@ -164,35 +160,23 @@ pat_append:
 	goto char_loop;
 }
 
-/*
- * This hack will search for the next occurrence of <pat> in the buffer, either
- * forward or backward.  It is called with the status of the prior search
- * attempt, so that it knows not to bother if it didn't work last time.  If
- * we can't find any more matches, "point" is left where it was before.  If
- * we do find a match, "point" will be at the end of the matched string for
- * forward searches and at the beginning of the matched string for reverse
- * searches.
- *
- * char *patrn;			string to scan for
- * int dir;			direction to search
- */
-int scanmore(char *patrn, int dir)
+int scanmore(char *pattern, int dir)
 {
-	int sts;
+	int status;
 
 	if (dir < 0) {	/* reverse search? */
-		rvstrcpy(tap, patrn);	/* Put reversed string in tap */
-		sts = scanner(tap, REVERSE, PTBEG);
+		rvstrcpy(tap, pattern);	/* Put reversed string in tap */
+		status = scanner(tap, REVERSE, PTBEG);
 	} else {
-		sts = scanner(patrn, FORWARD, PTEND);
+		status = scanner(pattern, FORWARD, PTEND);
 	}
 
-	if (!sts) {
+	if (!status) {
 		TTputc(BELL);	/* Beep if search fails */
 		TTflush();
 	}
 
-	return sts;	/* else, don't even try */
+	return status;
 }
 
 int promptpattern(const char *prompt, const char *pat)
@@ -207,12 +191,6 @@ int promptpattern(const char *prompt, const char *pat)
 	return mlwrite(tpat);
 }
 
-/*
- * Routine to get the next character from the input stream.  If we're reading
- * from the real terminal, force a screen update before we get the char.
- * Otherwise, we must be re-executing the command string, so just return the
- * next character.
- */
 int get_char(void)
 {
 	int c;

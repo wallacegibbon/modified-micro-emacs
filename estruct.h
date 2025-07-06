@@ -270,3 +270,13 @@ struct kill {
 #define PROGRAM_NAME_LONG	"Modified Micro Emacs"
 
 #define VERSION	"0.1.0"
+
+/* Loop utilities */
+#define for_each_wind(__wp) \
+	for ((__wp) = wheadp; (__wp) != NULL; (__wp) = (__wp)->w_wndp)
+
+#define for_each_buff(__bp) \
+	for ((__bp) = bheadp; (__bp) != NULL; (__bp) = (__bp)->b_bufp)
+
+#define for_each_kbuf(__kp) \
+	for (kp = kbufh; kp != NULL; kp = kp->d_next)

@@ -92,7 +92,7 @@ int swbuffer(struct buffer *bp)
 		curwp->w_marko = bp->b_marko;
 		return TRUE;
 	}
-	for (wp = wheadp; wp != NULL; wp = wp->w_wndp) {
+	for_each_wind(wp) {
 		if (wp != curwp && wp->w_bufp == bp) {
 			curwp->w_dotp = wp->w_dotp;
 			curwp->w_doto = wp->w_doto;
@@ -186,7 +186,7 @@ int listbuffers(int f, int n)
 		wp->w_bufp = blistp;
 		++blistp->b_nwnd;
 	}
-	for (wp = wheadp; wp != NULL; wp = wp->w_wndp) {
+	for_each_wind(wp) {
 		if (wp->w_bufp == blistp) {
 			wp->w_linep = lforw(blistp->b_linep);
 			wp->w_dotp = lforw(blistp->b_linep);
@@ -361,8 +361,7 @@ int addline(char *text)
 int anycb(void)
 {
 	struct buffer *bp;
-
-	for (bp = bheadp; bp != NULL; bp = bp->b_bufp) {
+	for_each_buff(bp) {
 		if ((bp->b_flag & BFINVS) == 0 && (bp->b_flag & BFCHG) != 0)
 			return TRUE;
 	}
@@ -380,7 +379,7 @@ struct buffer *bfind(char *bname, int cflag, int bflag)
 	struct buffer *bp, *sb;
 	struct line *lp;
 
-	for (bp = bheadp; bp != NULL; bp = bp->b_bufp) {
+	for_each_buff(bp) {
 		if (strcmp(bname, bp->b_bname) == 0)
 			return bp;
 	}

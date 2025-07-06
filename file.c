@@ -62,7 +62,7 @@ int viewfile(int f, int n)
 	s = getfile(fname, FALSE);
 	if (s) {
 		curwp->w_bufp->b_mode |= MDVIEW;
-		for (wp = wheadp; wp != NULL; wp = wp->w_wndp)
+		for_each_wind(wp)
 			wp->w_flag |= WFMODE;
 	}
 	return s;
@@ -75,7 +75,7 @@ int getfile(char *fname, int lockfl)
 	char bname[NBUFN];
 	int i, s;
 
-	for (bp = bheadp; bp != NULL; bp = bp->b_bufp) {
+	for_each_buff(bp) {
 		if ((bp->b_flag & BFINVS) == 0 &&
 				strcmp(bp->b_fname, fname) == 0) {
 			swbuffer(bp);
@@ -195,7 +195,7 @@ int readin(char *fname, int lockfl /* check for file locks ? */)
 	mlwrite(mesg);
 
 out:
-	for (wp = wheadp; wp != NULL; wp = wp->w_wndp) {
+	for_each_wind(wp) {
 		if (wp->w_bufp == curbp) {
 			wp->w_linep = lforw(curbp->b_linep);
 			wp->w_dotp = lforw(curbp->b_linep);
@@ -271,7 +271,7 @@ int filewrite(int f, int n)
 	if ((s = writeout(fname)) == TRUE) {
 		strcpy(curbp->b_fname, fname);
 		curbp->b_flag &= ~BFCHG;
-		for (wp = wheadp; wp != NULL; wp = wp->w_wndp) {
+		for_each_wind(wp) {
 			if (wp->w_bufp == curbp)
 				wp->w_flag |= WFMODE;
 		}
@@ -308,7 +308,7 @@ int filesave(int f, int n)
 
 	if ((s = writeout(curbp->b_fname)) == TRUE) {
 		curbp->b_flag &= ~BFCHG;
-		for (wp = wheadp; wp != NULL; wp = wp->w_wndp) {
+		for_each_wind(wp) {
 			if (wp->w_bufp == curbp)
 				wp->w_flag |= WFMODE;
 		}

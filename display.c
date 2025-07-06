@@ -195,10 +195,10 @@ int update(int force)
 	 * first, propagate mode line changes to all instances of a buffer
 	 * displayed in more than one window.
 	 */
-	for (wp = wheadp; wp != NULL; wp = wp->w_wndp) {
+	for_each_wind(wp) {
 		if (wp->w_flag & WFMODE) {
 			if (wp->w_bufp->b_nwnd > 1) {
-				for (w = wheadp; w != NULL; w = w->w_wndp) {
+				for_each_wind(w) {
 					if (w->w_bufp == wp->w_bufp)
 						w->w_flag |= WFMODE;
 				}
@@ -207,7 +207,7 @@ int update(int force)
 	}
 
 	/* update any windows that need refreshing */
-	for (wp = wheadp; wp != NULL; wp = wp->w_wndp) {
+	for_each_wind(wp) {
 		if (wp->w_flag) {
 			reframe(wp);
 			if (wp->w_flag & (WFKILLS | WFINS)) {
@@ -407,7 +407,7 @@ static void update_de_extend_wind(struct window *wp)
 static void update_de_extend(void)
 {
 	struct window *wp;
-	for (wp = wheadp; wp != NULL; wp = wp->w_wndp)
+	for_each_wind(wp)
 		update_de_extend_wind(wp);
 }
 
@@ -739,7 +739,7 @@ static void modeline(struct window *wp)
 void update_modelines(void)
 {
 	struct window *wp;
-	for (wp = wheadp; wp != NULL; wp = wp->w_wndp)
+	for_each_wind(wp)
 		wp->w_flag |= WFMODE;
 }
 

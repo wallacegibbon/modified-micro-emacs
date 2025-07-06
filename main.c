@@ -248,7 +248,7 @@ int quickexit(int f, int n)
 	struct buffer *curbp_bak = curbp, *bp;
 	int status;
 
-	for (bp = bheadp; bp != NULL; bp = bp->b_bufp) {
+	for_each_buff(bp) {
 		if ((bp->b_flag & BFCHG) != 0
 				&& (bp->b_flag & BFTRUNC) == 0
 				&& (bp->b_flag & BFINVS) == 0) {
@@ -386,10 +386,12 @@ int cexit(int status)
 	wheadp = NULL;
 
 	/* Then the buffers */
-	for (bp = bheadp; bp; bp = bheadp) {
+	bp = bheadp;
+	while (bp) {
 		bp->b_nwnd = 0;
 		bp->b_flag = 0;	/* don't say anything about a changed buffer! */
 		zotbuf(bp);
+		bp = bheadp;
 	}
 
 	/* and the kill buffer */

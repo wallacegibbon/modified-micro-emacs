@@ -12,7 +12,7 @@ static int nextch(struct line **pcurline, int *pcuroff, int dir);
  * Search for a pattern in either direction.  If found, reset the "." to be at
  * the start or just after the match string, and (perhaps) repaint the display.
  */
-int scanner(const char *patrn, int direct, int beg_or_end)
+int scanner(const char *pattern, int direct, int beg_or_end)
 {
 	struct line *curline = curwp->w_dotp;
 	int curoff = curwp->w_doto;
@@ -27,18 +27,14 @@ int scanner(const char *patrn, int direct, int beg_or_end)
 	beg_or_end ^= direct;
 
 	while (!boundry(curline, curoff, direct)) {
-		/*
-		 * Save the current position in case we match the search
-		 * string at this point.
-		 */
 		matchline = curline;
 		matchoff = curoff;
 
 		c = nextch(&curline, &curoff, direct);
-		if (eq(c, patrn[0])) {
+		if (eq(c, pattern[0])) {
 			scanline = curline;
 			scanoff = curoff;
-			patptr = patrn;
+			patptr = pattern;
 
 			while (*++patptr != '\0') {
 				c = nextch(&scanline, &scanoff, direct);

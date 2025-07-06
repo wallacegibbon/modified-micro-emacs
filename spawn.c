@@ -55,8 +55,7 @@ int pipecmd(int f, int n)
 
 	/* get rid of the command output buffer if it exists */
 	if ((bp = bfind(bname, FALSE, 0)) != FALSE) {
-		/* try to make sure we are off screen */
-		for (wp = wheadp; wp != NULL; wp = wp->w_wndp) {
+		for_each_wind(wp) {
 			if (wp->w_bufp == bp) {
 				if (wp == curwp)
 					delwind(FALSE, 1);
@@ -92,7 +91,7 @@ int pipecmd(int f, int n)
 		return FALSE;
 
 	curwp->w_bufp->b_mode |= MDVIEW;
-	for (wp = wheadp; wp != NULL; wp = wp->w_wndp)
+	for_each_wind(wp)
 		wp->w_flag |= WFMODE;
 
 	unlink(filename);
