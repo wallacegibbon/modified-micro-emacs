@@ -192,9 +192,9 @@ static int (*getfn_byname(char *fname))(int, int)
 {
 	struct name_bind *ffp;
 
-	for (ffp = names; ffp->n_func != NULL; ++ffp) {
-		if (strcmp(fname, ffp->n_name) == 0)
-			return ffp->n_func;
+	for (ffp = names; ffp->fn != NULL; ++ffp) {
+		if (strcmp(fname, ffp->f_name) == 0)
+			return ffp->fn;
 	}
 	return NULL;
 }
@@ -203,7 +203,7 @@ static int (*getfn_byname(char *fname))(int, int)
 int namedcmd(int f, int n)
 {
 	char buf[NSTRING];
-	fn_t fn;
+	int (*fn)(int, int);
 
 	if (getstring(": ", buf, NSTRING, ENTERC) != TRUE)
 		return FALSE;

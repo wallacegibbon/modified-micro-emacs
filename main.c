@@ -175,9 +175,9 @@ int (*getbind(int c))(int, int)
 {
 	struct key_tab *ktp = keytab;
 
-	while (ktp->k_fp != NULL) {
+	while (ktp->fn != NULL) {
 		if (ktp->k_code == c)
-			return ktp->k_fp;
+			return ktp->fn;
 		++ktp;
 	}
 	return NULL;
@@ -192,7 +192,7 @@ int (*getbind(int c))(int, int)
 int execute(int c, int f, int n)
 {
 	int status;
-	fn_t execfunc;
+	int (*execfunc)(int, int);
 
 	/* If the keystroke is a bound function.  Do it. */
 	execfunc = getbind(c);

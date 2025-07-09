@@ -78,6 +78,4 @@ extern struct terminal term;
 
 extern int reeat_char;
 
-typedef int (*fn_t)(int, int);
-
 #endif

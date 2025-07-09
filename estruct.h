@@ -223,13 +223,13 @@ struct terminal {
 #define TTrez		(term.t_rez)
 
 struct key_tab {
-	int k_code;		 /* Key code */
-	int (*k_fp)(int, int);	 /* Routine to handle it */
+	int k_code;
+	int (*fn)(int, int);
 };
 
 struct name_bind {
-	const char *n_name;	 /* name of function key */
-	int (*n_func)(int, int); /* function name is bound to */
+	const char *f_name;
+	int (*fn)(int, int);
 };
 
 /*
@@ -272,11 +272,11 @@ struct kill {
 #define VERSION	"0.1.0"
 
 /* Loop utilities */
-#define for_each_wind(__wp) \
-	for ((__wp) = wheadp; (__wp) != NULL; (__wp) = (__wp)->w_wndp)
+#define for_each_wind(wp) \
+	for ((wp) = wheadp; (wp) != NULL; (wp) = (wp)->w_wndp)
 
-#define for_each_buff(__bp) \
-	for ((__bp) = bheadp; (__bp) != NULL; (__bp) = (__bp)->b_bufp)
+#define for_each_buff(bp) \
+	for ((bp) = bheadp; (bp) != NULL; (bp) = (bp)->b_bufp)
 
-#define for_each_kbuf(__kp) \
-	for (kp = kbufh; kp != NULL; kp = kp->d_next)
+#define for_each_kbuf(kp) \
+	for ((kp) = kbufh; (kp) != NULL; (kp) = (kp)->d_next)
