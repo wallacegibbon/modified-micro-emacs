@@ -56,14 +56,12 @@ Case word capitalize .. Meta  C
 Split current window ..   ^X  2         Next window ...........   ^X  O
 Delete other windows ..   ^X  1         Scroll next up ........ Meta ^Z
 Delete window .........   ^X  0         Scroll next down ...... Meta ^V
-Grow window ...........   ^X  Z
-Shrink window .........   ^X ^Z
 -------------------------------------------------------------------------------
 =>                      BUFFER COMMANDS
 Next buffer ...........   ^X  X         Filter buffer .........   ^X  #
 Select buffer .........   ^X  B         Pipe command ..........   ^X  @
-List buffers ..........   ^X ^B         Buffer position .......   ^X  =
 Delete buffer .........   ^X  K         Last buffer ........... Meta  P
+Buffer position .......   ^X  =
 -------------------------------------------------------------------------------
 =>                      SEARCHING AND REPLACING
 Incremental search           ^S     ::  Search next ^X, stop Enter, cancel ^G.

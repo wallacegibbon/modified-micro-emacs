@@ -69,9 +69,7 @@ struct key_tab keytab[] = {
 	{ CTLX | 'O', nextwind },
 	{ CTLX | 'P', prevwind },
 	{ CTLX | 'X', nextbuffer },
-	{ CTLX | 'Z', enlargewind },
 
-	{ CTLX | CTL | 'B', listbuffers },
 	{ CTLX | CTL | 'C', quit },
 	{ CTLX | CTL | 'F', filefind },
 	{ CTLX | CTL | 'I', insfile },
@@ -83,7 +81,6 @@ struct key_tab keytab[] = {
 	{ CTLX | CTL | 'V', viewfile },
 	{ CTLX | CTL | 'W', filewrite },
 	{ CTLX | CTL | 'X', swapmark },
-	{ CTLX | CTL | 'Z', shrinkwind },
 
 	{ CTLX | META | CTL | 'Z', nullproc },
 
