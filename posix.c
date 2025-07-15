@@ -1,28 +1,22 @@
 /*
  * The functions in this file negotiate with the operating system for
  * characters, and write characters in a barely buffered fashion on the display.
- * All operating systems.
  */
 
 #include "estruct.h"
 #include "edef.h"
 #include "efunc.h"
-#include <errno.h>
-#include <fcntl.h>
-#include <signal.h>
-#include <stdio.h>
 #include <termios.h>
+#include <stdio.h>
 #include <unistd.h>
-#include <sys/ioctl.h>
+#include <errno.h>
+#include <sys/ioctl.h>	/* TIOCGWINSZ is define in this file */
 
 /* Mac OS X's termios.h doesn't have the following 2 macros, define them. */
 #if defined(_DARWIN_C_SOURCE) || defined(_FREEBSD_C_SOURCE)
 #define OLCUC 0000002
 #define XCASE 0000004
 #endif
-
-static int kbdflgs;			/* saved keyboard fd flags */
-static int kbdpoll;			/* in O_NDELAY mode */
 
 static struct termios otermios;		/* original terminal characteristics */
 static struct termios ntermios;		/* charactoristics to use inside */
@@ -61,9 +55,6 @@ void ttopen(void)
 	 * the type ahead detection works better (more often)
 	 */
 	setbuffer(stdout, tobuf, TBUFSIZ);
-
-	kbdflgs = fcntl(0, F_GETFL, 0);
-	kbdpoll = FALSE;
 
 	/* on screens we are not sure of the initial position of the cursor */
 	ttrow = 999;

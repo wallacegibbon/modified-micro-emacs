@@ -76,12 +76,6 @@ static int handle_special_esc(void)
 	do c = get1key();
 	while (isdigit(c) || c == ';');
 
-	/* Linux TTY emit `\033[[A` on F1.  non-standard */
-	if (c == '[') {
-		get1key();
-		return NULLPROC_KEYS;
-	}
-
 	switch (c) {
 	case 'A':	return CTL | 'P';
 	case 'B':	return CTL | 'N';
@@ -232,9 +226,9 @@ int mlyesno(char *prompt)
 		mlwrite(buf);
 
 		switch (ctoec(tgetc())) {
-		case 'Y': case 'y':	return TRUE;
-		case 'N': case 'n':	return FALSE;
-		case ABORTC:		return ABORT;
+		case 'y':	return TRUE;
+		case 'n':	return FALSE;
+		case ABORTC:	return ABORT;
 		}
 	}
 }
