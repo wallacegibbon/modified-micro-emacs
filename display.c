@@ -118,12 +118,8 @@ void vttidy(void)
 }
 
 /*
- * Write a character to the virtual screen.  The virtual row and column are
- * updated.  If we are not yet on left edge, don't print it yet.
+ * Write a character to the virtual screen.
  * If the line is too long put a "$" in the last column.
- *
- * This routine only puts printing characters into the virtual
- * terminal buffers.  Only column overflow is checked.
  */
 static int vtputc(int c)
 {
@@ -141,26 +137,32 @@ static int vtputc(int c)
 	if (vtcol >= term.t_ncol) {
 		++vtcol;
 		vp->v_text[term.t_ncol - 1] = '$';
-		return 0;
+		return 1;
 	}
 
 	if (c == '\t') {
 		do {
 			vtputc(' ');
 		} while (((vtcol + taboff) & TABMASK) != 0);
-		return 0;
+		return 1;
 	}
 
-	if (!isvisible(c)) {
-		put_c(c, vtputc);
-		return 0;
-	}
+	if (!isvisible(c))
+		return put_c(c, vtputc);
 
 	if (vtcol >= 0)
 		vp->v_text[vtcol] = c;
 
 	++vtcol;
-	return 0;
+	return 1;
+}
+
+static int vtputs(const char *s)
+{
+	int c, n = 0;
+	while ((c = *s++) != '\0')
+		n += vtputc(c);
+	return n;
 }
 
 /*
@@ -581,62 +583,34 @@ static void modeline(struct window *wp)
 {
 	struct buffer *bp;
 	char tline[NLINE];
-	char *cp;
-	int firstm = TRUE, lchar, c, n, i;
+	int n;
 
 	n = wp->w_toprow + wp->w_ntrows;
 	vscreen[n]->v_flag |= VFCHG | VFREQ;
 	vtmove(n, 0);
 
-	lchar = (wp == curwp) ? '-' : ' ';
-
 	bp = wp->w_bufp;
-	vtputc(lchar);
 
-	if ((bp->b_flag & BFCHG) != 0)	/* "*" if changed. */
+	vtputs(wp == curwp ? ">> " : "   ");
+	if ((bp->b_flag & BFCHG) != 0) {
+		vtputc(bp->rdonly ? '%' : '*');
 		vtputc('*');
-	else
-		vtputc(lchar);
+	} else {
+		vtputs(bp->rdonly ? "%%" : "  ");
+	}
+	vtputc(' ');
+	n = 6;
+
+	n += vtputs(bp->b_bname);
 
 	vtputc(' ');
-	n = 3;
+	++n;
 
-	cp = &bp->b_bname[0];
-	while ((c = *cp++) != 0) {
-		vtputc(c);
-		++n;
-	}
-
-	strcpy(tline, " (");
-
-	/* display the modes */
-
-	if ((bp->b_flag & BFTRUNC) != 0) {
-		firstm = FALSE;
-		strcat(tline, "TRUNC");
-	}
-	for (i = 0; i < NMODES; ++i) {
-		if (wp->w_bufp->b_mode & modevalue[i]) {
-			if (firstm != TRUE)
-				strcat(tline, " ");
-			firstm = FALSE;
-			strcat(tline, modename[i]);
-		}
-	}
-	strcat(tline, ") ");
-
-	cp = tline;
-	while ((c = *cp++) != 0) {
-		vtputc(c);
-		++n;
-	}
+	if ((bp->b_flag & BFTRUNC) != 0)
+		n += vtputs(" (TRUNC) ");
 
 	if (bp->b_fname[0] != 0 && strcmp(bp->b_bname, bp->b_fname) != 0) {
-		cp = &bp->b_fname[0];
-		while ((c = *cp++) != 0) {
-			vtputc(c);
-			++n;
-		}
+		n += vtputs(bp->b_fname);
 		vtputc(' ');
 		++n;
 	}
@@ -646,7 +620,7 @@ static void modeline(struct window *wp)
 		return;
 
 	while (n < term.t_ncol) {	/* Pad to full width. */
-		vtputc(lchar);
+		vtputc(' ');
 		++n;
 	}
 
@@ -669,14 +643,11 @@ static void modeline(struct window *wp)
 			}
 		}
 		if (lback(wp->w_linep) == wp->w_bufp->b_linep) {
-			if (msg) {
-				if (wp->w_linep == wp->w_bufp->b_linep)
-					msg = " Emp ";
-				else
-					msg = " All ";
-			} else {
+			if (msg)
+				msg = wp->w_linep == wp->w_bufp->b_linep
+					? " Emp " : " All ";
+			else
 				msg = " Top ";
-			}
 		}
 		if (!msg) {
 			struct line *lp;
@@ -705,8 +676,7 @@ static void modeline(struct window *wp)
 			}
 		}
 
-		for (cp = msg; (c = *cp) != 0; ++cp)
-			vtputc(c);
+		vtputs(msg);
 	}
 
 #if RAMSHOW
@@ -727,8 +697,7 @@ static void modeline(struct window *wp)
 			sprintf(s, " %3d.%dK ", I(envram, KB), D(envram, KB));
 		else
 			sprintf(s, " %5d  ", (int)envram);
-		for (cp = s; (c = *cp) != 0; ++cp)
-			vtputc(c);
+		vtputs(s);
 	}
 #undef I
 #undef D

@@ -52,11 +52,6 @@ int newline_and_indent(int f, int n);
 int forwdel(int f, int n);
 int backdel(int f, int n);
 int killtext(int f, int n);
-int setemode(int f, int n);
-int delmode(int f, int n);
-int setgmode(int f, int n);
-int delgmode(int f, int n);
-int adjustmode(int kind, int global);
 
 /* main.c */
 int (*getbind(int c))(int, int);
@@ -123,6 +118,7 @@ int swbuffer(struct buffer *bp);
 int killbuffer(int f, int n);
 int zotbuf(struct buffer *bp);
 int listbuffers(int f, int n);
+int bufrdonly(int f, int n);
 int makelist(int iflag);
 void e_ltoa(char *buf, int width, long num);
 int addline(char *text);

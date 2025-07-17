@@ -26,14 +26,6 @@ Newline and indent ....      ^J         Abort command .........      ^G
 Open line .............      ^O         Quote character .......      ^Q
 Goto line ............. Meta  G
 -------------------------------------------------------------------------------
-=>                      MODE COMMANDS
-Add mode ..............   ^X  M         Add global mode	....... Meta  M
-Delete mode ...........   ^X ^M         Delete global mode .... Meta ^M
-
-EXACT  :: Match case in search
-VIEW   :: View/Read only
-ASAVE  :: Auto save the buffer
--------------------------------------------------------------------------------
 =>                      KEYS AND COMMANDS
 Abort command .........      ^G
 Meta prefix ...........     ESC     ::  Although meta-prefix can be bound to
@@ -61,7 +53,7 @@ Delete window .........   ^X  0         Scroll next down ...... Meta ^V
 Next buffer ...........   ^X  X         Filter buffer .........   ^X  #
 Select buffer .........   ^X  B         Pipe command ..........   ^X  @
 Delete buffer .........   ^X  K         Last buffer ........... Meta  P
-Buffer position .......   ^X  =
+Buffer position .......   ^X  =         Toggle Read Only ......   ^X ^Q
 -------------------------------------------------------------------------------
 =>                      SEARCHING AND REPLACING
 Incremental search           ^S     ::  Search next ^X, stop Enter, cancel ^G.

@@ -62,16 +62,13 @@ fail:
 	return FALSE;
 }
 
-/*
- * Compare two characters.  The "bc" comes from the buffer, "pc" from the
- * pattern.  If we are not in EXACT mode, fold out the case.
- */
+/* "bc" comes from the buffer, "pc" from the pattern. */
 int eq(unsigned char bc, unsigned char pc)
 {
-	if ((curwp->w_bufp->b_mode & MDEXACT) == 0)
-		return ensure_upper(bc) == ensure_upper(pc);
-	else
-		return bc == pc;
+	return ensure_upper(bc) == ensure_upper(pc);
+	/*
+	return bc == pc;
+	*/
 }
 
 /*
@@ -175,9 +172,8 @@ static int replaces(int kind, int f, int n)
 	int nlflag, nlrepl, numsub, nummatch, status, c, last_char = 0;
 	char tpat[NPAT + 64];
 
-	if (curbp->b_mode & MDVIEW)
+	if (curbp->rdonly)
 		return rdonly();
-
 	if (f && n < 0)
 		return FALSE;
 

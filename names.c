@@ -6,8 +6,6 @@
 #if NAMED_CMD
 struct name_bind names[] = {
 	{ "abort-command", ctrlg },
-	{ "add-mode", setemode },
-	{ "add-global-mode", setgmode },
 	{ "backward-character", backchar },
 	{ "begin-macro", ctlxlp },
 	{ "beginning-of-file", gotobob },
@@ -21,8 +19,6 @@ struct name_bind names[] = {
 	{ "clear-and-redraw", redraw },
 	{ "copy-region", copyregion },
 	{ "delete-buffer", killbuffer },
-	{ "delete-mode", delmode },
-	{ "delete-global-mode", delgmode },
 	{ "delete-next-character", forwdel },
 	{ "delete-next-word", delfword },
 	{ "delete-other-windows", onlywind },

@@ -127,7 +127,7 @@ int linsert(int n, int c)
 	char *cp1, *cp2;
 	int doto, i;
 
-	if (curbp->b_mode & MDVIEW)
+	if (curbp->rdonly)
 		return rdonly();
 
 	lchange(WFEDIT);
@@ -210,7 +210,7 @@ int lnewline(void)
 	char *cp1, *cp2;
 	int doto;
 
-	if (curbp->b_mode & MDVIEW)
+	if (curbp->rdonly)
 		return rdonly();
 
 	lchange(WFHARD | WFINS);
@@ -265,7 +265,7 @@ int ldelete(long n, int kflag)
 	char *cp1, *cp2;
 	int doto, chunk;
 
-	if (curbp->b_mode & MDVIEW)
+	if (curbp->rdonly)
 		return rdonly();
 	while (n != 0) {
 		dotp = curwp->w_dotp;
@@ -330,7 +330,7 @@ int ldelnewline(void)
 	struct window *wp;
 	char *cp1, *cp2;
 
-	if (curbp->b_mode & MDVIEW)
+	if (curbp->rdonly)
 		return rdonly();
 	lp1 = curwp->w_dotp;
 	lp2 = lp1->l_fp;
@@ -446,7 +446,7 @@ int yank(int f, int n)
 	char *sp;
 	int c, i;
 
-	if (curbp->b_mode & MDVIEW)
+	if (curbp->rdonly)
 		return rdonly();
 	if (n < 0)
 		return FALSE;

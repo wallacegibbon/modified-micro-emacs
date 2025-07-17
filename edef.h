@@ -7,10 +7,6 @@
 extern struct name_bind names[];/* name to function table */
 extern struct key_tab keytab[];	/* key to function table */
 
-extern const char *modename[];	/* text names of modes */
-extern int modevalue[];		/* value of modes */
-extern char modecode[];		/* letters to represent modes */
-
 extern int kbdm[];		/* Holds keyboard macro data */
 
 extern char hex[];
@@ -18,9 +14,6 @@ extern char hex[];
 extern char pat[];		/* Search pattern */
 extern char rpat[];		/* Replacement pattern */
 
-extern int gmode;		/* global editor mode */
-extern int gasave;		/* global ASAVE size */
-extern int gacount;		/* count until next ASAVE */
 extern int sgarbf;		/* State of screen unknown */
 extern int mpresf;		/* Stuff in message line */
 extern int vtrow;		/* Row location of SW cursor */

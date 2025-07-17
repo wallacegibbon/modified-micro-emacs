@@ -1,10 +1,6 @@
 #include "estruct.h"
 #include "edef.h"
 
-const char *modename[NMODES] = { "EXACT", "VIEW", "ASAVE" };
-int modevalue[NMODES] = { MDEXACT, MDVIEW, MDASAVE };
-char modecode[NMODES] = "EVA";
-
 char hex[] = "0123456789ABCDEF";
 
 int kbdm[NKBDM];		/* Keyboard Macro */
@@ -12,11 +8,6 @@ int *kbdptr;			/* current position in keyboard buf */
 int *kbdend = kbdm;		/* ptr to end of the keyboard */
 int kbdmode = STOP;		/* current keyboard macro mode */
 int kbdrep;			/* number of repetitions */
-
-int gmode = MDASAVE;		/* global editor mode */
-
-int gasave = 256;		/* global ASAVE size */
-int gacount = 256;		/* count until next ASAVE */
 
 int sgarbf = TRUE;		/* TRUE if screen is garbage */
 int mpresf = FALSE;		/* TRUE if message in last line */

@@ -80,7 +80,6 @@ int swbuffer(struct buffer *bp)
 		curbp->b_dotp = lforw(curbp->b_linep);
 		curbp->b_doto = 0;
 		curbp->b_active = TRUE;
-		curbp->b_mode |= gmode;
 	}
 	curwp->w_bufp = bp;
 	curwp->w_linep = bp->b_linep;	/* For macros, ignored. */
@@ -119,6 +118,13 @@ int killbuffer(int f, int n)
 		return TRUE;
 
 	return zotbuf(bp);
+}
+
+int bufrdonly(int f, int n)
+{
+	curbp->rdonly = !curbp->rdonly;
+	curwp->w_flag |= WFMODE;
+	return TRUE;
 }
 
 /* Kill the buffer pointed to by bp, and update bheadp when necessary */
@@ -250,7 +256,6 @@ struct buffer *bfind(char *bname, int cflag, int bflag)
 	bp->b_markp = NULL;
 	bp->b_marko = 0;
 	bp->b_flag = bflag;
-	bp->b_mode = gmode;
 	bp->b_nwnd = 0;
 	bp->b_linep = lp;
 	strcpy(bp->b_fname, "");

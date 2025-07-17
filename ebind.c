@@ -38,7 +38,6 @@ struct key_tab keytab[] = {
 	{ META | 'F', forwword },
 	{ META | 'G', gotoline },
 	{ META | 'L', lowerword },
-	{ META | 'M', setgmode },
 	{ META | 'P', lastbuffer },
 	{ META | 'U', upperword },
 	{ META | 'W', copyregion },
@@ -49,7 +48,6 @@ struct key_tab keytab[] = {
 	{ META | 0x7F, delbword },
 
 	{ META | CTL | 'H', delbword },
-	{ META | CTL | 'M', delgmode },
 	{ META | CTL | 'V', scrnextdw },
 	{ META | CTL | 'Z', scrnextup },
 
@@ -65,7 +63,6 @@ struct key_tab keytab[] = {
 	{ CTLX | 'C', spawncli },
 	{ CTLX | 'E', ctlxe },
 	{ CTLX | 'K', killbuffer },
-	{ CTLX | 'M', setemode },
 	{ CTLX | 'O', nextwind },
 	{ CTLX | 'P', prevwind },
 	{ CTLX | 'X', nextbuffer },
@@ -74,7 +71,7 @@ struct key_tab keytab[] = {
 	{ CTLX | CTL | 'F', filefind },
 	{ CTLX | CTL | 'I', insfile },
 	{ CTLX | CTL | 'L', lowerregion },
-	{ CTLX | CTL | 'M', delmode },
+	{ CTLX | CTL | 'Q', bufrdonly },
 	{ CTLX | CTL | 'R', fileread },
 	{ CTLX | CTL | 'S', filesave },
 	{ CTLX | CTL | 'U', upperregion },

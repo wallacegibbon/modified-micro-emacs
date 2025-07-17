@@ -18,7 +18,7 @@ void usage(int status)
 	printf("%s (version %s)\n\n", PROGRAM_NAME_LONG, VERSION);
 	printf("\tUSAGE: %s [OPTIONS] [FILENAMES]\n\n", PROGRAM_NAME);
 	fputs("\t+<n>\tGo to line <n>\n", stdout);
-	fputs("\t-v\tOpen read only (VIEW mode on)\n", stdout);
+	fputs("\t-v\tOpen read only\n", stdout);
 	fputs("\t--help\tDisplay this help and exit\n", stdout);
 	exit(status);
 }
@@ -27,7 +27,7 @@ int main(int argc, char **argv)
 {
 	struct buffer *firstbp = NULL, *bp;
 	char bname[NBUFN];
-	int firstfile = TRUE, viewflag = FALSE, gotoflag = FALSE, gline = 0;
+	int firstfile = TRUE, rdonlyflag = FALSE, gotoflag = FALSE, gline = 0;
 	int c = 0, c1, i;
 	int f, n;
 
@@ -46,7 +46,7 @@ int main(int argc, char **argv)
 
 	for (i = 1; i < argc; ++i) {
 		if (argv[i][0] == '-' && (argv[i][1] | DIFCASE) == 'v') {
-			viewflag = TRUE;
+			rdonlyflag = TRUE;
 		} else if (argv[i][0] == '+') {
 			gotoflag = TRUE;
 			gline = atoi(&argv[i][1]);
@@ -60,8 +60,8 @@ int main(int argc, char **argv)
 				firstbp = bp;
 				firstfile = FALSE;
 			}
-			if (viewflag)
-				bp->b_mode |= MDVIEW;
+			if (rdonlyflag)
+				bp->rdonly = 1;
 		}
 	}
 
@@ -75,8 +75,6 @@ int main(int argc, char **argv)
 	if (firstfile == FALSE) {
 		swbuffer(firstbp);
 		zotbuf(bp);
-	} else {
-		bp->b_mode |= gmode;
 	}
 
 	/* Deal with startup gotos */
@@ -223,18 +221,7 @@ int execute(int c, int f, int n)
 	}
 
 	thisflag = 0;
-
 	status = linsert(n, c);
-
-	/* Check auto-save mode and save the file if needed */
-	if (status == TRUE && (curbp->b_mode & MDASAVE)) {
-		if (--gacount == 0) {
-			update(TRUE);
-			filesave(FALSE, 0);
-			gacount = gasave;
-		}
-	}
-
 	lastflag = thisflag;
 	return status;
 }
@@ -353,11 +340,11 @@ int ctrlg(int f, int n)
 	return ABORT;
 }
 
-/* Tell the user that this command is illegal while we are in VIEW mode. */
+/* Tell the user that this command is illegal in read-only mode. */
 int rdonly(void)
 {
 	TTbeep();
-	mlwrite("(Key illegal in VIEW mode)");
+	mlwrite("(Key illegal in read-only mode)");
 	return FALSE;
 }
 

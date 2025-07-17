@@ -25,7 +25,7 @@ int insfile(int f, int n)
 	char fname[NFILEN];
 	int s;
 
-	if (curbp->b_mode & MDVIEW)
+	if (curbp->rdonly)
 		return rdonly();
 	if ((s = mlreply("Insert file: ", fname, NFILEN)) != TRUE)
 		return s;
@@ -61,7 +61,7 @@ int viewfile(int f, int n)
 
 	s = getfile(fname, FALSE);
 	if (s) {
-		curwp->w_bufp->b_mode |= MDVIEW;
+		curwp->w_bufp->rdonly = 1;
 		for_each_wind(wp)
 			wp->w_flag |= WFMODE;
 	}
@@ -289,7 +289,7 @@ int filesave(int f, int n)
 	struct window *wp;
 	int s;
 
-	if (curbp->b_mode & MDVIEW)
+	if (curbp->rdonly)
 		return rdonly();
 	if ((curbp->b_flag & BFCHG) == 0)	/* Return, no changes. */
 		return TRUE;

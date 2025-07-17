@@ -43,7 +43,6 @@
 #define NSTRING	128		/* # of bytes, string buffers */
 #define NKBDM   256		/* # of strokes, keyboard macro */
 #define NPAT    128		/* # of bytes, pattern */
-#define NMODES	3		/* # of modes */
 #define NLOCKS	100		/* max # of file locks active */
 
 #define HUGE    1000		/* Huge number */
@@ -167,22 +166,17 @@ struct buffer {
 	struct line *b_linep;	/* Link to the header struct line */
 	int b_doto;		/* Offset of "." in above struct line */
 	int b_marko;		/* but for the "mark" */
-	int b_mode;		/* editor mode of this buffer */
 	char b_active;		/* window activated flag */
 	char b_nwnd;		/* Count of windows on buffer */
 	char b_flag;		/* Flags */
 	char b_fname[NFILEN];	/* File name */
 	char b_bname[NBUFN];	/* Buffer name */
+	char rdonly;		/* Read only mode */
 };
 
 #define BFINVS  0x01		/* Internal invisable buffer */
 #define BFCHG   0x02		/* Changed since last write */
 #define BFTRUNC	0x04		/* buffer was truncated when read */
-
-/* mode flags */
-#define MDEXACT	0x0001		/* Exact matching for searches */
-#define MDVIEW	0x0002		/* View (read-only) buffer */
-#define MDASAVE	0x0004		/* Auto-save mode */
 
 struct region {
 	struct line *r_linep;	/* Origin struct line address. */

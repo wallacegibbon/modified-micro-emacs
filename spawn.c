@@ -90,7 +90,7 @@ int pipecmd(int f, int n)
 	if (getfile(filename, FALSE) == FALSE)
 		return FALSE;
 
-	curwp->w_bufp->b_mode |= MDVIEW;
+	curwp->w_bufp->rdonly = 1;
 	for_each_wind(wp)
 		wp->w_flag |= WFMODE;
 
@@ -115,7 +115,7 @@ int filter_buffer(int f, int n)
 	static char filename_in[] = "_me_filter_tmp_in";
 	static char filename_out[] = "_me_filter_tmp_out";
 
-	if (curbp->b_mode & MDVIEW)
+	if (curbp->rdonly)
 		return rdonly();
 
 	/* get the filter name and its args */

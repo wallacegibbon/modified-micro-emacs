@@ -78,7 +78,7 @@ int quote(int f, int n)
 {
 	int s, c;
 
-	if (curbp->b_mode & MDVIEW)
+	if (curbp->rdonly)
 		return rdonly();
 	c = tgetc();
 	if (n < 0)
@@ -102,7 +102,7 @@ int openline(int f, int n)
 {
 	int i, s;
 
-	if (curbp->b_mode & MDVIEW)
+	if (curbp->rdonly)
 		return rdonly();
 	if (n < 0)
 		return FALSE;
@@ -124,7 +124,7 @@ int newline(int f, int n)
 {
 	int s;
 
-	if (curbp->b_mode & MDVIEW)
+	if (curbp->rdonly)
 		return rdonly();
 	if (n < 0)
 		return FALSE;
@@ -141,7 +141,7 @@ int newline_and_indent(int f, int n)
 {
 	int nicol, c, i;
 
-	if (curbp->b_mode & MDVIEW)
+	if (curbp->rdonly)
 		return rdonly();
 	if (n < 0)
 		return FALSE;
@@ -177,7 +177,7 @@ int newline_and_indent(int f, int n)
 /* Delete forward.  If any argument is present, it kills rather than deletes. */
 int forwdel(int f, int n)
 {
-	if (curbp->b_mode & MDVIEW)
+	if (curbp->rdonly)
 		return rdonly();
 	if (n < 0)
 		return backdel(f, -n);
@@ -195,7 +195,7 @@ int backdel(int f, int n)
 	int s = TRUE;
 	long nn = 0;
 
-	if (curbp->b_mode & MDVIEW)
+	if (curbp->rdonly)
 		return rdonly();
 	if (n < 0)
 		return forwdel(f, -n);
@@ -218,7 +218,7 @@ int killtext(int f, int n)
 	struct line *nextp;
 	long chunk;
 
-	if (curbp->b_mode & MDVIEW)
+	if (curbp->rdonly)
 		return rdonly();
 	if (n <= 0)
 		return FALSE;
@@ -244,81 +244,4 @@ int killtext(int f, int n)
 		}
 	}
 	return ldelete(chunk, TRUE);
-}
-
-int setemode(int f, int n)
-{
-	return adjustmode(TRUE, FALSE);
-}
-
-int delmode(int f, int n)
-{
-	return adjustmode(FALSE, FALSE);
-}
-
-int setgmode(int f, int n)
-{
-	return adjustmode(TRUE, TRUE);
-}
-
-int delgmode(int f, int n)
-{
-	return adjustmode(FALSE, TRUE);
-}
-
-/*
- * change the editor mode status
- *
- * int kind;		true = set,          false = delete
- * int global;		true = global flag,  false = current buffer flag
- */
-int adjustmode(int kind, int global)
-{
-	char modname_buf[8];	/* 8 is enough for any mode name */
-	char prompt[32];	/* 32 is enough for prompt in this function */
-	char *scan;
-	int status, i, *pmode;
-
-	if (global) {
-		strcpy(prompt, "Global mode to ");
-		pmode = &gmode;
-	} else {
-		strcpy(prompt, "Mode to ");
-		pmode = &curbp->b_mode;
-	}
-
-	if (kind == TRUE)
-		strcat(prompt, "add: ");
-	else
-		strcat(prompt, "delete: ");
-
-	status = mlreply(prompt, modname_buf, 8 - 1);
-	if (status != TRUE)
-		return status;
-
-	/* make it uppercase */
-
-	for (scan = modname_buf; *scan != 0; ++scan) {
-		if (islower(*scan))
-			*scan ^= DIFCASE;
-	}
-
-	/* test it against the modes we know */
-
-	for (i = 0; i < NMODES; ++i) {
-		if (strcmp(modname_buf, modename[i]) == 0) {
-			int val = modevalue[i];
-			if (kind == TRUE)
-				*pmode |= val;
-			else
-				*pmode &= ~val;
-			if (global == 0)
-				update_modelines();
-			mlerase();
-			return TRUE;
-		}
-	}
-
-	mlwrite("No such mode!");
-	return FALSE;
 }
