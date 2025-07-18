@@ -573,6 +573,69 @@ partial_update:
 	return TRUE;
 }
 
+static char *posinfo(struct window *wp)
+{
+	static char s[16] = { 0 };
+	struct buffer *bp = wp->w_bufp;
+	struct line *lp = wp->w_linep;
+	int rows, numlines, predlines, ratio;
+
+	if (wp->w_dotp == bp->b_linep)
+		return " Bot ";
+
+	rows = wp->w_ntrows;
+	while (rows--) {
+		if ((lp = lforw(lp)) == wp->w_bufp->b_linep)
+			return " Bot ";
+	}
+
+	if (lback(wp->w_linep) == wp->w_bufp->b_linep)
+		return " Top ";
+
+	numlines = 0;
+	predlines = 0;
+	for (lp = lforw(bp->b_linep); lp != bp->b_linep; lp = lforw(lp)) {
+		if (lp == wp->w_linep)
+			predlines = numlines;
+		++numlines;
+	}
+
+	ratio = 0;
+	if (numlines != 0)
+		ratio = (100L * predlines) / numlines;
+	if (ratio > 99)
+		ratio = 99;
+
+	sprintf(s, " %2d%% ", ratio);
+	return s;
+}
+
+#if RAMSHOW
+static char *raminfo(void)
+{
+#define GB (1024 * 1024 * 1024)
+#define MB (1024 * 1024)
+#define KB 1024
+#define I(v, unit) ((short)((v) / (unit)))
+#define D(v, unit) ((char)((v) * 10 / (unit) % 10))
+	static char s[16] = { 0 };
+	if (envram >= 1000 * MB)
+		sprintf(s, " %3d.%dG ", I(envram, GB), D(envram, GB));
+	else if (envram >= 1000 * KB)
+		sprintf(s, " %3d.%dM ", I(envram, MB), D(envram, MB));
+	else if (envram >= 100000)
+		sprintf(s, " %3d.%dK ", I(envram, KB), D(envram, KB));
+	else
+		sprintf(s, " %5d  ", (int)envram);
+	return s;
+#undef D
+#undef I
+#undef KB
+#undef MB
+#undef GB
+}
+#endif
+
 /*
  * Redisplay the mode line for the window pointed to by the "wp".  This is the
  * only routine that has any idea of how the modeline is formatted.  You can
@@ -582,7 +645,6 @@ partial_update:
 static void modeline(struct window *wp)
 {
 	struct buffer *bp;
-	char tline[NLINE];
 	int n;
 
 	n = wp->w_toprow + wp->w_ntrows;
@@ -591,16 +653,13 @@ static void modeline(struct window *wp)
 
 	bp = wp->w_bufp;
 
-	vtputs(wp == curwp ? ">> " : "   ");
-	if ((bp->b_flag & BFCHG) != 0) {
-		vtputc(bp->rdonly ? '%' : '*');
-		vtputc('*');
-	} else {
-		vtputs(bp->rdonly ? "%%" : "  ");
-	}
-	vtputc(' ');
-	n = 6;
+	vtputs(wp == curwp ? "@" : " ");
+	if ((bp->b_flag & BFCHG) != 0)
+		vtputs(bp->rdonly ? "%* " : "** ");
+	else
+		vtputs(bp->rdonly ? "%% " : "   ");
 
+	n = 4;
 	n += vtputs(bp->b_bname);
 
 	vtputc(' ');
@@ -625,82 +684,14 @@ static void modeline(struct window *wp)
 	}
 
 #if RAMSHOW
-	vtcol = n - 5 - 2 - 8 - 2;
+	vtcol = n - 5 - 2 - 8;
 #else
-	vtcol = n - 5 - 2;
+	vtcol = n - 5;
 #endif
-
-	{
-		struct line *lp = wp->w_linep;
-		int rows = wp->w_ntrows;
-		char *msg = NULL;
-
-		while (rows--) {
-			lp = lforw(lp);
-			if (lp == wp->w_bufp->b_linep) {
-				msg = " Bot ";
-				break;
-			}
-		}
-		if (lback(wp->w_linep) == wp->w_bufp->b_linep) {
-			if (msg)
-				msg = wp->w_linep == wp->w_bufp->b_linep
-					? " Emp " : " All ";
-			else
-				msg = " Top ";
-		}
-		if (!msg) {
-			struct line *lp;
-			int numlines, predlines, ratio;
-
-			lp = lforw(bp->b_linep);
-			numlines = 0;
-			predlines = 0;
-			while (lp != bp->b_linep) {
-				if (lp == wp->w_linep) {
-					predlines = numlines;
-				}
-				++numlines;
-				lp = lforw(lp);
-			}
-			if (wp->w_dotp == bp->b_linep) {
-				msg = " Bot ";
-			} else {
-				ratio = 0;
-				if (numlines != 0)
-					ratio = (100L * predlines) / numlines;
-				if (ratio > 99)
-					ratio = 99;
-				sprintf(tline, " %2d%% ", ratio);
-				msg = tline;
-			}
-		}
-
-		vtputs(msg);
-	}
-
+	vtputs(posinfo(wp));
 #if RAMSHOW
 	vtcol += 2;
-
-	{
-#define GB (1024 * 1024 * 1024)
-#define MB (1024 * 1024)
-#define KB 1024
-#define I(v, unit) ((short)((v) / (unit)))
-#define D(v, unit) ((char)((v) * 10 / (unit) % 10))
-		char s[16];
-		if (envram >= 1000 * MB)
-			sprintf(s, " %3d.%dG ", I(envram, GB), D(envram, GB));
-		else if (envram >= 1000 * KB)
-			sprintf(s, " %3d.%dM ", I(envram, MB), D(envram, MB));
-		else if (envram >= 100000)
-			sprintf(s, " %3d.%dK ", I(envram, KB), D(envram, KB));
-		else
-			sprintf(s, " %5d  ", (int)envram);
-		vtputs(s);
-	}
-#undef I
-#undef D
+	vtputs(raminfo());
 #endif
 }
 

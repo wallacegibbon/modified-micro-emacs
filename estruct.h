@@ -22,9 +22,7 @@
 
 #define UNIX	(BSD | USG)
 
-#define RAMSIZE	1		/* Dynamic RAM memory usage tracking */
-#define RAMSHOW	1		/* Auto dynamic RAM reporting */
-
+#define RAMSHOW	0		/* Auto dynamic RAM tracking & reporting */
 #define VISMAC	0		/* update display during keyboard macros */
 
 #ifdef SVR4
@@ -116,7 +114,7 @@ static inline int ensure_upper(int c)
 	return islower(c) ? c ^ DIFCASE : c;
 }
 
-#if RAMSIZE
+#if RAMSHOW
 #define malloc	allocate
 #define free	release
 #endif

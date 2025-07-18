@@ -92,3 +92,4 @@ globals.o: estruct.h edef.h
 memory.o: estruct.h edef.h
 ansi.o: ansi.c estruct.h edef.h
 termcap.o: termcap.c estruct.h edef.h
+wrapper.o: wrapper.c estruct.h edef.h

@@ -6,7 +6,7 @@
 #include "estruct.h"
 #include "edef.h"
 
-#if RAMSIZE
+#if RAMSHOW
 
 /* Undefine macros defined in estruct.h to unshadow `malloc` and `free`. */
 #undef malloc
