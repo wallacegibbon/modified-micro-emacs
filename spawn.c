@@ -20,11 +20,8 @@ int spawncli(int f, int n)
 	if ((cp = getenv("SHELL")) != NULL && *cp != '\0')
 		r = system(cp);
 	else
-#if BSD
-		r = system("exec /bin/csh");
-#else
 		r = system("exec /bin/sh");
-#endif
+
 	sgarbf = TRUE;
 
 	TTopen();
