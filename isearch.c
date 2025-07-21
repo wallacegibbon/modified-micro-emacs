@@ -73,9 +73,11 @@ start_over:
 	}
 
 char_loop:
-	/* ^M finishs the searching and leave the pat as what it is */
-	if (expc == ENTERC)
-		return TRUE;
+	/* We don't use ^M to finish a search, use ^F, ^B, etc. */
+	if (expc == ENTERC) {
+		c = ectoc(expc = get_char());
+		goto char_loop;
+	}
 
 	/* ^G stops the searching and restore the search pattern */
 	if (expc == ABORTC) {
