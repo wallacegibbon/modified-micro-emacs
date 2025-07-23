@@ -446,7 +446,6 @@ void update_garbage(void)
 	TTeeop();
 	mlflush();
 	sgarbf = FALSE;
-	mpresf = FALSE;
 }
 
 static int flush_to_physcr(void)
@@ -765,7 +764,6 @@ int mlwrite(const char *fmt, ...)
 
 	mlflush();
 	TTflush();
-	mpresf = TRUE;
 	return n;
 }
 
@@ -777,6 +775,7 @@ static void mlflush(void)
 	for (s = mlbuf; *s; s++)
 		TTputc(*s);
 	TTeeol();
+	mpresf = TRUE;
 }
 
 #ifdef SIGWINCH
