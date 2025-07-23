@@ -13,11 +13,11 @@ endif
 
 SRC = main.c buffer.c window.c line.c word.c display.c basic.c random.c \
 	file.c fileio.c input.c search.c isearch.c lock.c region.c spawn.c \
-	$(TT).c posix.c ebind.c names.c globals.c wrapper.c memory.c
+	$(TT).c posix.c ebind.c names.c globals.c wrapper.c memory.c util.c
 
 OBJ = main.o buffer.o window.o line.o word.o display.o basic.o random.o \
 	file.o fileio.o input.o search.o isearch.o lock.o region.o spawn.o \
-	$(TT).o posix.o ebind.o names.o globals.o wrapper.o memory.o
+	$(TT).o posix.o ebind.o names.o globals.o wrapper.o memory.o util.o
 
 WARNINGS = -Wall -Wextra -Wstrict-prototypes -Wno-unused-parameter
 
@@ -93,3 +93,4 @@ memory.o: estruct.h edef.h
 ansi.o: ansi.c estruct.h edef.h
 termcap.o: termcap.c estruct.h edef.h
 wrapper.o: wrapper.c estruct.h edef.h
+util.o: util.c

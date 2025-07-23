@@ -26,6 +26,8 @@ struct video {
 
 static struct video **vscreen;	/* Virtual screen. */
 static struct video **pscreen;	/* Physical screen. */
+static char *mlbuf = NULL;	/* Message line buffer */
+static size_t mlbuf_size = 0;
 
 #if UNIX
 #include <signal.h>
@@ -48,10 +50,7 @@ static void update_extended(void);
 static void update_de_extend(void);
 static void update_pos(void);
 
-static int mlputs(char *s);
-static int mlputi(int i, int r);
-static int mlputli(long l, int r);
-static int mlputf(int s);
+static void mlflush(void);
 
 #ifdef SIGWINCH
 static void newscreensize(void);
@@ -66,13 +65,25 @@ static struct video *video_new(size_t text_size)
 
 static void screen_init(void)
 {
+	char *mlbuf_old;
 	int i;
+
 	vscreen = xmalloc(term.t_nrow * sizeof(struct video *));
 	pscreen = xmalloc(term.t_nrow * sizeof(struct video *));
 
 	for (i = 0; i < term.t_nrow; ++i) {
 		vscreen[i] = video_new(term.t_ncol);
 		pscreen[i] = video_new(term.t_ncol);
+	}
+
+	mlbuf_old = mlbuf;
+	mlbuf_size = term.t_ncol + 1;
+	mlbuf = xmalloc(mlbuf_size);
+	if (mlbuf_old != NULL) {
+		strncpy_safe(mlbuf, mlbuf_old, mlbuf_size);
+		free(mlbuf_old);
+	} else {
+		mlbuf[0] = '\0';
 	}
 }
 
@@ -97,6 +108,8 @@ void vtinit(void)
 void vtdeinit(void)
 {
 	screen_deinit();
+	/* mlbuf is not like screen lines, it keeps contents on resize */
+	free(mlbuf);
 	TTclose();
 }
 
@@ -431,6 +444,7 @@ void update_garbage(void)
 
 	movecursor(0, 0);
 	TTeeop();
+	mlflush();
 	sgarbf = FALSE;
 	mpresf = FALSE;
 }
@@ -740,120 +754,29 @@ void mlerase(void)
 int mlwrite(const char *fmt, ...)
 {
 	va_list ap;
-	int n = 0, c, tmp;
+	int n;
 
-	movecursor(term.t_nrow, 0);
+	if (mlbuf == NULL)
+		return 0;
+
 	va_start(ap, fmt);
-	while ((c = *fmt++) != 0) {
-		if (c != '%') {
-			tmp = put_c(c, TTputc);
-			ttcol += tmp;
-			n += tmp;
-		} else {
-			c = *fmt++;
-			switch (c) {
-			case 'd':
-				n += mlputi(va_arg(ap, int), 10);
-				break;
-
-			case 'o':
-				n += mlputi(va_arg(ap, int), 8);
-				break;
-
-			case 'x':
-				n += mlputi(va_arg(ap, int), 16);
-				break;
-
-			case 'D':
-				n += mlputli(va_arg(ap, long), 10);
-				break;
-
-			case 's':
-				n += mlputs(va_arg(ap, char *));
-				break;
-
-			case 'f':
-				n += mlputf(va_arg(ap, int));
-				break;
-
-			default:
-				TTputc(c);
-				++ttcol;
-				++n;
-			}
-		}
-	}
+	n = vsnprintf(mlbuf, mlbuf_size, fmt, ap);
 	va_end(ap);
 
-	TTeeol();
+	mlflush();
 	TTflush();
 	mpresf = TRUE;
 	return n;
 }
 
-static int mlputs(char *s)
+static void mlflush(void)
 {
-	int n = 0, c, tmp;
-	while ((c = *s++) != 0) {
-		tmp = put_c(c, TTputc);
-		n += tmp;
-		ttcol += tmp;
-	}
-	return n;
-}
+	char *s;
 
-static int mlputi(int i, int r)
-{
-	int q, n = 0;
-	if (i < 0) {
-		i = -i;
-		TTputc('-');
-		++n;
-	}
-
-	q = i / r;
-	if (q != 0)
-		n += mlputi(q, r);
-
-	TTputc(hex[i % r]);
-	++ttcol;
-	return n + 1;
-}
-
-static int mlputli(long l, int r)
-{
-	long q, n = 0;
-	if (l < 0) {
-		l = -l;
-		TTputc('-');
-		++n;
-	}
-
-	q = l / r;
-	if (q != 0)
-		n += mlputli(q, r);
-
-	TTputc((int)(l % r) + '0');
-	++ttcol;
-	return n + 1;
-}
-
-/* write out a scaled integer with two decimal places */
-static int mlputf(int s)
-{
-	int i, f, n = 0;
-
-	/* break it up */
-	i = s / 100;
-	f = s % 100;
-
-	/* send out the integer portion */
-	n += mlputi(i, 10);
-	TTputc('.');
-	TTputc((f / 10) + '0');
-	TTputc((f % 10) + '0');
-	ttcol += 3;
-	return n + 3;
+	movecursor(term.t_nrow, 0);
+	for (s = mlbuf; *s; s++)
+		TTputc(*s);
+	TTeeol();
 }
 
 #ifdef SIGWINCH

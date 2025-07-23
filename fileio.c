@@ -8,8 +8,10 @@ static int eofflag;			/* end-of-file flag */
 
 int ffropen(char *fn)
 {
-	if ((ffp = fopen(fn, "r")) == NULL)
+	if ((ffp = fopen(fn, "r")) == NULL) {
+		mlwrite("Cannot open file for reading");
 		return FIOFNF;
+	}
 	eofflag = FALSE;
 	return FIOSUC;
 }
@@ -84,7 +86,7 @@ int ffgetline(int *count)
 		if (i >= flen) {
 			if ((tmpline = malloc(flen + NSTRING)) == NULL)
 				return FIOMEM;
-			strncpy(tmpline, fline, flen);
+			strncpy_safe(tmpline, fline, flen);
 			flen += NSTRING;
 			free(fline);
 			fline = tmpline;

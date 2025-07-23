@@ -130,10 +130,6 @@ static int dolock(char *fname, char **errstr)
 
 	strcat(strcpy(lname_buf, fname), LOCK_POSTFIX);
 
-	/* check that we are not being cheated, qname must point to */
-	/* a regular file - even this code leaves a small window of */
-	/* vulnerability but it is rather hard to exploit it */
-
 #if defined(S_IFLNK)
 	if (lstat(lname_buf, &sbuf) == 0) {
 #else

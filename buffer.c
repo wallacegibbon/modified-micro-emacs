@@ -75,12 +75,13 @@ int swbuffer(struct buffer *bp)
 	curbp = bp;
 
 	if (curbp->b_active != TRUE) {	/* buffer not active yet */
-		/* read it in and activate it */
-		readin(curbp->b_fname, TRUE);
+		if (readin(curbp->b_fname, TRUE) == FALSE)
+			mlwrite("Failed reading file");
 		curbp->b_dotp = lforw(curbp->b_linep);
 		curbp->b_doto = 0;
 		curbp->b_active = TRUE;
 	}
+
 	curwp->w_bufp = bp;
 	curwp->w_linep = bp->b_linep;	/* For macros, ignored. */
 	curwp->w_flag |= WFMODE | WFFORCE | WFHARD;	/* Quite nasty. */

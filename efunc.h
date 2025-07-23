@@ -184,3 +184,6 @@ void lckerror(char *errstr);
 /* memory.c */
 void *allocate(unsigned long nbytes);
 void release(void *mp);
+
+/* util.c */
+char *strncpy_safe(char *dest, const char *src, size_t size);

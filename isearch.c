@@ -43,7 +43,7 @@ int isearch(int f, int n)
 	cmd_buff[0] = '\0';
 
 	/* `pat` is global, so 0-initialized on startup */
-	strncpy(pat_save, pat, NPAT - 1);
+	strncpy_safe(pat_save, pat, NPAT);
 
 start_over:
 	col = promptpattern("ISearch:", pat_save);
@@ -185,7 +185,7 @@ int promptpattern(const char *prompt, const char *pat)
 {
 	char tpat[NPAT + 64 /* prompt */ + 5 /* " (", "): " */ + 1];
 
-	strncpy(tpat, prompt, 64);
+	strncpy_safe(tpat, prompt, 65);
 	strcat(tpat, " (");
 	strcat(tpat, pat);
 	strcat(tpat, "): ");

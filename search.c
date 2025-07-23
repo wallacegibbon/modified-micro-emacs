@@ -81,7 +81,7 @@ static int readpattern(char *prompt, char *apat, int srch)
 	char tpat[NPAT + 64 /* prompt */ + 5 /* " (", "): " */ + 1];
 	int status;
 
-	strncpy(tpat, prompt, 64);
+	strncpy_safe(tpat, prompt, 65);
 	strcat(tpat, " (");
 	strcat(tpat, apat);
 	strcat(tpat, "): ");

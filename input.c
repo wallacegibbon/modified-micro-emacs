@@ -221,7 +221,7 @@ int mlyesno(char *prompt)
 {
 	char buf[64 /* prompt */ + 8 /* " (y/n)? " */ + 1];
 	for (;;) {
-		strncpy(buf, prompt, 64);
+		strncpy_safe(buf, prompt, 65);
 		strcat(buf, " (y/n)? ");
 		mlwrite(buf);
 

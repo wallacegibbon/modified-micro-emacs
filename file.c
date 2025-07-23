@@ -131,26 +131,23 @@ int readin(char *fname, int lockfl /* check for file locks ? */)
 {
 	struct line *lp1, *lp2;
 	struct window *wp;
-	struct buffer *bp;
 	int s, i, nbytes, nline;
 	char mesg[NSTRING];
 
 #if (FILOCK && BSD) || SVR4
 	if (lockfl && lockchk(fname) == ABORT) {
+		strcpy(curbp->b_fname, "");
 		s = FIOFNF;
-		bp = curbp;
-		strcpy(bp->b_fname, "");
 		goto out;
 	}
 #endif
-	bp = curbp;
-	if ((s = bclear(bp)) != TRUE)	/* Might be old. */
+	if ((s = bclear(curbp)) != TRUE)	/* Might be old. */
 		return s;
-	bp->b_flag &= ~(BFINVS | BFCHG);
-	strncpy(bp->b_fname, fname, NFILEN - 1);
+	curbp->b_flag &= ~(BFINVS | BFCHG);
+	strncpy_safe(curbp->b_fname, fname, NFILEN);
 
 	if ((s = ffropen(fname)) == FIOERR)	/* Hard file open. */
-		goto out;
+		return FALSE;
 
 	if (s == FIOFNF) {	/* File not found. */
 		mlwrite("(New file)");
@@ -162,8 +159,8 @@ int readin(char *fname, int lockfl /* check for file locks ? */)
 	nline = 0;
 	while ((s = ffgetline(&nbytes)) == FIOSUC) {
 		if ((lp1 = lalloc(nbytes)) == NULL) {
-			s = FIOMEM;	/* Keep message on the */
-			break;	/* display. */
+			s = FIOMEM;	/* Keep message on the display */
+			break;
 		}
 		if (nline > MAXNLINE) {
 			s = FIOMEM;

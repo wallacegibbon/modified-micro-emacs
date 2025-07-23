@@ -54,7 +54,7 @@ int main(int argc, char **argv)
 			makename(bname, argv[i]);
 			unqname(bname);
 			bp = bfind(bname, TRUE, 0);
-			strncpy(bp->b_fname, argv[i], NFILEN - 1);
+			strncpy_safe(bp->b_fname, argv[i], NFILEN);
 			bp->b_active = FALSE;
 			if (firstfile) {
 				firstbp = bp;
@@ -71,10 +71,10 @@ int main(int argc, char **argv)
 #endif
 
 	/* If there are any files to read, read the first one! */
-	bp = bfind("main", FALSE, 0);
 	if (firstfile == FALSE) {
 		swbuffer(firstbp);
-		zotbuf(bp);
+		if ((bp = bfind("main", FALSE, 0)) != NULL)
+			zotbuf(bp);
 	}
 
 	/* Deal with startup gotos */
