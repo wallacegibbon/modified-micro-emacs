@@ -744,6 +744,9 @@ void movecursor(int row, int col)
 
 void mlerase(void)
 {
+	if (mlbuf != NULL)
+		mlbuf[0] = '\0';
+
 	movecursor(term.t_nrow, 0);
 	TTeeol();
 	TTflush();
