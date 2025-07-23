@@ -51,8 +51,6 @@ struct key_tab keytab[] = {
 	{ META | CTL | 'V', scrnextdw },
 	{ META | CTL | 'Z', scrnextup },
 
-	{ CTLX | '@', pipecmd },
-	{ CTLX | '#', filter_buffer },
 	{ CTLX | '=', showcpos },
 	{ CTLX | '(', ctlxlp },
 	{ CTLX | ')', ctlxrp },
@@ -69,13 +67,10 @@ struct key_tab keytab[] = {
 
 	{ CTLX | CTL | 'C', quit },
 	{ CTLX | CTL | 'F', filefind },
-	{ CTLX | CTL | 'I', insfile },
 	{ CTLX | CTL | 'L', lowerregion },
 	{ CTLX | CTL | 'Q', bufrdonly },
-	{ CTLX | CTL | 'R', fileread },
 	{ CTLX | CTL | 'S', filesave },
 	{ CTLX | CTL | 'U', upperregion },
-	{ CTLX | CTL | 'V', viewfile },
 	{ CTLX | CTL | 'W', filewrite },
 	{ CTLX | CTL | 'X', swapmark },
 

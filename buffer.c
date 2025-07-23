@@ -75,8 +75,7 @@ int swbuffer(struct buffer *bp)
 	curbp = bp;
 
 	if (curbp->b_active != TRUE) {	/* buffer not active yet */
-		if (readin(curbp->b_fname, TRUE) == FALSE)
-			mlwrite("Failed reading file");
+		readin(curbp->b_fname, TRUE);
 		curbp->b_dotp = lforw(curbp->b_linep);
 		curbp->b_doto = 0;
 		curbp->b_active = TRUE;
@@ -132,7 +131,6 @@ int bufrdonly(int f, int n)
 int zotbuf(struct buffer *bp)
 {
 	struct buffer *bp1, *bp2;
-	int s;
 
 	/* Reset prevbp when that buffer is killed */
 	if (bp == prevbp)
@@ -142,8 +140,8 @@ int zotbuf(struct buffer *bp)
 		mlwrite("Buffer is being displayed");
 		return FALSE;
 	}
-	if ((s = bclear(bp)) != TRUE)	/* Blow text away. */
-		return s;
+	if (bclear(bp) != TRUE)	/* Blow text away. */
+		return FALSE;
 	free(bp->b_linep);	/* Release header line. */
 	bp1 = NULL;		/* Find the header. */
 	bp2 = bheadp;
@@ -256,6 +254,7 @@ struct buffer *bfind(char *bname, int cflag, int bflag)
 	bp->b_doto = 0;
 	bp->b_markp = NULL;
 	bp->b_marko = 0;
+	bp->rdonly = 0;
 	bp->b_flag = bflag;
 	bp->b_nwnd = 0;
 	bp->b_linep = lp;
@@ -279,12 +278,11 @@ struct buffer *bfind(char *bname, int cflag, int bflag)
 int bclear(struct buffer *bp)
 {
 	struct line *lp;
-	int s;
 
 	if ((bp->b_flag & BFINVS) == 0	/* Not scratch buffer. */
 			&& (bp->b_flag & BFCHG) != 0	/* Something changed */
-			&& (s = mlyesno("Discard changes")) != TRUE)
-		return s;
+			&& mlyesno("Discard changes") != TRUE)
+		return FALSE;
 	bp->b_flag &= ~BFCHG;	/* Not changed */
 	while ((lp = lforw(bp->b_linep)) != bp->b_linep)
 		lfree(lp);

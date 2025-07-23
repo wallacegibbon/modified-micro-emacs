@@ -772,11 +772,13 @@ int mlwrite(const char *fmt, ...)
 
 static void mlflush(void)
 {
-	char *s;
+	char *s = mlbuf, c;
 
 	movecursor(term.t_nrow, 0);
-	for (s = mlbuf; *s; s++)
-		TTputc(*s);
+	while ((c = *s++)) {
+		TTputc(c);
+		++ttcol;
+	}
 	TTeeol();
 	mpresf = TRUE;
 }

@@ -127,18 +127,13 @@ int bclear(struct buffer *bp);
 struct buffer *bfind(char *bname, int cflag, int bflag);
 
 /* file.c */
-int fileread(int f, int n);
-int insfile(int f, int n);
 int filefind(int f, int n);
-int viewfile(int f, int n);
-int getfile(char *fname, int lockfl);
 int readin(char *fname, int lockfl);
 void makename(char *bname, char *fname);
 void unqname(char *name);
 int filewrite(int f, int n);
 int filesave(int f, int n);
 int writeout(char *fn);
-int ifile(char *fname);
 
 /* fileio.c */
 int ffropen(char *fn);

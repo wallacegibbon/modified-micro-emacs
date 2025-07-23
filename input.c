@@ -131,7 +131,6 @@ int getstring(char *prompt, char *buf, int nbuf, int eolchar)
 	int quotef = FALSE, cpos = 0, c, expc;
 
 	mlwrite(prompt);
-
 	for (;;) {
 		c = ectoc(expc = get1key());
 
@@ -139,7 +138,6 @@ int getstring(char *prompt, char *buf, int nbuf, int eolchar)
 		if (expc == eolchar && quotef == FALSE) {
 			buf[cpos++] = 0;
 			mlwrite("");
-			TTflush();
 
 			/* if we default the buffer, return FALSE */
 			if (buf[0] == 0)
@@ -219,12 +217,8 @@ int mlreply(char *prompt, char *buf, int nbuf)
 
 int mlyesno(char *prompt)
 {
-	char buf[64 /* prompt */ + 8 /* " (y/n)? " */ + 1];
 	for (;;) {
-		strncpy_safe(buf, prompt, 65);
-		strcat(buf, " (y/n)? ");
-		mlwrite(buf);
-
+		mlwrite("%s (y/n)? ", prompt);
 		switch (ctoec(tgetc())) {
 		case 'y':	return TRUE;
 		case 'n':	return FALSE;

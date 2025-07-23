@@ -8,72 +8,19 @@
 /* Max number of lines from one file. */
 #define MAXNLINE 10000000
 
-int fileread(int f, int n)
-{
-	char fname[NFILEN];
-	int s;
-
-	if ((s = mlreply("Read file: ", fname, NFILEN)) != TRUE)
-		return s;
-
-	return readin(fname, TRUE);
-}
-
-/* Insert a file into the current buffer. */
-int insfile(int f, int n)
-{
-	char fname[NFILEN];
-	int s;
-
-	if (curbp->rdonly)
-		return rdonly();
-	if ((s = mlreply("Insert file: ", fname, NFILEN)) != TRUE)
-		return s;
-
-	return ifile(fname);
-}
-
 /*
- * Select a file for editing.
- * Look around to see if you can find the fine in another buffer;
- * if you can find it just switch to the buffer.
- * If you cannot find the file, create a new buffer, read in the text,
- * and switch to the new buffer.
+ * If the buffer can be found, just switch to the buffer.  Other wise create
+ * a new buffer, read in the text, and switch to the new buffer.
  */
 int filefind(int f, int n)
 {
-	char fname[NFILEN];
-	int s;
+	struct buffer *bp;
+	struct line *lp;
+	char bname[NBUFN], fname[NFILEN];
+	int i, s;
 
 	if ((s = mlreply("Find file: ", fname, NFILEN)) != TRUE)
 		return s;
-	return getfile(fname, TRUE);
-}
-
-int viewfile(int f, int n)
-{
-	struct window *wp;
-	char fname[NFILEN];
-	int s;
-
-	if ((s = mlreply("View file: ", fname, NFILEN)) != TRUE)
-		return s;
-
-	s = getfile(fname, FALSE);
-	if (s) {
-		curwp->w_bufp->rdonly = 1;
-		for_each_wind(wp)
-			wp->w_flag |= WFMODE;
-	}
-	return s;
-}
-
-int getfile(char *fname, int lockfl)
-{
-	struct buffer *bp;
-	struct line *lp;
-	char bname[NBUFN];
-	int i, s;
 
 	for_each_buff(bp) {
 		if ((bp->b_flag & BFINVS) == 0 &&
@@ -89,13 +36,13 @@ int getfile(char *fname, int lockfl)
 			return TRUE;
 		}
 	}
-	makename(bname, fname);	/* New buffer name. */
+	makename(bname, fname);
 	while ((bp = bfind(bname, FALSE, 0)) != NULL) {
 		/* old buffer name conflict code */
 		s = mlreply("Buffer name: ", bname, NBUFN);
-		if (s == ABORT)	/* ^G to just quit */
+		if (s == ABORT)
 			return s;
-		if (s == FALSE) {	/* CR to clobber it */
+		if (s == FALSE) {
 			makename(bname, fname);
 			break;
 		}
@@ -117,17 +64,17 @@ int getfile(char *fname, int lockfl)
 	curwp->w_bufp = bp;
 	curbp->b_nwnd++;
 
-	s = readin(fname, lockfl);
+	s = readin(fname, TRUE);
 	return s;
 }
 
 /*
- * Read file "fname" into the current buffer, blowing away any text
- * found there.  Called by both the read and find commands.  Return
- * the final status of the read.  Also called by the mainline, to
- * read in a file specified on the command line as an argument.
+ * Read file "fname" into the current buffer, blowing away any existing text.
+ * Called by both the read and find commands.  Return the status of the read.
+ * Also called by the mainline, to read in a file specified on the command line
+ * as an argument.
  */
-int readin(char *fname, int lockfl /* check for file locks ? */)
+int readin(char *fname, int lockfl)
 {
 	struct line *lp1, *lp2;
 	struct window *wp;
@@ -141,20 +88,21 @@ int readin(char *fname, int lockfl /* check for file locks ? */)
 		goto out;
 	}
 #endif
-	if ((s = bclear(curbp)) != TRUE)	/* Might be old. */
-		return s;
+	if (bclear(curbp) != TRUE)	/* Might be old. */
+		return FALSE;
+
 	curbp->b_flag &= ~(BFINVS | BFCHG);
 	strncpy_safe(curbp->b_fname, fname, NFILEN);
 
-	if ((s = ffropen(fname)) == FIOERR)	/* Hard file open. */
+	if ((s = ffropen(fname)) == FIOERR)
 		return FALSE;
 
-	if (s == FIOFNF) {	/* File not found. */
+	if (s == FIOFNF) {
 		mlwrite("(New file)");
+		s = FIOSUC;
 		goto out;
 	}
 
-	/* read the file in */
 	mlwrite("(Reading file)");
 	nline = 0;
 	while ((s = ffgetline(&nbytes)) == FIOSUC) {
@@ -202,9 +150,10 @@ out:
 			wp->w_flag |= WFMODE | WFHARD;
 		}
 	}
-	if (s == FIOERR || s == FIOFNF)	/* False if error. */
+	if (s == FIOERR || s == FIOFNF)
 		return FALSE;
-	return TRUE;
+	else
+		return TRUE;
 }
 
 /*
@@ -288,9 +237,9 @@ int filesave(int f, int n)
 
 	if (curbp->rdonly)
 		return rdonly();
-	if ((curbp->b_flag & BFCHG) == 0)	/* Return, no changes. */
+	if ((curbp->b_flag & BFCHG) == 0)
 		return TRUE;
-	if (curbp->b_fname[0] == 0) {	/* Must have a name. */
+	if (curbp->b_fname[0] == 0) {
 		mlwrite("No file name");
 		return FALSE;
 	}
@@ -323,21 +272,19 @@ int writeout(char *fn)
 	struct line *lp;
 	int nline, s;
 
-	if ((s = ffwopen(fn)) != FIOSUC) {	/* Open writes message. */
+	if ((s = ffwopen(fn)) != FIOSUC)
 		return FALSE;
-	}
+
 	mlwrite("(Writing...)");
-	lp = lforw(curbp->b_linep);	/* First line. */
 	nline = 0;
-	while (lp != curbp->b_linep) {
+	for (lp = lforw(curbp->b_linep); lp != curbp->b_linep; lp = lforw(lp)) {
 		if ((s = ffputline(&lp->l_text[0], llength(lp))) != FIOSUC)
 			break;
 		++nline;
-		lp = lforw(lp);
 	}
-	if (s == FIOSUC) {	/* No write error. */
+	if (s == FIOSUC) {
 		s = ffclose();
-		if (s == FIOSUC) {	/* No close error. */
+		if (s == FIOSUC) {
 			if (nline == 1)
 				mlwrite("(Wrote 1 line)");
 			else
@@ -347,87 +294,8 @@ int writeout(char *fn)
 		ffclose();
 	}
 
-	if (s != FIOSUC)	/* Some sort of error. */
+	if (s != FIOSUC)
 		return FALSE;
-
-	return TRUE;
-}
-
-/*
- * Insert file "fname" into the current buffer, Called by insert file command.
- * Return the final status of the read.
- */
-int ifile(char *fname)
-{
-	struct line *lp0, *lp1, *lp2;
-	struct buffer *bp;
-	char mesg[NSTRING];
-	int nbytes, nline, i, s;
-
-	bp = curbp;
-	bp->b_flag |= BFCHG;
-	bp->b_flag &= ~BFINVS;
-	if ((s = ffropen(fname)) == FIOERR)	/* Hard file open. */
-		goto out;
-	if (s == FIOFNF) {	/* File not found. */
-		mlwrite("(No such file)");
-		return FALSE;
-	}
-	mlwrite("(Inserting file)");
-
-	/* back up a line and save the mark here */
-	curwp->w_dotp = lback(curwp->w_dotp);
-	curwp->w_doto = 0;
-	curwp->w_markp = curwp->w_dotp;
-	curwp->w_marko = 0;
-
-	nline = 0;
-	while ((s = ffgetline(&nbytes)) == FIOSUC) {
-		if ((lp1 = lalloc(nbytes)) == NULL) {
-			s = FIOMEM;
-			break;
-		}
-		lp0 = curwp->w_dotp;
-		lp2 = lp0->l_fp;
-		lp2->l_bp = lp1;
-		lp0->l_fp = lp1;
-		lp1->l_bp = lp0;
-		lp1->l_fp = lp2;
-		curwp->w_dotp = lp1;
-		for (i = 0; i < nbytes; ++i)
-			lputc(lp1, i, fline[i]);
-		++nline;
-	}
-	ffclose();		/* Ignore errors. */
-	curwp->w_markp = lforw(curwp->w_markp);
-	strcpy(mesg, "(");
-	if (s == FIOERR) {
-		strcat(mesg, "I/O ERROR, ");
-		curbp->b_flag |= BFTRUNC;
-	}
-	if (s == FIOMEM) {
-		strcat(mesg, "OUT OF MEMORY, ");
-		curbp->b_flag |= BFTRUNC;
-	}
-	sprintf(&mesg[strlen(mesg)], "Inserted %d line", nline);
-	if (nline > 1)
-		strcat(mesg, "s");
-	strcat(mesg, ")");
-	mlwrite(mesg);
-
-out:
-	/* advance to the next line and mark the window for changes */
-	curwp->w_dotp = lforw(curwp->w_dotp);
-	curwp->w_flag |= WFHARD | WFMODE;
-
-	/* copy window parameters back to the buffer structure */
-	curbp->b_dotp = curwp->w_dotp;
-	curbp->b_doto = curwp->w_doto;
-	curbp->b_markp = curwp->w_markp;
-	curbp->b_marko = curwp->w_marko;
-
-	if (s == FIOERR)
-		return FALSE;
-
-	return TRUE;
+	else
+		return TRUE;
 }
