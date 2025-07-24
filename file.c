@@ -23,7 +23,7 @@ int filefind(int f, int n)
 		return s;
 
 	for_each_buff(bp) {
-		if ((bp->b_flag & BFINVS) == 0 &&
+		if (!(bp->b_flag & BFINVS) &&
 				strcmp(bp->b_fname, fname) == 0) {
 			swbuffer(bp);
 			lp = curwp->w_dotp;
@@ -225,11 +225,6 @@ int filewrite(int f, int n)
 	return s;
 }
 
-/*
- * Save the contents of the current buffer in its associatd file.
- * No nothing if nothing has changed (this may be a bug, not a feature).
- * Error if there is no remembered file name for the buffer.
- */
 int filesave(int f, int n)
 {
 	struct window *wp;
@@ -237,15 +232,14 @@ int filesave(int f, int n)
 
 	if (curbp->b_flag & BFRDONLY)
 		return rdonly();
-	if ((curbp->b_flag & BFCHG) == 0)
+	if (!(curbp->b_flag & BFCHG))
 		return TRUE;
 	if (curbp->b_fname[0] == 0) {
 		mlwrite("No file name");
 		return FALSE;
 	}
 
-	/* complain about truncated files */
-	if ((curbp->b_flag & BFTRUNC) != 0) {
+	if (curbp->b_flag & BFTRUNC) {
 		if (mlyesno("Truncated file ... write it out") == FALSE) {
 			mlwrite("(Aborted)");
 			return FALSE;
@@ -262,11 +256,6 @@ int filesave(int f, int n)
 	return s;
 }
 
-/*
- * This function performs the details of file writing.
- * Uses the file management routines in the "fileio.c" package.
- * The number of lines written is displayed.
- */
 int writeout(char *fn)
 {
 	struct line *lp;

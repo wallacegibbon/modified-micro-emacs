@@ -81,8 +81,8 @@ void lchange(int flag)
 
 	if (curbp->b_nwnd != 1)	/* Ensure hard. */
 		flag = WFHARD;
-	if ((curbp->b_flag & BFCHG) == 0) {	/* First change, so */
-		flag |= WFMODE;	/* update mode lines. */
+	if (!(curbp->b_flag & BFCHG)) {
+		flag |= WFMODE;
 		curbp->b_flag |= BFCHG;
 	}
 	for_each_wind(wp) {
