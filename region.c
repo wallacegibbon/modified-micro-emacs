@@ -12,7 +12,7 @@ int killregion(int f, int n)
 	struct region region;
 	int s;
 
-	if (curbp->rdonly)
+	if (curbp->b_flag & BFRDONLY)
 		return rdonly();
 	if ((s = getregion(&region)) != TRUE)
 		return s;
@@ -69,7 +69,7 @@ int lowerregion(int f, int n)
 	struct region region;
 	int loffs, c, s;
 
-	if (curbp->rdonly)
+	if (curbp->b_flag & BFRDONLY)
 		return rdonly();
 	if ((s = getregion(&region)) != TRUE)
 		return s;
@@ -102,7 +102,7 @@ int upperregion(int f, int n)
 	struct region region;
 	int loffs, c, s;
 
-	if (curbp->rdonly)
+	if (curbp->b_flag & BFRDONLY)
 		return rdonly();
 	if ((s = getregion(&region)) != TRUE)
 		return s;

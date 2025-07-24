@@ -122,7 +122,10 @@ int killbuffer(int f, int n)
 
 int bufrdonly(int f, int n)
 {
-	curbp->rdonly = !curbp->rdonly;
+	if (curbp->b_flag & BFRDONLY)
+		curbp->b_flag &= ~BFRDONLY;
+	else
+		curbp->b_flag |= BFRDONLY;
 	curwp->w_flag |= WFMODE;
 	return TRUE;
 }
@@ -254,7 +257,6 @@ struct buffer *bfind(char *bname, int cflag, int bflag)
 	bp->b_doto = 0;
 	bp->b_markp = NULL;
 	bp->b_marko = 0;
-	bp->rdonly = 0;
 	bp->b_flag = bflag;
 	bp->b_nwnd = 0;
 	bp->b_linep = lp;

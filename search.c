@@ -172,7 +172,7 @@ static int replaces(int kind, int f, int n)
 	int nlflag, nlrepl, numsub, nummatch, status, c, last_char = 0;
 	char tpat[NPAT + 64];
 
-	if (curbp->rdonly)
+	if (curbp->b_flag & BFRDONLY)
 		return rdonly();
 	if (f && n < 0)
 		return FALSE;

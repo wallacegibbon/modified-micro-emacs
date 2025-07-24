@@ -57,7 +57,7 @@ int upperword(int f, int n)
 {
 	int c;
 
-	if (curbp->rdonly)
+	if (curbp->b_flag & BFRDONLY)
 		return rdonly();
 	if (n < 0)
 		return FALSE;
@@ -90,7 +90,7 @@ int lowerword(int f, int n)
 {
 	int c;
 
-	if (curbp->rdonly)
+	if (curbp->b_flag & BFRDONLY)
 		return rdonly();
 	if (n < 0)
 		return FALSE;
@@ -124,7 +124,7 @@ int capword(int f, int n)
 {
 	int c;
 
-	if (curbp->rdonly)
+	if (curbp->b_flag & BFRDONLY)
 		return rdonly();
 	if (n < 0)
 		return FALSE;
@@ -165,7 +165,7 @@ int delfword(int f, int n)
 	int doto = curwp->w_doto;
 	long size;
 
-	if (curbp->rdonly)
+	if (curbp->b_flag & BFRDONLY)
 		return rdonly();
 	if (n < 0)
 		return FALSE;
@@ -203,7 +203,7 @@ int delbword(int f, int n)
 	long size;
 	int s = FALSE;
 
-	if (curbp->rdonly)
+	if (curbp->b_flag & BFRDONLY)
 		return rdonly();
 	if (n <= 0)
 		return FALSE;

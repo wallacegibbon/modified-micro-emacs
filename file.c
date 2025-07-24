@@ -186,7 +186,7 @@ void unqname(char *name)
 	char *sp;
 
 	/* check to see if it is in the buffer list */
-	while (bfind(name, 0, FALSE) != NULL) {
+	while (bfind(name, FALSE, 0) != NULL) {
 		/* go to the end of the name */
 		sp = name;
 		while (*sp)
@@ -235,7 +235,7 @@ int filesave(int f, int n)
 	struct window *wp;
 	int s;
 
-	if (curbp->rdonly)
+	if (curbp->b_flag & BFRDONLY)
 		return rdonly();
 	if ((curbp->b_flag & BFCHG) == 0)
 		return TRUE;

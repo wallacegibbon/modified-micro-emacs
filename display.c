@@ -668,9 +668,9 @@ static void modeline(struct window *wp)
 
 	vtputs(wp == curwp ? "@" : " ");
 	if ((bp->b_flag & BFCHG) != 0)
-		vtputs(bp->rdonly ? "%* " : "** ");
+		vtputs(bp->b_flag & BFRDONLY ? "%* " : "** ");
 	else
-		vtputs(bp->rdonly ? "%% " : "   ");
+		vtputs(bp->b_flag & BFRDONLY ? "%% " : "   ");
 
 	n = 4;
 	n += vtputs(bp->b_bname);

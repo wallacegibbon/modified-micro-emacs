@@ -53,15 +53,13 @@ int main(int argc, char **argv)
 		} else {
 			makename(bname, argv[i]);
 			unqname(bname);
-			bp = bfind(bname, TRUE, 0);
+			bp = bfind(bname, TRUE, rdonlyflag ? BFRDONLY : 0);
 			strncpy_safe(bp->b_fname, argv[i], NFILEN);
 			bp->b_active = FALSE;
 			if (firstfile) {
 				firstbp = bp;
 				firstfile = FALSE;
 			}
-			if (rdonlyflag)
-				bp->rdonly = 1;
 		}
 	}
 

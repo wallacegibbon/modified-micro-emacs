@@ -78,7 +78,7 @@ int quote(int f, int n)
 {
 	int s, c;
 
-	if (curbp->rdonly)
+	if (curbp->b_flag & BFRDONLY)
 		return rdonly();
 	c = tgetc();
 	if (n < 0)
@@ -102,7 +102,7 @@ int openline(int f, int n)
 {
 	int i, s;
 
-	if (curbp->rdonly)
+	if (curbp->b_flag & BFRDONLY)
 		return rdonly();
 	if (n < 0)
 		return FALSE;
@@ -124,7 +124,7 @@ int newline(int f, int n)
 {
 	int s;
 
-	if (curbp->rdonly)
+	if (curbp->b_flag & BFRDONLY)
 		return rdonly();
 	if (n < 0)
 		return FALSE;
@@ -141,7 +141,7 @@ int newline_and_indent(int f, int n)
 {
 	int nicol, c, i;
 
-	if (curbp->rdonly)
+	if (curbp->b_flag & BFRDONLY)
 		return rdonly();
 	if (n < 0)
 		return FALSE;
@@ -177,7 +177,7 @@ int newline_and_indent(int f, int n)
 /* Delete forward.  If any argument is present, it kills rather than deletes. */
 int forwdel(int f, int n)
 {
-	if (curbp->rdonly)
+	if (curbp->b_flag & BFRDONLY)
 		return rdonly();
 	if (n < 0)
 		return backdel(f, -n);
@@ -195,7 +195,7 @@ int backdel(int f, int n)
 	int s = TRUE;
 	long nn = 0;
 
-	if (curbp->rdonly)
+	if (curbp->b_flag & BFRDONLY)
 		return rdonly();
 	if (n < 0)
 		return forwdel(f, -n);
@@ -218,7 +218,7 @@ int killtext(int f, int n)
 	struct line *nextp;
 	long chunk;
 
-	if (curbp->rdonly)
+	if (curbp->b_flag & BFRDONLY)
 		return rdonly();
 	if (n <= 0)
 		return FALSE;
