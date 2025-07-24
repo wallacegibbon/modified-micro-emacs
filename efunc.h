@@ -121,7 +121,6 @@ int listbuffers(int f, int n);
 int bufrdonly(int f, int n);
 int makelist(int iflag);
 void e_ltoa(char *buf, int width, long num);
-int addline(char *text);
 int anycb(void);
 int bclear(struct buffer *bp);
 struct buffer *bfind(char *bname, int cflag, int bflag);

@@ -167,30 +167,6 @@ int zotbuf(struct buffer *bp)
 }
 
 /*
- * The argument "text" points to a string.
- * Append this line to the buffer list buffer.  Handcraft the EOL on the end.
- * Return TRUE if it worked and FALSE if you ran out of room.
- */
-int addline(char *text)
-{
-	struct line *lp;
-	int i, ntext;
-
-	ntext = strlen(text);
-	if ((lp = lalloc(ntext)) == NULL)
-		return FALSE;
-	for (i = 0; i < ntext; ++i)
-		lputc(lp, i, text[i]);
-	blistp->b_linep->l_bp->l_fp = lp;	/* Hook onto the end */
-	lp->l_bp = blistp->b_linep->l_bp;
-	blistp->b_linep->l_bp = lp;
-	lp->l_fp = blistp->b_linep;
-	if (blistp->b_dotp == blistp->b_linep)	/* If "." is at the end */
-		blistp->b_dotp = lp;	/* move it to new line */
-	return TRUE;
-}
-
-/*
  * Look through the list of buffers, return TRUE if there are any changed
  * buffers.  Return FALSE if no buffers have been changed.
  * Buffers that hold magic internal stuff are not considered.
@@ -199,7 +175,7 @@ int anycb(void)
 {
 	struct buffer *bp;
 	for_each_buff(bp) {
-		if ((bp->b_flag & BFINVS) == 0 && (bp->b_flag & BFCHG) != 0)
+		if (!(bp->b_flag & BFINVS) && (bp->b_flag & BFCHG))
 			return TRUE;
 	}
 	return FALSE;
@@ -281,8 +257,7 @@ int bclear(struct buffer *bp)
 {
 	struct line *lp;
 
-	if ((bp->b_flag & BFINVS) == 0	/* Not scratch buffer. */
-			&& (bp->b_flag & BFCHG) != 0	/* Something changed */
+	if (!(bp->b_flag & BFINVS) && (bp->b_flag & BFCHG)
 			&& mlyesno("Discard changes") != TRUE)
 		return FALSE;
 	bp->b_flag &= ~BFCHG;	/* Not changed */

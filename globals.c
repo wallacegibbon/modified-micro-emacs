@@ -47,7 +47,6 @@ struct buffer *curbp;		/* Current buffer */
 struct buffer *prevbp;		/* Previous buffer */
 struct window *wheadp;		/* Head of list of windows */
 struct buffer *bheadp;		/* Head of list of buffers */
-struct buffer *blistp;		/* Buffer for C-X C-B */
 
 int curgoal;			/* Goal for C-P, C-N */
 

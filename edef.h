@@ -55,7 +55,6 @@ extern struct buffer *curbp;	/* Current buffer */
 extern struct buffer *prevbp;	/* Previous buffer */
 extern struct window *wheadp;	/* Head of list of windows */
 extern struct buffer *bheadp;	/* Head of list of buffers */
-extern struct buffer *blistp;	/* Buffer for C-X C-B */
 
 extern char pat[];		/* Search pattern. */
 extern char tap[];		/* Reversed pattern array. */

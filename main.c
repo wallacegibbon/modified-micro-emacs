@@ -144,9 +144,8 @@ void edinit(char *bname)
 	struct window *wp;
 
 	bp = bfind(bname, TRUE, 0); /* First buffer */
-	blistp = bfind("*List*", TRUE, BFINVS); /* Buffer list buffer */
 	wp = malloc(sizeof(struct window)); /* First window */
-	if (bp == NULL || wp == NULL || blistp == NULL)
+	if (bp == NULL || wp == NULL)
 		exit(1);
 	curbp = bp;
 	prevbp = NULL;
@@ -234,9 +233,8 @@ int quickexit(int f, int n)
 	int status;
 
 	for_each_buff(bp) {
-		if ((bp->b_flag & BFCHG) != 0
-				&& (bp->b_flag & BFTRUNC) == 0
-				&& (bp->b_flag & BFINVS) == 0) {
+		if ((bp->b_flag & BFCHG) && !(bp->b_flag & BFTRUNC)
+				&& !(bp->b_flag & BFINVS)) {
 			curbp = bp;
 			mlwrite("(Saving %s)", bp->b_fname);
 			if ((status = filesave(f, n)) != TRUE) {

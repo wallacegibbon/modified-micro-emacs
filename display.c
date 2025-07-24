@@ -667,7 +667,7 @@ static void modeline(struct window *wp)
 	bp = wp->w_bufp;
 
 	vtputs(wp == curwp ? "@" : " ");
-	if ((bp->b_flag & BFCHG) != 0)
+	if (bp->b_flag & BFCHG)
 		vtputs(bp->b_flag & BFRDONLY ? "%* " : "** ");
 	else
 		vtputs(bp->b_flag & BFRDONLY ? "%% " : "   ");
@@ -678,7 +678,7 @@ static void modeline(struct window *wp)
 	vtputc(' ');
 	++n;
 
-	if ((bp->b_flag & BFTRUNC) != 0)
+	if (bp->b_flag & BFTRUNC)
 		n += vtputs(" (TRUNC) ");
 
 	if (bp->b_fname[0] != 0 && strcmp(bp->b_bname, bp->b_fname) != 0) {
