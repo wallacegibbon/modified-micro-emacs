@@ -96,7 +96,7 @@ static int readpattern(char *prompt, char *apat, int srch)
 		strcpy(apat, tpat);
 		if (srch) {	/* If we are doing the search string. */
 			rvstrcpy(tap, apat);
-			mlenold = matchlen = strlen(apat);
+			matchlen = strlen(apat);
 		}
 	} else if (status == FALSE && apat[0] != 0) {	/* Old one */
 		status = TRUE;
@@ -170,7 +170,6 @@ int delins(int dlength, char *instr, int use_meta)
 static int replaces(int kind, int f, int n)
 {
 	int nlflag, nlrepl, numsub, nummatch, status, c, last_char = 0;
-	char tpat[NPAT + 64];
 
 	if (curbp->b_flag & BFRDONLY)
 		return rdonly();
@@ -193,15 +192,6 @@ static int replaces(int kind, int f, int n)
 	nlflag = (pat[matchlen - 1] == '\n');
 	nlrepl = FALSE;
 
-	if (kind) {
-		/* Build query replace question string. */
-		strcpy(tpat, "Replace '");
-		strcat(tpat, pat);
-		strcat(tpat, "' with '");
-		strcat(tpat, rpat);
-		strcat(tpat, "'? ");
-	}
-
 	numsub = 0;
 	nummatch = 0;
 
@@ -216,7 +206,7 @@ static int replaces(int kind, int f, int n)
 		nlrepl = (lforw(curwp->w_dotp) == curwp->w_bufp->b_linep);
 
 		if (kind) {
-			mlwrite(tpat, pat, rpat);
+			mlwrite("Replace (%s) with (%s)?", pat, rpat);
 qprompt:
 			update(TRUE);
 			c = tgetc();

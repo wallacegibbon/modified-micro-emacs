@@ -165,7 +165,6 @@ int risearch(int f, int n);
 int fisearch(int f, int n);
 int isearch(int f, int n);
 int scanmore(char *pattern, int dir);
-int promptpattern(const char *prompt, const char *pat);
 int get_char(void);
 
 /* lock.c */
@@ -173,7 +172,6 @@ int lockchk(char *fname);
 int lockrel(void);
 int lock(char *fname);
 int unlock(char *fname);
-void lckerror(char *errstr);
 
 /* memory.c */
 void *allocate(unsigned long nbytes);

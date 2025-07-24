@@ -76,6 +76,11 @@ int lockrel(void)
 	return s1;
 }
 
+static inline void lckerror(char *errstr)
+{
+	mlwrite("%s - %s", errstr, strerror(errno));
+}
+
 /*
  * Check and lock a file from access by others.  Returns
  * TRUE  = files was not locked and now is;
@@ -113,14 +118,6 @@ int unlock(char *fname)
 	return FALSE;
 }
 
-void lckerror(char *errstr)
-{
-	char obuf[NSTRING];
-	strcpy(obuf, errstr);
-	strcat(obuf, " - ");
-	strcat(obuf, strerror(errno));
-	mlwrite(obuf);
-}
 
 /* Return 0 on success, 1 on fail, -1 on error. */
 static int dolock(char *fname, char **errstr)

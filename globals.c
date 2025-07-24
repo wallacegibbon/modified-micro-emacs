@@ -37,7 +37,6 @@ int flen;			/* current length of fline */
 int scrollcount = 1;		/* number of lines to scroll */
 
 unsigned int matchlen;		/* The length of the matched string */
-unsigned int mlenold;
 char *patmatch;			/* The string that satisfies the search */
 struct line *matchline;		/* The line of the *start* of match */
 int matchoff;			/* The offset of the *start* of match */

@@ -137,7 +137,7 @@ int readin(char *fname, int lockfl)
 	if (nline != 1)
 		strcat(mesg, "s");
 	strcat(mesg, ")");
-	mlwrite(mesg);
+	mlwrite("%s", mesg);
 
 out:
 	for_each_wind(wp) {

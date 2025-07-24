@@ -29,8 +29,7 @@ Goto line ............. Meta  G
 Delete previous character    ^H         Delete next character .      ^D
 Delete previous word .. Meta ^H         Delete next word ...... Meta  D
 Kill to end of line ...      ^K         Yank ..................      ^Y
-Kill region ...........      ^W
-Copy region ........... Meta  W
+Kill region ...........      ^W         Copy region ........... Meta  W
 -------------------------------------------------------------------------------
 =>                      FORMATTING
 Case word upper ....... Meta  U         Case word lower ....... Meta  L

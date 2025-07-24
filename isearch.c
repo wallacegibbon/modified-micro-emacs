@@ -46,7 +46,7 @@ int isearch(int f, int n)
 	strncpy_safe(pat_save, pat, NPAT);
 
 start_over:
-	col = promptpattern("ISearch:", pat_save);
+	col = mlwrite("ISearch: (%s): ", pat_save);
 
 	/* Restore n for a new loop */
 	n = init_direction;
@@ -179,18 +179,6 @@ int scanmore(char *pattern, int dir)
 	}
 
 	return status;
-}
-
-int promptpattern(const char *prompt, const char *pat)
-{
-	char tpat[NPAT + 64 /* prompt */ + 5 /* " (", "): " */ + 1];
-
-	strncpy_safe(tpat, prompt, 65);
-	strcat(tpat, " (");
-	strcat(tpat, pat);
-	strcat(tpat, "): ");
-
-	return mlwrite(tpat);
 }
 
 int get_char(void)

@@ -1,14 +1,9 @@
 #include "estruct.h"
 #include "edef.h"
 #include "efunc.h"
-#include <stdio.h>
 #include <unistd.h>
 
-/*
- * Create a subjob with a copy of the command intrepreter in it.  When the
- * command interpreter exits, mark the screen as garbage so that you do a full
- * repaint.
- */
+/* Create a subjob with a copy of the command intrepreter in it. */
 int spawncli(int f, int n)
 {
 #if UNIX
@@ -23,11 +18,11 @@ int spawncli(int f, int n)
 	else
 		r = system("exec /bin/sh");
 
+	/* Mark the screen as garbage to do a full repaint. */
 	sgarbf = TRUE;
 
 	TTopen();
 	update(TRUE);
-
 	if (r == 0)
 		return TRUE;
 

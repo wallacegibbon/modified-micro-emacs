@@ -130,7 +130,7 @@ int getstring(char *prompt, char *buf, int nbuf, int eolchar)
 {
 	int quotef = FALSE, cpos = 0, c, expc;
 
-	mlwrite(prompt);
+	mlwrite("%s", prompt);
 	for (;;) {
 		c = ectoc(expc = get1key());
 
