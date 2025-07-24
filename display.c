@@ -758,13 +758,19 @@ int mlwrite(const char *fmt, ...)
 	va_list ap;
 	int n;
 
+	va_start(ap, fmt);
+	n = mlvwrite(fmt, ap);
+	va_end(ap);
+	return n;
+}
+
+int mlvwrite(const char *fmt, va_list ap)
+{
+	int n;
 	if (mlbuf == NULL)
 		return 0;
 
-	va_start(ap, fmt);
 	n = vsnprintf(mlbuf, mlbuf_size, fmt, ap);
-	va_end(ap);
-
 	mlflush();
 	TTflush();
 	return n;
@@ -817,6 +823,23 @@ static void newscreensize(void)
 
 #endif
 
+int unput_c(unsigned char c)
+{
+	int i, n = 1;
+#define DEL_CH(N) for (i = 0; i < N; ++i) { \
+			TTputc('\b'); TTputc(' '); TTputc('\b'); }
+	if (c < 0x20 || c == 0x7F) {
+		DEL_CH(2); n = 2;
+	} else if (c >= 0x20 && c < 0x7F) {
+		DEL_CH(1); n = 1;
+	} else {
+		DEL_CH(4); n = 4;
+	}
+	TTflush();
+	return n;
+#undef DEL_CH
+}
+
 int put_c(unsigned char c, int (*p)(int))
 {
 	if (c < 0x20 || c == 0x7F) {
@@ -828,7 +851,7 @@ int put_c(unsigned char c, int (*p)(int))
 	}
 }
 
-/* Keep `next_col` sync with `put_c` */
+/* Keep `next_col` sync with `put_c` (except `\t`) */
 int next_col(int col, unsigned char c)
 {
 	if (c == '\t')

@@ -46,7 +46,7 @@ int showcpos(int f, int n)
 	if (numchars != 0)
 		ratio = (100L * predchars) / numchars;
 
-	mlwrite("Line %d/%d Col %d/%d Char %D/%D (%d%%) char = 0x%x",
+	mlwrite("Line %d/%d Col %d/%d Char %ld/%ld (%d%%) char = 0x%x",
 		predlines + 1, numlines + 1, col, ecol,
 		predchars, numchars, ratio, curchar);
 	return TRUE;

@@ -100,7 +100,7 @@ int lock(char *fname)
 		return ABORT;
 	}
 
-	if (mlyesno("File in use, override? ") == TRUE)
+	if (mlyesno("File in use, override") == TRUE)
 		return FALSE;
 	else
 		return ABORT;

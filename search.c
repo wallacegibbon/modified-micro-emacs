@@ -92,7 +92,7 @@ static int readpattern(char *prompt, char *apat, int srch)
 	 * Then, if it's the search string, make a reversed pattern.
 	 * *Then*, make the meta-pattern, if we are defined that way.
 	 */
-	if ((status = getstring(tpat, tpat, NPAT, ENTERC)) == TRUE) {
+	if ((status = mlgetstring(tpat, tpat, NPAT, ENTERC)) == TRUE) {
 		strcpy(apat, tpat);
 		if (srch) {	/* If we are doing the search string. */
 			rvstrcpy(tap, apat);
@@ -169,7 +169,7 @@ int delins(int dlength, char *instr, int use_meta)
  */
 static int replaces(int kind, int f, int n)
 {
-	int nlflag, nlrepl, numsub, nummatch, status, c, last_char = 0;
+	int nlflag, nlrepl, numsub, nummatch, status, c = 0;
 
 	if (curbp->b_flag & BFRDONLY)
 		return rdonly();
@@ -178,7 +178,7 @@ static int replaces(int kind, int f, int n)
 
 	/* Ask the user for the text of a pattern. */
 	if ((status = readpattern((kind == FALSE ? "Replace" : "Query replace"),
-			pat, TRUE)) != TRUE)
+					pat, TRUE)) != TRUE)
 		return status;
 
 	/* Ask for the replacement string. */
@@ -206,39 +206,27 @@ static int replaces(int kind, int f, int n)
 		nlrepl = (lforw(curwp->w_dotp) == curwp->w_bufp->b_linep);
 
 		if (kind) {
-			mlwrite("Replace (%s) with (%s)?", pat, rpat);
+			mlwrite("Replace (%s) with (%s)? ", pat, rpat);
 qprompt:
 			update(TRUE);
-			c = tgetc();
-			mlwrite("");
-
-			last_char = c;
-			switch (c) {
+			switch ((c = tgetc())) {
 			case 'y':
 			case ' ':
 				savematch();
 				break;
-
 			case 'n':
 				forwchar(FALSE, 1);
 				continue;
-
 			case '!':
 				kind = FALSE;
 				break;
-
 			case 0x07: /* ASCII code of ^G is 0x07 ('\a') */
 				mlwrite("%d substitutions", numsub);
 				return FALSE;
-
 			default:
 				TTbeep();
-				/* fallthrough */
-
-			case '?':
-				mlwrite("(Y)es, (N)o, (!)Do rest, (^G)Abort, (?)Help: ");
+				mlwrite("(Y)es, (N)o, (!)All, (^G)Abort");
 				goto qprompt;
-
 			}
 		}
 
@@ -250,7 +238,8 @@ qprompt:
 		++numsub;
 	}
 
-	if (last_char == 'n')
+	/* If it's the last one that we say `n`, back a char */
+	if (c == 'n')
 		backchar(FALSE, 1);
 
 	mlwrite("%d substitutions", numsub);

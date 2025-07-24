@@ -277,7 +277,7 @@ int quit(int f, int n)
 		else
 			exit(0);
 	}
-	mlwrite("");
+	mlerase();
 	return s;
 }
 

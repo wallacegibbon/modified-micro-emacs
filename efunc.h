@@ -1,3 +1,5 @@
+#include <stdarg.h>
+
 /* word.c */
 int backword(int f, int n);
 int forwword(int f, int n);
@@ -78,7 +80,9 @@ void update_modelines(void);
 void movecursor(int row, int col);
 void mlerase(void);
 int mlwrite(const char *fmt, ...);
+int mlvwrite(const char *fmt, va_list ap);
 void sizesignal(int signr);
+int unput_c(unsigned char c);
 int put_c(unsigned char c, int (*p)(int));
 int next_col(int col, unsigned char c);
 
@@ -105,7 +109,8 @@ int ctoec(int c);
 int tgetc(void);
 int get1key(void);
 int getcmd(void);
-int getstring(char *prompt, char *buf, int nbuf, int eolchar);
+int mlgetstring(char *prompt, char *buf, int nbuf, int eolchar);
+int mlgetchar(char *fmt, ...);
 #if NAMED_CMD
 int namedcmd(int f, int n);
 #endif

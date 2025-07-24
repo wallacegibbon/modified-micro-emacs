@@ -9,13 +9,6 @@
  */
 int reeat_char = -1;
 
-static inline void TTputs(char *s)
-{
-	int (*p)(int) = TTputc;
-	while (*s)
-		p(*s++);
-}
-
 /* Get a key from the terminal driver, resolve any keyboard macro action */
 int tgetc(void)
 {
@@ -126,57 +119,61 @@ proc_ctlxc:
  * A more generalized prompt/reply function allowing the caller to specify
  * the proper terminator.
  */
-int getstring(char *prompt, char *buf, int nbuf, int eolchar)
+int mlgetstring(char *prompt, char *buf, int nbuf, int eolchar)
 {
-	int quotef = FALSE, cpos = 0, c, expc;
+	int quote = 0, cpos = 0, c, expc;
 
 	mlwrite("%s", prompt);
-	for (;;) {
-		c = ectoc(expc = get1key());
+loop:
+	c = ectoc(expc = get1key());
 
-		/* if they hit the line terminate, wrap it up */
-		if (expc == eolchar && quotef == FALSE) {
-			buf[cpos++] = 0;
-			mlwrite("");
-
-			/* if we default the buffer, return FALSE */
-			if (buf[0] == 0)
-				return FALSE;
-
-			return TRUE;
-		}
-
-		if (expc == ABORTC && quotef == FALSE)
-			return ctrlg(FALSE, 0);
-
-		if ((c == 0x7F || c == '\b') && quotef == FALSE) {
-			if (cpos != 0) {
-				TTputs("\b \b");
-				--ttcol;
-
-				if (buf[--cpos] < 0x20) {
-					TTputs("\b \b");
-					--ttcol;
-				}
-				if (buf[cpos] == '\n') {
-					TTputs("\b\b  \b\b");
-					ttcol -= 2;
-				}
-				TTflush();
-			}
-
-		} else if (expc == QUOTEC && quotef == FALSE) {
-			quotef = TRUE;
-
-		} else {
-			quotef = FALSE;
-			if (cpos < nbuf - 1) {
-				buf[cpos++] = c;
-				ttcol += put_c(c, TTputc);
-				TTflush();
-			}
-		}
+	/* All return points should clear message line */
+	if (expc == eolchar && !quote) {
+		buf[cpos++] = 0;
+		mlerase();
+		return buf[0] != 0;
 	}
+	if (expc == ABORTC && !quote) {
+		mlerase();
+		return ctrlg(FALSE, 0);
+	}
+
+	if ((c == 0x7F || c == '\b') && !quote) {
+		if (cpos > 0)
+			ttcol -= unput_c(buf[--cpos]);
+		goto loop;
+	}
+
+	if (expc == QUOTEC && !quote) {
+		quote = 1;
+		goto loop;
+	}
+
+	/* Normal char or quoted char */
+
+	quote = 0;
+	if (cpos < nbuf - 1) {
+		buf[cpos++] = c;
+		ttcol += put_c(c, TTputc);
+		TTflush();
+	}
+	goto loop;
+}
+
+int mlgetchar(char *fmt, ...)
+{
+	va_list ap;
+	int c;
+
+	va_start(ap, fmt);
+	mlvwrite(fmt, ap);
+	va_end(ap);
+
+	c = ctoec(tgetc());
+
+	/* Clear message line after `tgetc` */
+	mlerase();
+	return c;
 }
 
 #if NAMED_CMD
@@ -197,7 +194,7 @@ int namedcmd(int f, int n)
 	char buf[NSTRING];
 	int (*fn)(int, int);
 
-	if (getstring(": ", buf, NSTRING, ENTERC) != TRUE)
+	if (mlgetstring(": ", buf, NSTRING, ENTERC) != TRUE)
 		return FALSE;
 
 	fn = getfn_byname(buf);
@@ -212,14 +209,13 @@ int namedcmd(int f, int n)
 
 int mlreply(char *prompt, char *buf, int nbuf)
 {
-	return getstring(prompt, buf, nbuf, ENTERC);
+	return mlgetstring(prompt, buf, nbuf, ENTERC);
 }
 
 int mlyesno(char *prompt)
 {
 	for (;;) {
-		mlwrite("%s (y/n)? ", prompt);
-		switch (ctoec(tgetc())) {
+		switch (mlgetchar("%s (y/n)? ", prompt)) {
 		case 'y':	return TRUE;
 		case 'n':	return FALSE;
 		case ABORTC:	return ABORT;
