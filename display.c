@@ -775,10 +775,8 @@ static void mlflush(void)
 	char *s = mlbuf, c;
 
 	movecursor(term.t_nrow, 0);
-	while ((c = *s++)) {
-		TTputc(c);
-		++ttcol;
-	}
+	while ((c = *s++))
+		ttcol += put_c(c, TTputc);
 	TTeeol();
 	mpresf = TRUE;
 }
