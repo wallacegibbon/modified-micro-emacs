@@ -4,32 +4,6 @@
 #include "line.h"
 #include "wrapper.h"
 
-/*
- * Attach a buffer to a window.
- * The values of dot and mark come from the buffer if the use count is 0.
- * Otherwise, they come from some other window.
- */
-int usebuffer(int f, int n)
-{
-	struct buffer *bp;
-	char bufn[NBUFN];
-	int s;
-
-	if ((s = mlreply("Use buffer: ", bufn, NBUFN)) != TRUE)
-		return s;
-	if ((bp = bfind(bufn, TRUE, 0)) == NULL)
-		return FALSE;
-	return swbuffer(bp);
-}
-
-int lastbuffer(int f, int n)
-{
-	if (prevbp != NULL)
-		return swbuffer(prevbp);
-	else
-		return FALSE;
-}
-
 int nextbuffer(int f, int n)
 {
 	struct buffer *bp = NULL, *bbp;
@@ -71,7 +45,6 @@ int swbuffer(struct buffer *bp)
 		curbp->b_marko = curwp->w_marko;
 	}
 
-	prevbp = curbp;
 	curbp = bp;
 
 	if (curbp->b_active != TRUE) {	/* buffer not active yet */
@@ -134,10 +107,6 @@ int bufrdonly(int f, int n)
 int zotbuf(struct buffer *bp)
 {
 	struct buffer *bp1, *bp2;
-
-	/* Reset prevbp when that buffer is killed */
-	if (bp == prevbp)
-		prevbp = NULL;
 
 	if (bp->b_nwnd != 0) {	/* Error if on screen. */
 		mlwrite("Buffer is being displayed");

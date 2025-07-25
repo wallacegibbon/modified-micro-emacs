@@ -58,9 +58,7 @@ int filefind(int f, int n)
 		curbp->b_marko = curwp->w_marko;
 	}
 
-	prevbp = curbp;
 	curbp = bp;
-
 	curwp->w_bufp = bp;
 	curbp->b_nwnd++;
 

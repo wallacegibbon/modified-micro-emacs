@@ -4,7 +4,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-extern struct name_bind names[];/* name to function table */
 extern struct key_tab keytab[];	/* key to function table */
 
 extern int kbdm[];		/* Holds keyboard macro data */
@@ -52,7 +51,6 @@ extern int curgoal;		/* Goal for C-P, C-N */
 
 extern struct window *curwp;	/* Current window */
 extern struct buffer *curbp;	/* Current buffer */
-extern struct buffer *prevbp;	/* Previous buffer */
 extern struct window *wheadp;	/* Head of list of windows */
 extern struct buffer *bheadp;	/* Head of list of buffers */
 

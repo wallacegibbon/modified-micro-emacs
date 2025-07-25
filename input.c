@@ -55,63 +55,50 @@ int get1key(void)
 	return ctoec(tgetc());
 }
 
-#define NULLPROC_KEYS	(CTLX | META | CTL | 'Z')
-
 /*
+ * Drop CSI arguments and return the CSI command char.
  * Escape sequences are messes of `CSI`, `SS3`, .... and non-standard stuff.
  * We only handle a tiny subset of them to support mouse/touchpad scrolling.
  */
-static int handle_special_esc(void)
+static int csi_drop_args(void)
 {
 	int c;
-
-	/* We do not need CSI arguments (like "12;3;45") in input. */
-	do c = get1key();
+	do { c = get1key(); }
 	while (isdigit(c) || c == ';');
-
-	switch (c) {
-	case 'A':	return CTL | 'P';
-	case 'B':	return CTL | 'N';
-	default:	return NULLPROC_KEYS;
-	}
+	return c;
 }
 
 /* Get a command from the keyboard.  Process all applicable prefix keys. */
 int getcmd(void)
 {
 	int cmask = 0, c;
-
+start:
 	c = get1key();
-
-	/* process META prefix */
-	if (c == METAC) {
-proc_metac:
-		c = get1key();
 #if UNIX
-		if (c == '[' || c == 'O')
-			return handle_special_esc();
-		if (c == METAC) {
-			cmask |= META;
-			goto proc_metac;
-		}
-#endif
-		cmask |= META;
-		if (c == CTLXC)
-			goto proc_ctlxc;
-		return cmask | ensure_upper(c);
-	}
-
-	/* process CTLX prefix */
-	if (c == CTLXC) {
-proc_ctlxc:
+	/* process escape sequences */
+	if (c == ESCAPEC) {
 		c = get1key();
+		if (c == '[' || c == 'O') {
+			switch (csi_drop_args()) {
+			case 'A':	return CTL | 'P';
+			case 'B':	return CTL | 'N';
+			default:	return NULLPROC_KEY;
+			}
+		} else {
+			goto start;
+		}
+	}
+#endif
+	if (c == CTLXC) {
 		cmask |= CTLX;
-		if (c == METAC)
-			goto proc_metac;
-		return cmask | ensure_upper(c);
+ctlx_loop:
+		c = get1key();
+		if (c == ESCAPEC)
+			goto ctlx_loop;
+		else
+			return cmask | ensure_upper(c);
 	}
 
-	/* otherwise, just return it */
 	return c;
 }
 
@@ -179,37 +166,6 @@ int mlgetchar(char *fmt, ...)
 	mlerase();
 	return c;
 }
-
-#if NAMED_CMD
-static int (*getfn_byname(char *fname))(int, int)
-{
-	struct name_bind *ffp;
-
-	for (ffp = names; ffp->fn != NULL; ++ffp) {
-		if (strcmp(fname, ffp->f_name) == 0)
-			return ffp->fn;
-	}
-	return NULL;
-}
-
-/* Execute a named command even if it is not bound. */
-int namedcmd(int f, int n)
-{
-	char buf[NSTRING];
-	int (*fn)(int, int);
-
-	if (mlgetstring(": ", buf, NSTRING, ENTERC) != TRUE)
-		return FALSE;
-
-	fn = getfn_byname(buf);
-	if (fn == NULL) {
-		mlwrite("(No such function)");
-		return FALSE;
-	}
-
-	return fn(f, n);
-}
-#endif
 
 int mlreply(char *prompt, char *buf, int nbuf)
 {

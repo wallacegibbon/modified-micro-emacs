@@ -11,13 +11,13 @@ else
 TT = ansi
 endif
 
-SRC = main.c buffer.c window.c line.c word.c display.c basic.c random.c \
+SRC = main.c buffer.c window.c line.c display.c basic.c random.c \
 	file.c fileio.c input.c search.c isearch.c lock.c region.c spawn.c \
-	$(TT).c posix.c ebind.c names.c globals.c wrapper.c memory.c util.c
+	$(TT).c posix.c ebind.c globals.c wrapper.c memory.c util.c
 
-OBJ = main.o buffer.o window.o line.o word.o display.o basic.o random.o \
+OBJ = main.o buffer.o window.o line.o display.o basic.o random.o \
 	file.o fileio.o input.o search.o isearch.o lock.o region.o spawn.o \
-	$(TT).o posix.o ebind.o names.o globals.o wrapper.o memory.o util.o
+	$(TT).o posix.o ebind.o globals.o wrapper.o memory.o util.o
 
 WARNINGS = -Wall -Wextra -Wstrict-prototypes -Wno-unused-parameter
 
@@ -69,7 +69,6 @@ install: $(PROGRAM)
 
 # Write the dependencies by hand to work on different make programs.
 
-names.o: edef.h efunc.h estruct.h line.h
 ebind.o: edef.h efunc.h estruct.h line.h
 basic.o: basic.c estruct.h edef.h line.h
 buffer.o: buffer.c estruct.h edef.h line.h
@@ -87,7 +86,6 @@ region.o: region.c estruct.h edef.h line.h
 search.o: search.c estruct.h edef.h line.h
 spawn.o: spawn.c estruct.h edef.h
 window.o: window.c estruct.h edef.h line.h
-word.o: word.c estruct.h edef.h line.h
 globals.o: estruct.h edef.h
 memory.o: estruct.h edef.h
 ansi.o: ansi.c estruct.h edef.h

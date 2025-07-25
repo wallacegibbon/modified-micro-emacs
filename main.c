@@ -28,7 +28,7 @@ int main(int argc, char **argv)
 	struct buffer *firstbp = NULL, *bp;
 	char bname[NBUFN];
 	int firstfile = TRUE, rdonlyflag = FALSE, gotoflag = FALSE, gline = 0;
-	int c = 0, c1, i;
+	int c = 0, i;
 	int f, n;
 
 #if UNIX
@@ -94,19 +94,6 @@ loop:
 	f = FALSE;
 	n = 1;
 
-	/* do META-# processing if needed */
-	c1 = c & ~META;
-	if ((c & META) && isdigit(c1)) {
-		f = TRUE;
-		n = 0;
-		c = c1;
-		while (isdigit(c)) {
-			n = n * 10 + (c - '0');
-			mlwrite("Arg: %d", n);
-			c = getcmd();
-		}
-	}
-
 	/* do ^U repeat argument processing */
 	if (c == REPTC) {
 		i = 0;	/* A sign for the first loop */
@@ -148,7 +135,6 @@ void edinit(char *bname)
 	if (bp == NULL || wp == NULL)
 		exit(1);
 	curbp = bp;
-	prevbp = NULL;
 	wheadp = wp;
 	curwp = wp;
 	wp->w_wndp = NULL;	/* Initialize window */

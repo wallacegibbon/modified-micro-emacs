@@ -1,15 +1,5 @@
 #include <stdarg.h>
 
-/* word.c */
-int backword(int f, int n);
-int forwword(int f, int n);
-int upperword(int f, int n);
-int lowerword(int f, int n);
-int capword(int f, int n);
-int delfword(int f, int n);
-int delbword(int f, int n);
-int inword(void);
-
 /* window.c */
 int redraw(int f, int n);
 int nextwind(int f, int n);
@@ -19,8 +9,6 @@ int delwind(int f, int n);
 int splitwind(int f, int n);
 int enlargewind(int f, int n);
 int shrinkwind(int f, int n);
-int scrnextup(int f, int n);
-int scrnextdw(int f, int n);
 int adjust_on_scr_resize(void);
 int getwpos(void);
 void cknewwindow(void);
@@ -111,20 +99,13 @@ int get1key(void);
 int getcmd(void);
 int mlgetstring(char *prompt, char *buf, int nbuf, int eolchar);
 int mlgetchar(char *fmt, ...);
-#if NAMED_CMD
-int namedcmd(int f, int n);
-#endif
 
 /* buffer.c */
-int usebuffer(int f, int n);
 int nextbuffer(int f, int n);
-int lastbuffer(int f, int n);
 int swbuffer(struct buffer *bp);
 int killbuffer(int f, int n);
 int zotbuf(struct buffer *bp);
-int listbuffers(int f, int n);
 int bufrdonly(int f, int n);
-int makelist(int iflag);
 void e_ltoa(char *buf, int width, long num);
 int anycb(void);
 int bclear(struct buffer *bp);

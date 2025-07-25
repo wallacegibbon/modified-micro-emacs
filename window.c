@@ -275,24 +275,6 @@ struct window *wpopup(void)
 	return wp;
 }
 
-/* scroll the next window up (back) a page */
-int scrnextup(int f, int n)
-{
-	nextwind(FALSE, 1);
-	backpage(f, n);
-	prevwind(FALSE, 1);
-	return TRUE;
-}
-
-/* scroll the next window down (forward) a page */
-int scrnextdw(int f, int n)
-{
-	nextwind(FALSE, 1);
-	forwpage(f, n);
-	prevwind(FALSE, 1);
-	return TRUE;
-}
-
 int adjust_on_scr_resize(void)
 {
 	struct window *wp = NULL, *lastwp = NULL, *nextwp;

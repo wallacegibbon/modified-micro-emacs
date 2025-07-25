@@ -43,7 +43,6 @@ int matchoff;			/* The offset of the *start* of match */
 
 struct window *curwp;		/* Current window */
 struct buffer *curbp;		/* Current buffer */
-struct buffer *prevbp;		/* Previous buffer */
 struct window *wheadp;		/* Head of list of windows */
 struct buffer *bheadp;		/* Head of list of buffers */
 

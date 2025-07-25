@@ -1,57 +1,45 @@
 -------------------------------------------------------------------------------
-=>                      THE VERY BASICS
-Notations: ^X means <Ctrl> and X. The <Meta> key is <ESC> on most systems.
-Exiting:   ^G aborts almost any operation. ^X ^C will get you out of uEmacs.
-
 A BUFFER is a named area containing a FILE being edited. Many buffers may
 be active at once. Many WINDOWS may be active at once on the screen. All
 windows may show different parts of the same buffer, or each may display a
 different one.
+
+Notations: ^X means <Ctrl> and X.
 -------------------------------------------------------------------------------
 =>                      CURSOR MOVEMENT
 Backward character ....      ^B         Forward character .....      ^F
-Previous word ......... Meta  B         Next word ............. Meta  F
-Beginning of line .....      ^A         End of line ...........      ^E
 Previous line .........      ^P         Next line .............      ^N
+Beginning of line .....      ^A         End of line ...........      ^E
 Previous page .........      ^Z         Next page .............      ^V
-Beginning of file ..... Meta  <         End of file ........... Meta  >
+Beginning of file .....   ^X  ,         End of file ...........   ^X  .
+-------------------------------------------------------------------------------
+=>                      DELETING AND INSERTING
+Delete previous character    ^H         Delete next character .      ^D
+Kill to end of line ...      ^K         Yank (Paste) ..........      ^Y
+Kill region ...........   ^X  K         Copy region ...........   ^X  J
 -------------------------------------------------------------------------------
 =>                      FILE COMMANDS
 Find file .............   ^X ^F         Write file ............   ^X ^W
 Save file .............   ^X ^S
 -------------------------------------------------------------------------------
-=>                      MISCELLANEOUS CHARACTER COMMANDS
-Newline and indent ....      ^J         Abort command .........      ^G
-Open line .............      ^O         Quote character .......      ^Q
-Goto line ............. Meta  G
--------------------------------------------------------------------------------
-=>                      DELETING AND INSERTING
-Delete previous character    ^H         Delete next character .      ^D
-Delete previous word .. Meta ^H         Delete next word ...... Meta  D
-Kill to end of line ...      ^K         Yank ..................      ^Y
-Kill region ...........      ^W         Copy region ........... Meta  W
--------------------------------------------------------------------------------
 =>                      FORMATTING
-Case word upper ....... Meta  U         Case word lower ....... Meta  L
-Case region upper .....   ^X ^U         Case region lower .....   ^X ^L
-Case word capitalize .. Meta  C
+Case region upper .....   ^X  U         Case region lower .....   ^X  L
 -------------------------------------------------------------------------------
 =>                      WINDOW COMMANDS
-Split current window ..   ^X  2         Next window ...........   ^X  O
-Delete other windows ..   ^X  1         Scroll next up ........ Meta ^Z
-Delete window .........   ^X  0         Scroll next down ...... Meta ^V
+Delete window .........   ^X  0         Delete other windows ..   ^X  1
+Split current window ..   ^X  2
+Previous window .......   ^X  P         Next window ...........   ^X  O
 -------------------------------------------------------------------------------
 =>                      BUFFER COMMANDS
-Next buffer ...........   ^X  X         Last buffer ........... Meta  P
-Select buffer .........   ^X  B         Toggle Read Only ......   ^X ^Q
-Delete buffer .........   ^X  K         Buffer position .......   ^X  =
+Next buffer ...........   ^X  X         Buffer position .......   ^X  =
+Delete buffer .........   ^X ^K         Toggle Read Only ......   ^X ^Q
 -------------------------------------------------------------------------------
 =>                      SEARCHING AND REPLACING
 Incremental search ....      ^S         Reverse incsearch .....      ^R
-Query replace string .. Meta  %
+Query replace string ..   ^X  R
 -------------------------------------------------------------------------------
 =>                      ACCESSING THE OPERATING SYSTEM
-Quick exit ............ Meta  Z     ::  Write out all changed buffers and exit.
+Quick exit ............   ^X ^Z     ::  Write out all changed buffers and exit.
 Exit emacs ............   ^X ^C     ::  Exit without automatic save.
 I shell ...............   ^X  C     ::  Start a new command processor.
 -------------------------------------------------------------------------------
@@ -60,7 +48,9 @@ Begin macro ...........   ^X  (         End macro .............   ^X  )
 Execute macro .........   ^X  E
 -------------------------------------------------------------------------------
 =>                      MISCELLANEOUS
-Universal argument ....      ^U         Set mark .............. Meta Space
+Newline and indent ....      ^J         Abort command .........      ^G
+Open line .............      ^O         Quote character .......      ^Q
+Universal argument ....      ^U         Set mark ..............   ^X  M
 Redraw display ........      ^L         Exchange point and mark   ^X ^X
-Execute named command . Meta  X
+Goto line .............   ^X  G
 -------------------------------------------------------------------------------

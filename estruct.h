@@ -47,8 +47,7 @@
 #define KBLOCK	250		/* sizeof kill buffer chunks */
 
 #define CTL	0x2000		/* Control flag, or'ed in */
-#define META	0x4000		/* Meta flag, or'ed in */
-#define CTLX	0x8000		/* ^X flag, or'ed in */
+#define CTLX	0x4000		/* ^X flag, or'ed in */
 
 #ifdef FALSE
 #undef FALSE
@@ -241,7 +240,7 @@ struct kill {
 #define IS_FORWARD	0x13	/* Search forward */
 
 #define CTLXC		(CTL | 'X')	/* CTL-X prefix char */
-#define METAC		(CTL | '[')	/* META character */
+#define ESCAPEC		(CTL | '[')	/* ESCAPE character */
 #define ABORTC		(CTL | 'G')	/* ABORT command char */
 #define ENTERC		(CTL | 'M')	/* ENTER char */
 #define QUOTEC		(CTL | 'Q')	/* QUOTE char */
@@ -255,12 +254,13 @@ struct kill {
 /* Miscellaneous */
 #define TABMASK		0x07
 #define INDENT_NO_SPACE	1
-#define NAMED_CMD	0
 
 #define PROGRAM_NAME	"me"
 #define PROGRAM_NAME_LONG	"Modified Micro Emacs"
 
 #define VERSION	"0.1.0"
+
+#define NULLPROC_KEY	1
 
 /* Loop utilities */
 #define for_each_wind(wp) \
