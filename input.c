@@ -72,10 +72,8 @@ static int csi_drop_args(void)
 int getcmd(void)
 {
 	int cmask = 0, c;
-start:
 	c = get1key();
 #if UNIX
-	/* process escape sequences */
 	if (c == ESCAPEC) {
 		c = get1key();
 		if (c == '[' || c == 'O') {
@@ -84,8 +82,6 @@ start:
 			case 'B':	return CTL | 'N';
 			default:	return NULLPROC_KEY;
 			}
-		} else {
-			goto start;
 		}
 	}
 #endif
@@ -95,8 +91,8 @@ ctlx_loop:
 		c = get1key();
 		if (c == ESCAPEC)
 			goto ctlx_loop;
-		else
-			return cmask | ensure_upper(c);
+
+		return cmask | ensure_upper(c);
 	}
 
 	return c;
