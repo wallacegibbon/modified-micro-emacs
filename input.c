@@ -121,43 +121,48 @@ proc_ctlxc:
  */
 int mlgetstring(char *prompt, char *buf, int nbuf, int eolchar)
 {
-	int quote = 0, cpos = 0, c, expc;
+	int cpos = 0, c, expc;
 
 	mlwrite("%s", prompt);
-loop:
+char_loop:
 	c = ectoc(expc = get1key());
 
 	/* All return points should clear message line */
-	if (expc == eolchar && !quote) {
-		buf[cpos++] = 0;
-		mlerase();
-		return buf[0] != 0;
-	}
-	if (expc == ABORTC && !quote) {
+
+	if (expc == eolchar)
+		goto normal_exit;
+
+	if (expc == ABORTC) {
 		mlerase();
 		return ctrlg(FALSE, 0);
 	}
 
-	if ((c == 0x7F || c == '\b') && !quote) {
+	if (expc == QUOTEC) {
+		c = ectoc(expc = get1key());
+		goto char_append;
+	}
+
+	if (c == '\b' || c == 0x7F) {
 		if (cpos > 0)
 			ttcol -= unput_c(buf[--cpos]);
-		goto loop;
+		goto char_loop;
 	}
 
-	if (expc == QUOTEC && !quote) {
-		quote = 1;
-		goto loop;
+char_append:
+	buf[cpos++] = c;
+	if (cpos >= nbuf - 1) {
+		mlwrite("? Input too long");
+		goto normal_exit;
 	}
 
-	/* Normal char or quoted char */
+	ttcol += put_c(c, TTputc);
+	TTflush();
+	goto char_loop;
 
-	quote = 0;
-	if (cpos < nbuf - 1) {
-		buf[cpos++] = c;
-		ttcol += put_c(c, TTputc);
-		TTflush();
-	}
-	goto loop;
+normal_exit:
+	buf[cpos] = '\0';
+	mlerase();
+	return buf[0] != '\0';
 }
 
 int mlgetchar(char *fmt, ...)
