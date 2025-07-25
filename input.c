@@ -125,6 +125,7 @@ int mlgetstring(char *prompt, char *buf, int nbuf, int eolchar)
 
 	mlwrite("%s", prompt);
 char_loop:
+	TTflush();
 	c = ectoc(expc = get1key());
 
 	/* All return points should clear message line */
@@ -150,17 +151,15 @@ char_loop:
 
 char_append:
 	buf[cpos++] = c;
-	if (cpos >= nbuf - 1) {
-		mlwrite("? Input too long");
-		goto normal_exit;
-	}
-
+	buf[cpos] = '\0';
 	ttcol += put_c(c, TTputc);
-	TTflush();
-	goto char_loop;
+
+	if (cpos < nbuf - 1)
+		goto char_loop;
+
+	mlwrite("? Input too long");
 
 normal_exit:
-	buf[cpos] = '\0';
 	mlerase();
 	return buf[0] != '\0';
 }

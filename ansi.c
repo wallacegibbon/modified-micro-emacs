@@ -42,8 +42,9 @@ struct terminal term = {
 
 static inline void ttputs(char *s)
 {
-	while (*s)
-		ttputc(*s++);
+	int c;
+	while ((c = *s++))
+		ttputc(c);
 }
 
 static inline int ansi_compatible(const char *name)

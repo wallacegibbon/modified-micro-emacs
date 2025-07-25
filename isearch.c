@@ -121,14 +121,15 @@ char_loop:
 
 pat_append:
 	pat[cpos++] = c;
-	if (cpos >= NPAT - 1) {
-		mlwrite("? Search string too long");
-		return TRUE;
-	}
 	pat[cpos] = '\0';
 	movecursor(term.t_nrow, col);
 	col += put_c(c, TTputc);
 	TTflush();
+
+	if (cpos >= NPAT - 1) {
+		mlwrite("? Search string too long");
+		return TRUE;
+	}
 
 	/* If we lost on last char, no more check is needed */
 	if (!status) {

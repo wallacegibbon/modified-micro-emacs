@@ -823,21 +823,22 @@ static void newscreensize(void)
 
 #endif
 
+static inline void ttputs(char *s)
+{
+	int c;
+	while ((c = *s++))
+		TTputc(c);
+}
+
 int unput_c(unsigned char c)
 {
-	int i, n = 1;
-#define DEL_CH(N) for (i = 0; i < N; ++i) { \
-			TTputc('\b'); TTputc(' '); TTputc('\b'); }
 	if (c < 0x20 || c == 0x7F) {
-		DEL_CH(2); n = 2;
+		ttputs("\b\b  \b\b"); return 2;
 	} else if (c < 0x7F) {
-		DEL_CH(1); n = 1;
+		ttputs("\b \b"); return 1;
 	} else {
-		DEL_CH(4); n = 4;
+		ttputs("\b\b\b   \b\b\b"); return 3;
 	}
-	TTflush();
-	return n;
-#undef DEL_CH
 }
 
 int put_c(unsigned char c, int (*p)(int))
@@ -847,7 +848,7 @@ int put_c(unsigned char c, int (*p)(int))
 	} else if (c < 0x7F) {
 		p(c); return 1;
 	} else {
-		p('<'); p(hex[c >> 4]); p(hex[c & 0xF]); p('>'); return 4;
+		p('\\'); p(hex[c >> 4]); p(hex[c & 0xF]); return 3;
 	}
 }
 
@@ -861,5 +862,5 @@ int next_col(int col, unsigned char c)
 	else if (c < 0x7F)
 		return col + 1;
 	else
-		return col + 4;
+		return col + 3;
 }
