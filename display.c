@@ -830,7 +830,7 @@ int unput_c(unsigned char c)
 			TTputc('\b'); TTputc(' '); TTputc('\b'); }
 	if (c < 0x20 || c == 0x7F) {
 		DEL_CH(2); n = 2;
-	} else if (c >= 0x20 && c < 0x7F) {
+	} else if (c < 0x7F) {
 		DEL_CH(1); n = 1;
 	} else {
 		DEL_CH(4); n = 4;
@@ -844,7 +844,7 @@ int put_c(unsigned char c, int (*p)(int))
 {
 	if (c < 0x20 || c == 0x7F) {
 		p('^'); p(c ^ 0x40); return 2;
-	} else if (c >= 0x20 && c < 0x7F) {
+	} else if (c < 0x7F) {
 		p(c); return 1;
 	} else {
 		p('<'); p(hex[c >> 4]); p(hex[c & 0xF]); p('>'); return 4;
@@ -858,7 +858,7 @@ int next_col(int col, unsigned char c)
 		return (col | TABMASK) + 1;
 	else if (c < 0x20 || c == 0x7F)
 		return col + 2;
-	else if (c >= 0x20 && c < 0x7F)
+	else if (c < 0x7F)
 		return col + 1;
 	else
 		return col + 4;
