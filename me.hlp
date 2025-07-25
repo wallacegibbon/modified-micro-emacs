@@ -4,7 +4,7 @@ be active at once. Many WINDOWS may be active at once on the screen. All
 windows may show different parts of the same buffer, or each may display a
 different one.
 
-Notations: ^X means <Ctrl> and X.
+Notations: ^X means holding Ctrl and stroke X.
 -------------------------------------------------------------------------------
 =>                      CURSOR MOVEMENT
 Backward character ....      ^B         Forward character .....      ^F
@@ -31,26 +31,25 @@ Split current window ..   ^X  2
 Previous window .......   ^X  P         Next window ...........   ^X  O
 -------------------------------------------------------------------------------
 =>                      BUFFER COMMANDS
-Next buffer ...........   ^X  X         Buffer position .......   ^X  =
-Delete buffer .........   ^X ^K         Toggle Read Only ......   ^X ^Q
+Next buffer ...........   ^X  X         Toggle Read Only ......   ^X ^Q
+Delete buffer .........   ^X ^K
 -------------------------------------------------------------------------------
 =>                      SEARCHING AND REPLACING
 Incremental search ....      ^S         Reverse incsearch .....      ^R
 Query replace string ..   ^X  R
 -------------------------------------------------------------------------------
 =>                      ACCESSING THE OPERATING SYSTEM
-Quick exit ............   ^X ^Z     ::  Write out all changed buffers and exit.
-Exit emacs ............   ^X ^C     ::  Exit without automatic save.
-I shell ...............   ^X  C     ::  Start a new command processor.
+Quick exit ............   ^X ^Z         Exit emacs ............   ^X ^C
+I shell ...............   ^X  C
 -------------------------------------------------------------------------------
 =>                      MACRO COMMANDS
 Begin macro ...........   ^X  (         End macro .............   ^X  )
 Execute macro .........   ^X  E
 -------------------------------------------------------------------------------
 =>                      MISCELLANEOUS
-Newline and indent ....      ^J         Abort command .........      ^G
-Open line .............      ^O         Quote character .......      ^Q
-Universal argument ....      ^U         Set mark ..............   ^X  M
-Redraw display ........      ^L         Exchange point and mark   ^X ^X
-Goto line .............   ^X  G
+Abort command .........      ^G         Quote character .......      ^Q
+Newline and indent ....      ^J         Open line .............      ^O
+Universal argument ....      ^U         Goto line .............   ^X  G
+Set mark ..............   ^X  M         Exchange point and mark   ^X ^X
+Redraw display ........      ^L
 -------------------------------------------------------------------------------

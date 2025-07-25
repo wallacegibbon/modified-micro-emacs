@@ -256,25 +256,6 @@ int splitwind(int f, int n)
 	return TRUE;
 }
 
-/*
- * Pick a window for a pop-up.  Split the screen if there is only one window.
- * Pick the uppermost window that isn't the current window.  An LRU algorithm
- * might be better.  Return a pointer, or NULL on error.
- */
-struct window *wpopup(void)
-{
-	struct window *wp;
-
-	if (wheadp->w_wndp == NULL &&	/* Only 1 window */
-			splitwind(FALSE, 0) == FALSE) /* and it won't split */
-		return NULL;
-
-	/* Find window to use */
-	for (wp = wheadp; wp != NULL && wp == curwp; wp = wp->w_wndp);
-
-	return wp;
-}
-
 int adjust_on_scr_resize(void)
 {
 	struct window *wp = NULL, *lastwp = NULL, *nextwp;
@@ -332,20 +313,4 @@ int adjust_on_scr_resize(void)
 
 	sgarbf = TRUE;
 	return TRUE;
-}
-
-/* get screen offset of current line in current window */
-int getwpos(void)
-{
-	struct line *lp;
-	int sline;
-
-	lp = curwp->w_linep;
-	sline = 1;
-	while (lp != curwp->w_dotp) {
-		++sline;
-		lp = lforw(lp);
-	}
-
-	return sline;
 }

@@ -6,8 +6,7 @@ I call it **M**dified Micro **E**macs (`me`).
 
 ## Goals
 
-- Be more compatible with GNU emacs.
-- Be tiny. (by removing unecessary parts like the script engine)
+- Be tiny. (Removing unecessary parts like the script engine)
 - Fix all bugs.
 
 

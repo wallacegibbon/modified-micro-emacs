@@ -5,7 +5,6 @@
 #include <unistd.h>
 
 static int readpattern(char *prompt, char *apat, int srch);
-static int replaces(int kind, int f, int n);
 static int nextch(struct line **pcurline, int *pcuroff, int dir);
 
 /*
@@ -76,7 +75,7 @@ int eq(unsigned char bc, unsigned char pc)
  * Apat is not updated if the user types in an empty line.  If the user typed
  * an empty line, and there is no old pattern, it is an error.
  */
-static int readpattern(char *prompt, char *apat, int srch)
+static int readpattern(char *prompt, char *apat, int is_search)
 {
 	char tpat[NPAT + 64 /* prompt */ + 5 /* " (", "): " */ + 1];
 	int status;
@@ -86,15 +85,10 @@ static int readpattern(char *prompt, char *apat, int srch)
 	strcat(tpat, apat);
 	strcat(tpat, "): ");
 
-	/*
-	 * Read a pattern.  Either we get one,
-	 * or we just get the CR charater, and use the previous pattern.
-	 * Then, if it's the search string, make a reversed pattern.
-	 * *Then*, make the meta-pattern, if we are defined that way.
-	 */
+	/* Read a pattern.  Either we get one, or we use the previous one */
 	if ((status = mlgetstring(tpat, tpat, NPAT, ENTERC)) == TRUE) {
 		strcpy(apat, tpat);
-		if (srch) {	/* If we are doing the search string. */
+		if (is_search) {
 			rvstrcpy(tap, apat);
 			matchlen = strlen(apat);
 		}
@@ -102,30 +96,6 @@ static int readpattern(char *prompt, char *apat, int srch)
 		status = TRUE;
 	}
 	return status;
-}
-
-/* We found the pattern?  Let's save it away. */
-void savematch(void)
-{
-	struct line *curline;	/* line of last match */
-	int curoff;		/* offset of last match */
-	char *ptr;		/* pointer to last match string */
-	unsigned int j;
-
-	if (patmatch != NULL)
-		free(patmatch);
-
-	ptr = patmatch = malloc(matchlen + 1);
-
-	if (ptr != NULL) {
-		curoff = matchoff;
-		curline = matchline;
-
-		for (j = 0; j < matchlen; ++j)
-			*ptr++ = nextch(&curline, &curoff, FORWARD);
-
-		*ptr = '\0';
-	}
 }
 
 /* Reverse string copy. */
@@ -137,11 +107,6 @@ void rvstrcpy(char *rvstr, char *str)
 		*rvstr++ = *--str;
 
 	*rvstr = '\0';
-}
-
-int qreplace(int f, int n)
-{
-	return replaces(TRUE, f, n);
 }
 
 /*
@@ -162,26 +127,49 @@ int delins(int dlength, char *instr, int use_meta)
 }
 
 /*
- * Search for a string and replace it with another string.
- * Query might be enabled (according to kind).
- *
- * int kind;		Query enabled flag
+ * Return value meaning: 0: continue; 1: ignore this one; 2: finish
  */
-static int replaces(int kind, int f, int n)
+static int qreplace_interact(int *keep_interactive)
 {
-	int nlflag, nlrepl, numsub, nummatch, status, c = 0;
+	int c;
+	if (!*keep_interactive)
+		return 0;
+
+	mlwrite("Replace (%s) with (%s)? ", pat, rpat);
+qprompt:
+	update(TRUE);
+	switch ((c = tgetc())) {
+	case 'y':
+	case ' ':
+		return 0;
+	case 'n':
+		forwchar(FALSE, 1);
+		return 1;
+	case '!':
+		*keep_interactive = 0;
+		return 0;
+	case 0x07: /* ASCII code of ^G is 0x07 ('\a') */
+		return 2;
+	default:
+		TTbeep();
+		mlwrite("(Y)es, (N)o, (!)All, (^G)Abort");
+		goto qprompt;
+	}
+}
+
+/* Query search for a string and replace it with another string. */
+int qreplace(int f, int n)
+{
+	int nlflag, nlrepl, numsub, nummatch, status;
+	int keep_interactive = 1, interact_val = 0;
 
 	if (curbp->b_flag & BFRDONLY)
 		return rdonly();
 	if (f && n < 0)
 		return FALSE;
 
-	/* Ask the user for the text of a pattern. */
-	if ((status = readpattern((kind == FALSE ? "Replace" : "Query replace"),
-					pat, TRUE)) != TRUE)
+	if ((status = readpattern("Query replace", pat, TRUE)) != TRUE)
 		return status;
-
-	/* Ask for the replacement string. */
 	if ((status = readpattern("with", rpat, FALSE)) == ABORT)
 		return status;
 
@@ -205,43 +193,23 @@ static int replaces(int kind, int f, int n)
 		/* Check if we are on the last line. */
 		nlrepl = (lforw(curwp->w_dotp) == curwp->w_bufp->b_linep);
 
-		if (kind) {
-			mlwrite("Replace (%s) with (%s)? ", pat, rpat);
-qprompt:
-			update(TRUE);
-			switch ((c = tgetc())) {
-			case 'y':
-			case ' ':
-				savematch();
-				break;
-			case 'n':
-				forwchar(FALSE, 1);
-				continue;
-			case '!':
-				kind = FALSE;
-				break;
-			case 0x07: /* ASCII code of ^G is 0x07 ('\a') */
-				mlwrite("%d substitutions", numsub);
-				return FALSE;
-			default:
-				TTbeep();
-				mlwrite("(Y)es, (N)o, (!)All, (^G)Abort");
-				goto qprompt;
-			}
-		}
+		if ((interact_val = qreplace_interact(&keep_interactive)) == 1)
+			continue;
+		if (interact_val == 2)
+			goto finish;
 
-		/* Delete the sucker, and insert its replacement. */
-		status = delins(matchlen, rpat, TRUE);
-		if (status != TRUE)
+		/* Do one replacement */
+		if ((status = delins(matchlen, rpat, TRUE)) != TRUE)
 			return status;
 
 		++numsub;
 	}
 
 	/* If it's the last one that we say `n`, back a char */
-	if (c == 'n')
+	if (interact_val == 1)
 		backchar(FALSE, 1);
 
+finish:
 	mlwrite("%d substitutions", numsub);
 	return TRUE;
 }

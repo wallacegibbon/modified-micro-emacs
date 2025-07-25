@@ -7,7 +7,6 @@
 int nextbuffer(int f, int n)
 {
 	struct buffer *bp = NULL, *bbp;
-
 	if (f == FALSE)
 		n = 1;
 	if (n < 1)
@@ -16,7 +15,6 @@ int nextbuffer(int f, int n)
 	bbp = curbp;
 	while (n-- > 0) {
 		bp = bbp->b_bufp;
-
 		/* cycle through the buffers to find an eligable one */
 		while (bp == NULL || bp->b_flag & BFINVS) {
 			if (bp == NULL)
@@ -166,8 +164,6 @@ struct buffer *bfind(char *bname, int cflag, int bflag)
 			return bp;
 	}
 
-	/* not existing buffer found */
-
 	if (cflag == FALSE)
 		return NULL;
 
@@ -195,8 +191,6 @@ struct buffer *bfind(char *bname, int cflag, int bflag)
 		bp->b_bufp = sb->b_bufp;
 		sb->b_bufp = bp;
 	}
-
-	/* and set up the other buffer fields */
 	bp->b_active = TRUE;
 	bp->b_dotp = lp;
 	bp->b_doto = 0;
@@ -207,10 +201,8 @@ struct buffer *bfind(char *bname, int cflag, int bflag)
 	bp->b_linep = lp;
 	strcpy(bp->b_fname, "");
 	strcpy(bp->b_bname, bname);
-
 	lp->l_fp = lp;
 	lp->l_bp = lp;
-
 	return bp;
 }
 
@@ -229,12 +221,12 @@ int bclear(struct buffer *bp)
 	if (!(bp->b_flag & BFINVS) && (bp->b_flag & BFCHG)
 			&& mlyesno("Discard changes") != TRUE)
 		return FALSE;
-	bp->b_flag &= ~BFCHG;	/* Not changed */
+	bp->b_flag &= ~BFCHG;
 	while ((lp = lforw(bp->b_linep)) != bp->b_linep)
 		lfree(lp);
-	bp->b_dotp = bp->b_linep;	/* Fix "." */
+	bp->b_dotp = bp->b_linep;
 	bp->b_doto = 0;
-	bp->b_markp = NULL;	/* Invalidate "mark" */
+	bp->b_markp = NULL;
 	bp->b_marko = 0;
 	return TRUE;
 }

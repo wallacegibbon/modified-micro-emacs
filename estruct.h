@@ -80,11 +80,9 @@
 #define CFKILL  0x0002		/* Last command was a kill */
 
 #define BELL	0x07		/* BELL character */
-#define TAB	0x09		/* TAB character */
-#define ESC     0x1B		/* ESC character. */
 
 /* Integer difference between upper and lower case letters. */
-#define DIFCASE		0x20
+#define DIFCASE	0x20
 
 #ifdef islower
 #undef islower
@@ -137,7 +135,7 @@ struct window {
 	struct line *w_markp;	/* Line containing "mark" */
 	int w_doto;		/* Byte offset for "." */
 	int w_marko;		/* Byte offset for "mark" */
-	int w_toprow;		/* Origin 0 top row of window (physical screen) */
+	int w_toprow;		/* row of window (physical screen) */
 	int w_ntrows;		/* # of rows of text in window */
 	char w_force;		/* If NZ, forcing row. */
 	char w_flag;		/* Flags. */

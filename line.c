@@ -450,7 +450,6 @@ int yank(int f, int n)
 		return rdonly();
 	if (n < 0)
 		return FALSE;
-
 	if (kbufh == NULL)
 		return TRUE;	/* not an error, just nothing */
 

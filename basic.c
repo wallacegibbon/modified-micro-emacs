@@ -38,7 +38,7 @@ int backchar(int f, int n)
 				return FALSE;
 			curwp->w_dotp = lp;
 			curwp->w_doto = llength(lp);
-			curwp->w_flag |= WFMOVE;
+			curwp->w_flag |= WFMOVE | WFMODE;
 		} else {
 			--curwp->w_doto;
 		}
@@ -64,7 +64,7 @@ int forwchar(int f, int n)
 				return FALSE;
 			curwp->w_dotp = lforw(curwp->w_dotp);
 			curwp->w_doto = 0;
-			curwp->w_flag |= WFMOVE;
+			curwp->w_flag |= WFMOVE | WFMODE;
 		} else {
 			++curwp->w_doto;
 		}
@@ -137,7 +137,7 @@ int forwline(int f, int n)
 
 	curwp->w_dotp = lp;
 	curwp->w_doto = getgoal(lp);
-	curwp->w_flag |= WFMOVE;
+	curwp->w_flag |= WFMOVE | WFMODE;
 	return TRUE;
 }
 
@@ -162,7 +162,7 @@ int backline(int f, int n)
 
 	curwp->w_dotp = lp;
 	curwp->w_doto = getgoal(lp);
-	curwp->w_flag |= WFMOVE;
+	curwp->w_flag |= WFMOVE | WFMODE;
 	return TRUE;
 }
 

@@ -102,17 +102,17 @@ ctlx_loop:
  * A more generalized prompt/reply function allowing the caller to specify
  * the proper terminator.
  */
-int mlgetstring(char *prompt, char *buf, int nbuf, int eolchar)
+int mlgetstring(const char *prompt, char *buf, int nbuf, int eolchar)
 {
 	int cpos = 0, c, expc;
 
 	mlwrite("%s", prompt);
+	buf[0] = '\0';
 char_loop:
 	TTflush();
 	c = ectoc(expc = get1key());
 
 	/* All return points should clear message line */
-
 	if (expc == eolchar)
 		goto normal_exit;
 
@@ -147,7 +147,7 @@ normal_exit:
 	return buf[0] != '\0';
 }
 
-int mlgetchar(char *fmt, ...)
+int mlgetchar(const char *fmt, ...)
 {
 	va_list ap;
 	int c;

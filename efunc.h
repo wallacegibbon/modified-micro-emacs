@@ -7,12 +7,7 @@ int prevwind(int f, int n);
 int onlywind(int f, int n);
 int delwind(int f, int n);
 int splitwind(int f, int n);
-int enlargewind(int f, int n);
-int shrinkwind(int f, int n);
 int adjust_on_scr_resize(void);
-int getwpos(void);
-void cknewwindow(void);
-struct window *wpopup(void);
 
 /* basic.c */
 int gotobol(int f, int n);
@@ -32,7 +27,6 @@ int setmark(int f, int n);
 int swapmark(int f, int n);
 
 /* random.c */
-int showcpos(int f, int n);
 int getccol(int bflg);
 int twiddle(int f, int n);
 int quote(int f, int n);
@@ -97,8 +91,8 @@ int ctoec(int c);
 int tgetc(void);
 int get1key(void);
 int getcmd(void);
-int mlgetstring(char *prompt, char *buf, int nbuf, int eolchar);
-int mlgetchar(char *fmt, ...);
+int mlgetstring(const char *prompt, char *buf, int nbuf, int eolchar);
+int mlgetchar(const char *fmt, ...);
 
 /* buffer.c */
 int nextbuffer(int f, int n);
@@ -140,7 +134,6 @@ int execprog(char *cmd);
 /* search.c */
 int scanner(const char *pattern, int direct, int beg_or_end);
 int eq(unsigned char bc, unsigned char pc);
-void savematch(void);
 void rvstrcpy(char *rvstr, char *str);
 int qreplace(int f, int n);
 int delins(int dlength, char *instr, int use_meta);

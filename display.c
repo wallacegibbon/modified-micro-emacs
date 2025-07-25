@@ -148,7 +148,6 @@ static int vtputc(int c)
 	vp = vscreen[vtrow];
 
 	if (vtcol >= term.t_ncol) {
-		++vtcol;
 		vp->v_text[term.t_ncol - 1] = '$';
 		return 1;
 	}
@@ -586,41 +585,19 @@ partial_update:
 	return TRUE;
 }
 
-static char *posinfo(struct window *wp)
+static int posinfo(struct window *wp, char *buf)
 {
-	static char s[16] = { 0 };
 	struct buffer *bp = wp->w_bufp;
-	struct line *lp = wp->w_linep;
-	int rows, numlines, predlines, ratio;
-
-	if (wp->w_dotp == bp->b_linep)
-		return " Bot ";
-
-	rows = wp->w_ntrows;
-	while (rows--) {
-		if ((lp = lforw(lp)) == wp->w_bufp->b_linep)
-			return " Bot ";
-	}
-
-	if (lback(wp->w_linep) == wp->w_bufp->b_linep)
-		return " Top ";
-
-	numlines = 0;
-	predlines = 0;
+	struct line *lp;
+	int numlines = 0, curline = -1;
 	for (lp = lforw(bp->b_linep); lp != bp->b_linep; lp = lforw(lp)) {
-		if (lp == wp->w_linep)
-			predlines = numlines;
+		if (lp == wp->w_dotp)
+			curline = numlines;
 		++numlines;
 	}
-
-	ratio = 0;
-	if (numlines != 0)
-		ratio = (100L * predlines) / numlines;
-	if (ratio > 99)
-		ratio = 99;
-
-	sprintf(s, " %2d%% ", ratio);
-	return s;
+	if (curline == -1)
+		curline = numlines;
+	return sprintf(buf, "(%d/%d)", curline + 1, numlines + 1);
 }
 
 #if RAMSHOW
@@ -633,13 +610,13 @@ static char *raminfo(void)
 #define D(v, unit) ((char)((v) * 10 / (unit) % 10))
 	static char s[16] = { 0 };
 	if (envram >= 1000 * MB)
-		sprintf(s, " %3d.%dG ", I(envram, GB), D(envram, GB));
+		sprintf(s, "%3d.%dG", I(envram, GB), D(envram, GB));
 	else if (envram >= 1000 * KB)
-		sprintf(s, " %3d.%dM ", I(envram, MB), D(envram, MB));
+		sprintf(s, "%3d.%dM", I(envram, MB), D(envram, MB));
 	else if (envram >= 100000)
-		sprintf(s, " %3d.%dK ", I(envram, KB), D(envram, KB));
+		sprintf(s, "%3d.%dK", I(envram, KB), D(envram, KB));
 	else
-		sprintf(s, " %5d  ", (int)envram);
+		sprintf(s, "%6d", (int)envram);
 	return s;
 #undef D
 #undef I
@@ -651,12 +628,11 @@ static char *raminfo(void)
 
 /*
  * Redisplay the mode line for the window pointed to by the "wp".  This is the
- * only routine that has any idea of how the modeline is formatted.  You can
- * change the modeline format by hacking at this routine.  Called by "update"
- * any time there is a dirty window.
+ * only routine that has any idea of how the modeline is formatted.
  */
 static void modeline(struct window *wp)
 {
+	char posinfo_buf[32];
 	struct buffer *bp;
 	int n;
 
@@ -672,40 +648,25 @@ static void modeline(struct window *wp)
 	else
 		vtputs(bp->b_flag & BFRDONLY ? "%% " : "   ");
 
-	n = 4;
-	n += vtputs(bp->b_bname);
-
+	vtputs(bp->b_bname);
 	vtputc(' ');
-	++n;
-
 	if (bp->b_flag & BFTRUNC)
-		n += vtputs(" (TRUNC) ");
+		vtputs(" (TRUNC) ");
+	if (bp->b_fname[0] != 0 && strcmp(bp->b_bname, bp->b_fname) != 0)
+		vtputs(bp->b_fname);
 
-	if (bp->b_fname[0] != 0 && strcmp(bp->b_bname, bp->b_fname) != 0) {
-		n += vtputs(bp->b_fname);
-		vtputc(' ');
-		++n;
-	}
-
-	/* For very long filename, no space for other messages */
-	if (n > term.t_ncol)
-		return;
-
-	while (n < term.t_ncol) {	/* Pad to full width. */
-		vtputc(' ');
-		++n;
-	}
-
+	n = term.t_ncol - posinfo(wp, posinfo_buf) - 1;
 #if RAMSHOW
-	vtcol = n - 5 - 2 - 8;
-#else
-	vtcol = n - 5;
+	n -= 7;		/* 6 char for ram info, 1 spaces */
 #endif
-	vtputs(posinfo(wp));
+	while (vtcol < n)
+		vtputc(' ');
 #if RAMSHOW
-	vtcol += 2;
 	vtputs(raminfo());
+	vtputc(' ');
 #endif
+	vtputs(posinfo_buf);
+	vtputc(' ');
 }
 
 void update_modelines(void)
@@ -715,11 +676,6 @@ void update_modelines(void)
 		wp->w_flag |= WFMODE;
 }
 
-/*
- * Set the virtual cursor to the specified row and column on the virtual screen.
- * There is no checking for nonsense values; this might be a good
- * idea during the early stages.
- */
 void vtmove(int row, int col)
 {
 	vtrow = row;

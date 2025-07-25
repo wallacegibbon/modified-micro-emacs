@@ -3,55 +3,6 @@
 #include "efunc.h"
 #include "line.h"
 
-/*
- * Display the current position of the cursor, in origin 1 X-Y coordinates,
- * the character that is under the cursor (in hex), and the fraction of the
- * text that is before the cursor.  The displayed column is not the current
- * column, but the column that would be used on an infinite width display.
- */
-int showcpos(int f, int n)
-{
-	long numchars = 0, numlines = 0, predchars = 0, predlines = 0;
-	int ratio, col, ecol, saved_o, curchar = 0;
-	struct line *lp = lforw(curbp->b_linep);
-
-	while (lp != curbp->b_linep) {
-		if (lp == curwp->w_dotp) {
-			predlines = numlines;
-			predchars = numchars + curwp->w_doto;
-			if ((curwp->w_doto) == llength(lp))
-				curchar = '\n';
-			else
-				curchar = lgetc(lp, curwp->w_doto);
-		}
-		++numlines;
-		numchars += llength(lp) + 1;
-		lp = lforw(lp);
-	}
-
-	if (curwp->w_dotp == curbp->b_linep) {
-		predlines = numlines;
-		predchars = numchars;
-		curchar = 0;
-	}
-
-	/* Get real column and end-of-line column. */
-	col = getccol(FALSE);
-	saved_o = curwp->w_doto;
-	curwp->w_doto = llength(curwp->w_dotp);
-	ecol = getccol(FALSE);
-	curwp->w_doto = saved_o;
-
-	ratio = 0;		/* Ratio before dot. */
-	if (numchars != 0)
-		ratio = (100L * predchars) / numchars;
-
-	mlwrite("Line %d/%d Col %d/%d Char %ld/%ld (%d%%) char = 0x%x",
-		predlines + 1, numlines + 1, col, ecol,
-		predchars, numchars, ratio, curchar);
-	return TRUE;
-}
-
 /* Return current column.  Stop at first non-blank given TRUE argument. */
 int getccol(int bflg)
 {
@@ -77,7 +28,6 @@ int getccol(int bflg)
 int quote(int f, int n)
 {
 	int s, c;
-
 	if (curbp->b_flag & BFRDONLY)
 		return rdonly();
 	c = tgetc();
@@ -86,9 +36,8 @@ int quote(int f, int n)
 	if (n == 0)
 		return TRUE;
 	if (c == '\n') {
-		do {
-			s = lnewline();
-		} while (s == TRUE && --n);
+		do { s = lnewline(); }
+		while (s == TRUE && --n);
 		return s;
 	}
 	return linsert(n, c);
@@ -108,8 +57,8 @@ int openline(int f, int n)
 		return FALSE;
 	if (n == 0)
 		return TRUE;
-
 	i = n;
+
 	do {
 		s = lnewline();
 	} while (s == TRUE && --i);
