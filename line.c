@@ -404,7 +404,6 @@ int ldelnewline(void)
 void kdelete(void)
 {
 	struct kill *kp;
-
 	if (kbufh == NULL)
 		return;
 

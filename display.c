@@ -153,9 +153,8 @@ static int vtputc(int c)
 	}
 
 	if (c == '\t') {
-		do {
-			vtputc(' ');
-		} while (((vtcol + taboff) & TABMASK) != 0);
+		do { vtputc(' '); }
+		while (((vtcol + taboff) & TABMASK) != 0);
 		return 1;
 	}
 
@@ -684,8 +683,7 @@ void vtmove(int row, int col)
 
 /*
  * Send a command to the terminal to move the hardware cursor to row "row"
- * and column "col".  The row and column arguments are origin 0.  Optimize out
- * random calls.  Update "ttrow" and "ttcol".
+ * and column "col".  The row and column arguments are origin 0.
  */
 void movecursor(int row, int col)
 {
@@ -808,7 +806,6 @@ int put_c(unsigned char c, int (*p)(int))
 	}
 }
 
-/* Keep `next_col` sync with `put_c` (except `\t`) */
 int next_col(int col, unsigned char c)
 {
 	if (c == '\t')

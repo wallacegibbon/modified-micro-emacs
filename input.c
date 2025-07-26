@@ -17,7 +17,6 @@ int tgetc(void)
 		reeat_char = -1;
 		return c;
 	}
-
 	if (kbdmode == PLAY) {
 		if (kbdptr < kbdend)
 			return (int)*kbdptr++;
@@ -33,10 +32,8 @@ int tgetc(void)
 			return (int)*kbdptr++;
 		}
 	}
-
 	c = TTgetc();
 	lastkey = c;
-
 	if (kbdmode == RECORD) {
 		*kbdptr++ = c;
 		kbdend = kbdptr;
@@ -45,7 +42,6 @@ int tgetc(void)
 			TTbeep();
 		}
 	}
-
 	return c;
 }
 
@@ -98,15 +94,17 @@ ctlx_loop:
 	return c;
 }
 
-/*
- * A more generalized prompt/reply function allowing the caller to specify
- * the proper terminator.
- */
-int mlgetstring(const char *prompt, char *buf, int nbuf, int eolchar)
+int mlgetstring(char *buf, int nbuf, int eolchar, const char *fmt, ...)
 {
 	int cpos = 0, c, expc;
+	va_list ap;
 
-	mlwrite("%s", prompt);
+	va_start(ap, fmt);
+	mlvwrite(fmt, ap);
+	va_end(ap);
+
+	/* Init buf so that we can tell whether user have input something. */
+	/* fmt and buf can be the same address, so we do this after mlwrite */
 	buf[0] = '\0';
 char_loop:
 	TTflush();
@@ -165,7 +163,7 @@ int mlgetchar(const char *fmt, ...)
 
 int mlreply(char *prompt, char *buf, int nbuf)
 {
-	return mlgetstring(prompt, buf, nbuf, ENTERC);
+	return mlgetstring(buf, nbuf, ENTERC, "%s", prompt);
 }
 
 int mlyesno(char *prompt)

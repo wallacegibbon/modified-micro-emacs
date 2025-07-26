@@ -91,7 +91,7 @@ int ctoec(int c);
 int tgetc(void);
 int get1key(void);
 int getcmd(void);
-int mlgetstring(const char *prompt, char *buf, int nbuf, int eolchar);
+int mlgetstring(char *buf, int nbuf, int eolchar, const char *fmt, ...);
 int mlgetchar(const char *fmt, ...);
 
 /* buffer.c */

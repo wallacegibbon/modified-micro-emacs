@@ -59,9 +59,8 @@ int openline(int f, int n)
 		return TRUE;
 	i = n;
 
-	do {
-		s = lnewline();
-	} while (s == TRUE && --i);
+	do { s = lnewline(); }
+	while (s == TRUE && --i);
 
 	if (s == TRUE)
 		s = backchar(f, n);
