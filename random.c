@@ -193,3 +193,19 @@ int killtext(int f, int n)
 	}
 	return ldelete(chunk, TRUE);
 }
+
+/* Yank text back from the kill buffer. */
+int yank(int f, int n)
+{
+	if (curbp->b_flag & BFRDONLY)
+		return rdonly();
+	if (n < 0)
+		return FALSE;
+
+	while (n--) {
+		if (kdump() == FALSE)
+			return FALSE;
+	}
+
+	return TRUE;
+}

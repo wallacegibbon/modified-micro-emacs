@@ -15,6 +15,7 @@ struct line {
 #define lputc(lp, n, c) ((lp)->l_text[(n)] = (c))
 #define llength(lp)     ((lp)->l_used)
 
+struct line *lalloc(int);
 void lfree(struct line *lp);
 void lchange(int flag);
 int linstr(char *instr);
@@ -22,9 +23,9 @@ int linsert(int n, int c);
 int lnewline(void);
 int ldelete(long n, int kflag);
 int ldelnewline(void);
+
 void kdelete(void);
 int kinsert(int c);
-int yank(int f, int n);
-struct line *lalloc(int);
+int kdump(void);
 
 #endif

@@ -22,7 +22,7 @@
 
 #define UNIX	(BSD | USG)
 
-#define RAMSHOW	0		/* Auto dynamic RAM tracking & reporting */
+#define RAMSHOW	1		/* Auto dynamic RAM tracking & reporting */
 #define VISMAC	0		/* update display during keyboard macros */
 
 #ifdef SVR4
