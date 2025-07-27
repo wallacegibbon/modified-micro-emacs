@@ -283,8 +283,6 @@ int lnewline(void)
 	while (cp1 != &lp->l_text[doto])
 		*cp2++ = *cp1++;
 
-	/* Now, cp1 points to the char at dot */
-
 	/* Shift content left to the origin */
 	cp2 = &lp->l_text[0];
 	while (cp1 != &lp->l_text[lp->l_used])
@@ -326,6 +324,10 @@ int ldelete_once(int n, int kflag)
 
 	chunk = lp->l_used - doto;
 
+	/*
+	 * Line end means a newline in the buffer/file.  For simplicity,
+	 * We call `ldelnewline`, and leave the rest work to the next loop.
+	 */
 	if (chunk == 0) {
 		lchange(WFHARD | WFKILLS);
 		if (ldelnewline() == FALSE)
@@ -342,6 +344,7 @@ int ldelete_once(int n, int kflag)
 	cp1 = &lp->l_text[doto];
 	cp2 = cp1 + chunk;
 
+	/* If kflag is active, call kinsert and then reset `cp1` */
 	if (kflag) {
 		while (cp1 != cp2) {
 			if (kinsert(*cp1++) == FALSE)
@@ -468,7 +471,6 @@ int ldelnewline(void)
 	for_each_wind(wp) {
 		if (wp->w_linep == lp || wp->w_linep == lp2)
 			wp->w_linep = lp_new;
-
 		if (wp->w_dotp == lp) {
 			wp->w_dotp = lp_new;
 		} else if (wp->w_dotp == lp2) {

@@ -6,8 +6,11 @@ I call it **M**dified Micro **E**macs (`me`).
 
 ## Goals
 
-- Be tiny. (Removing unecessary parts like the script engine)
 - Fix all bugs.
+- Be tiny.
+
+The script engine is removed.  Concepts like `paragraph` and `word` are also
+removed.
 
 
 ## Build
