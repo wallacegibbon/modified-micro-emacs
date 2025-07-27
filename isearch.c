@@ -3,6 +3,10 @@
 #include "efunc.h"
 #include "line.h"
 
+static int isearch(int f, int n);
+static int search_next_dispatch(char *pattern, int dir);
+static int get_char(void);
+
 static int cmd_buff[CMDBUFLEN];		/* Save the command args here */
 static int cmd_offset;			/* Current offset into command buff */
 static int cmd_reexecute = -1;		/* > 0 if re-executing command */
@@ -30,7 +34,7 @@ int risearch(int f, int n)
 	return fisearch(f, -n);
 }
 
-int isearch(int f, int n)
+static int isearch(int f, int n)
 {
 	struct line *curline = curwp->w_dotp, *tmpline = NULL;
 	int curoff = curwp->w_doto, tmpoff = 0;
@@ -68,7 +72,7 @@ start_over:
 		}
 		TTflush();
 		n = (c == IS_REVERSE) ? -1 : 1;
-		status = scanmore(pat, n);
+		status = search_next_dispatch(pat, n);
 		c = ectoc(expc = get_char());
 	}
 
@@ -92,7 +96,7 @@ char_loop:
 
 	if (c == IS_REVERSE || c == IS_FORWARD) {
 		n = (c == IS_REVERSE) ? -1 : 1;
-		status = scanmore(pat, n);
+		status = search_next_dispatch(pat, n);
 		c = ectoc(expc = get_char());
 		goto char_loop;
 	}
@@ -142,15 +146,15 @@ pat_append:
 	/* Still matching so far, keep going */
 
 	/*
-	 * The scan during a changing pattern is tricky.  A simple solution
-	 * is to restore the "." position before a scan.
+	 * The searching during a changing pattern is tricky.
+	 * A solution is to restore the "." position before the next search.
 	 */
 	tmpline = curwp->w_dotp;
 	tmpoff = curwp->w_doto;
 	curwp->w_dotp = curline;
 	curwp->w_doto = curoff;
 
-	status = scanmore(pat, n);
+	status = search_next_dispatch(pat, n);
 	if (status == FALSE) {
 		/* When search failed, stay on previous success position */
 		curwp->w_dotp = tmpline;
@@ -168,15 +172,15 @@ success:
 	return TRUE;
 }
 
-int scanmore(char *pattern, int dir)
+static int search_next_dispatch(char *pattern, int dir)
 {
 	int status;
 
 	if (dir < 0) {	/* reverse search? */
 		rvstrcpy(tap, pattern);	/* Put reversed string in tap */
-		status = scanner(tap, REVERSE, PTBEG);
+		status = search_next(tap, REVERSE, PTBEG);
 	} else {
-		status = scanner(pattern, FORWARD, PTEND);
+		status = search_next(pattern, FORWARD, PTEND);
 	}
 
 	if (!status) {
@@ -187,7 +191,7 @@ int scanmore(char *pattern, int dir)
 	return status;
 }
 
-int get_char(void)
+static int get_char(void)
 {
 	int c;
 	if (cmd_reexecute >= 0)	{

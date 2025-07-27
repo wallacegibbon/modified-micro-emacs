@@ -10,25 +10,22 @@ int splitwind(int f, int n);
 int adjust_on_scr_resize(void);
 
 /* basic.c */
-int gotobol(int f, int n);
-int backchar(int f, int n);
-int gotoeol(int f, int n);
 int forwchar(int f, int n);
-int gotoline(int f, int n);
-int gotobob(int f, int n);
-int gotoeob(int f, int n);
+int backchar(int f, int n);
 int forwline(int f, int n);
 int backline(int f, int n);
-int gotobop(int f, int n);
-int gotoeop(int f, int n);
 int forwpage(int f, int n);
 int backpage(int f, int n);
+int gotobol(int f, int n);
+int gotoeol(int f, int n);
+int gotobob(int f, int n);
+int gotoeob(int f, int n);
+int gotoline(int f, int n);
 int setmark(int f, int n);
 int swapmark(int f, int n);
 
 /* random.c */
 int getccol(int bflg);
-int twiddle(int f, int n);
 int quote(int f, int n);
 int openline(int f, int n);
 int newline(int f, int n);
@@ -63,7 +60,6 @@ void movecursor(int row, int col);
 void mlerase(void);
 int mlwrite(const char *fmt, ...);
 int mlvwrite(const char *fmt, va_list ap);
-void sizesignal(int signr);
 int unput_c(unsigned char c);
 int put_c(unsigned char c, int (*p)(int));
 int next_col(int col, unsigned char c);
@@ -120,31 +116,18 @@ int ffwopen(char *fn);
 int ffclose(void);
 int ffputline(char *buf, int nbuf);
 int ffgetline(int *count);
-int fexist(char *fname);
 
 /* spawn.c */
 int spawncli(int f, int n);
-int execprg(int f, int n);
-int pipecmd(int f, int n);
-int filter_buffer(int f, int n);
-int sys(char *cmd);
-int shellprog(char *cmd);
-int execprog(char *cmd);
 
 /* search.c */
-int scanner(const char *pattern, int direct, int beg_or_end);
-int eq(unsigned char bc, unsigned char pc);
+int search_next(const char *pattern, int direct, int beg_or_end);
 void rvstrcpy(char *rvstr, char *str);
 int qreplace(int f, int n);
-int delins(int dlength, char *instr, int use_meta);
-int boundry(struct line *curline, int curoff, int dir);
 
 /* isearch.c */
 int risearch(int f, int n);
 int fisearch(int f, int n);
-int isearch(int f, int n);
-int scanmore(char *pattern, int dir);
-int get_char(void);
 
 /* lock.c */
 int lockchk(char *fname);

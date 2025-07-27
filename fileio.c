@@ -107,13 +107,3 @@ int ffgetline(int *count)
 	*count = i;
 	return FIOSUC;
 }
-
-int fexist(char *fname)
-{
-	FILE *fp = fopen(fname, "r");
-	if (fp == NULL)
-		return FALSE;
-
-	fclose(fp);
-	return TRUE;
-}

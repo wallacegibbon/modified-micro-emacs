@@ -6,12 +6,21 @@
 
 static int readpattern(char *prompt, char *apat, int srch);
 static int nextch(struct line **pcurline, int *pcuroff, int dir);
+static int boundry(struct line *curline, int curoff, int dir);
+static int delins(int dlength, char *instr, int use_meta);
+
+/* "bc" comes from the buffer, "pc" from the pattern. */
+static inline int eq(unsigned char bc, unsigned char pc)
+{
+	/* return bc == pc; */
+	return ensure_upper(bc) == ensure_upper(pc);
+}
 
 /*
  * Search for a pattern in either direction.  If found, reset the "." to be at
  * the start or just after the match string, and (perhaps) repaint the display.
  */
-int scanner(const char *pattern, int direct, int beg_or_end)
+int search_next(const char *pattern, int direct, int beg_or_end)
 {
 	struct line *curline = curwp->w_dotp, *scanline;
 	int curoff = curwp->w_doto, scanoff;
@@ -59,13 +68,6 @@ loop:
 	return TRUE;
 }
 
-/* "bc" comes from the buffer, "pc" from the pattern. */
-int eq(unsigned char bc, unsigned char pc)
-{
-	/* return bc == pc; */
-	return ensure_upper(bc) == ensure_upper(pc);
-}
-
 /* If the user did not give a string, use the old one (if there is one) */
 static int readpattern(char *prompt, char *apat, int is_search)
 {
@@ -102,7 +104,7 @@ void rvstrcpy(char *rvstr, char *str)
  * Delete a specified length from the current point then either insert the
  * string directly, or make use of replacement meta-array.
  */
-int delins(int dlength, char *instr, int use_meta)
+static int delins(int dlength, char *instr, int use_meta)
 {
 	int status;
 	if ((status = ldelete((long)dlength, FALSE)) != TRUE)
@@ -132,7 +134,7 @@ int qreplace(int f, int n)
 replace_loop:
 	if (curwp->w_dotp == curwp->w_bufp->b_linep)
 		goto loop_done;
-	if (!scanner(pat, FORWARD, PTBEG))
+	if (!search_next(pat, FORWARD, PTBEG))
 		goto loop_done;
 
 	++nummatch;
@@ -180,7 +182,7 @@ finish:
  * Return information depending on whether we may search no further.
  * Beginning of file and end of file are the obvious cases.
  */
-int boundry(struct line *curline, int curoff, int dir)
+static int boundry(struct line *curline, int curoff, int dir)
 {
 	if (dir == FORWARD)
 		return (curoff == llength(curline)) &&
