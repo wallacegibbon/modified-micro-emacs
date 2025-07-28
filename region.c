@@ -16,9 +16,11 @@ int killregion(int f, int n)
 		return rdonly();
 	if ((s = getregion(&region)) != TRUE)
 		return s;
-	if ((lastflag & CFKILL) == 0)
-		kdelete();
+
+	/* Always clear kbuf, we don't want to mess up region copying */
+	kdelete();
 	thisflag |= CFKILL;
+
 	curwp->w_dotp = region.r_linep;
 	curwp->w_doto = region.r_offset;
 	return ldelete(region.r_size, TRUE);
@@ -36,18 +38,20 @@ int copyregion(int f, int n)
 
 	if ((s = getregion(&region)) != TRUE)
 		return s;
-	if ((lastflag & CFKILL) == 0)	/* Kill type command. */
-		kdelete();
+
+	/* Always clear kbuf, we don't want to mess up region copying */
+	kdelete();
 	thisflag |= CFKILL;
-	linep = region.r_linep;	/* Current line. */
-	loffs = region.r_offset;	/* Current offset. */
+
+	linep = region.r_linep;
+	loffs = region.r_offset;
 	while (region.r_size--) {
-		if (loffs == llength(linep)) {	/* End of line. */
+		if (loffs == llength(linep)) {
 			if ((s = kinsert('\n')) != TRUE)
 				return s;
 			linep = lforw(linep);
 			loffs = 0;
-		} else {	/* Middle of line. */
+		} else {
 			if ((s = kinsert(lgetc(linep, loffs))) != TRUE)
 				return s;
 			++loffs;
