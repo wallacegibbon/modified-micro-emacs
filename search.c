@@ -174,7 +174,7 @@ loop_done:
 		backchar(FALSE, 1);
 
 finish:
-	mlwrite("%d substitutions", numsub);
+	mlwrite("%d substitutions (in %d matches)", numsub, nummatch);
 	return TRUE;
 }
 
