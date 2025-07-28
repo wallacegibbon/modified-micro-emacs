@@ -50,7 +50,7 @@ static void update_extended(void);
 static void update_de_extend(void);
 static void update_pos(void);
 
-static void mlflush(void);
+static int mlflush(void);
 
 #ifdef SIGWINCH
 static void newscreensize(void);
@@ -691,6 +691,7 @@ int mlwrite(const char *fmt, ...)
 	va_start(ap, fmt);
 	n = mlvwrite(fmt, ap);
 	va_end(ap);
+
 	return n;
 }
 
@@ -700,21 +701,26 @@ int mlvwrite(const char *fmt, va_list ap)
 	if (mlbuf == NULL)
 		return 0;
 
-	n = vsnprintf(mlbuf, mlbuf_size, fmt, ap);
-	mlflush();
+	vsnprintf(mlbuf, mlbuf_size, fmt, ap);
+
+	/* CAUTION: vsnprintf do not have the right size, mlflush does. */
+	n = mlflush();
+
 	TTflush();
 	return n;
 }
 
-static void mlflush(void)
+static int mlflush(void)
 {
 	char *s = mlbuf, c;
 
 	movecursor(term.t_nrow, 0);
 	while ((c = *s++))
 		ttcol += put_c(c, TTputc);
+
 	TTeeol();
 	mpresf = TRUE;
+	return ttcol;
 }
 
 #ifdef SIGWINCH
