@@ -3,6 +3,26 @@
 #include "efunc.h"
 #include "line.h"
 
+/* Show the line info (the current line number and the total line number) */
+int showpos(int flag, int n)
+{
+	struct line *lp;
+	int curline = -1, numlines = 0;
+
+	for (lp = lforw(curbp->b_linep); lp != curbp->b_linep; lp = lforw(lp)) {
+		if (lp == curwp->w_dotp)
+			curline = numlines;
+		++numlines;
+	}
+	if (curline == -1)
+		curline = numlines;
+
+	mlwrite("Current line: %d (Total lines: %d)",
+			curline + 1, numlines);
+
+	return TRUE;
+}
+
 /* Return current column.  Stop at first non-blank given TRUE argument. */
 int getccol(int bflg)
 {
@@ -57,8 +77,8 @@ int openline(int f, int n)
 		return FALSE;
 	if (n == 0)
 		return TRUE;
-	i = n;
 
+	i = n;
 	do { s = lnewline(); }
 	while (s == TRUE && --i);
 
@@ -85,9 +105,40 @@ int newline(int f, int n)
 	return TRUE;
 }
 
+static int newline_and_indent_one(void)
+{
+	int nicol = 0, c, i;
+
+	/* Calculate the leading white space count of current line */
+	for (i = 0; i < llength(curwp->w_dotp); ++i) {
+		c = lgetc(curwp->w_dotp, i);
+		if (c != ' ' && c != '\t')
+			break;
+		if (c == '\t')
+			nicol |= TABMASK;
+		++nicol;
+	}
+
+	if (lnewline() == FALSE)
+		return FALSE;
+
+	curwp->w_flag |= WFINS;
+
+	/* Insert leading TABs (and white spaces) */
+
+	if ((i = nicol / 8) != 0) {
+		if ((linsert(i, '\t') == FALSE))
+			return FALSE;
+	}
+
+	if ((i = nicol % 8) != 0)
+		return linsert(i, ' ');
+
+	return TRUE;
+}
+
 int newline_and_indent(int f, int n)
 {
-	int nicol, c, i;
 
 	if (curbp->b_flag & BFRDONLY)
 		return rdonly();
@@ -95,30 +146,10 @@ int newline_and_indent(int f, int n)
 		return FALSE;
 
 	while (n--) {
-		nicol = 0;
-		for (i = 0; i < llength(curwp->w_dotp); ++i) {
-			c = lgetc(curwp->w_dotp, i);
-			if (c != ' ' && c != '\t')
-				break;
-			if (c == '\t')
-				nicol |= TABMASK;
-			++nicol;
-		}
-		if (lnewline() == FALSE)
+		if (newline_and_indent_one() == FALSE)
 			return FALSE;
-		curwp->w_flag |= WFINS;
-		if ((i = nicol / 8) != 0) {
-			if ((linsert(i, '\t') == FALSE))
-				return FALSE;
-		}
-		if ((i = nicol % 8) != 0) {
-#if (INDENT_NO_SPACE == 1)
-			return linsert(1, '\t');
-#else
-			return linsert(i, ' ');
-#endif
-		}
 	}
+
 	return TRUE;
 }
 
@@ -129,15 +160,17 @@ int forwdel(int f, int n)
 		return rdonly();
 	if (n < 0)
 		return backdel(f, -n);
-	if (f != FALSE) {	/* Really a kill. */
+
+	if (f != FALSE) {
 		if ((lastflag & CFKILL) == 0)
 			kdelete();
 		thisflag |= CFKILL;
 	}
+
 	return ldelete((long)n, f);
 }
 
-/* Delete backwards. */
+/* Delete backward.  If any argument is present, it kills rather than deletes. */
 int backdel(int f, int n)
 {
 	int s = TRUE;
@@ -147,7 +180,8 @@ int backdel(int f, int n)
 		return rdonly();
 	if (n < 0)
 		return forwdel(f, -n);
-	if (f != FALSE) {	/* Really a kill. */
+
+	if (f != FALSE) {
 		if ((lastflag & CFKILL) == 0)
 			kdelete();
 		thisflag |= CFKILL;

@@ -25,6 +25,7 @@ int setmark(int f, int n);
 int swapmark(int f, int n);
 
 /* random.c */
+int showpos(int flag, int n);
 int getccol(int bflg);
 int quote(int f, int n);
 int openline(int f, int n);

@@ -584,21 +584,6 @@ partial_update:
 	return TRUE;
 }
 
-static int posinfo(struct window *wp, char *buf)
-{
-	struct buffer *bp = wp->w_bufp;
-	struct line *lp;
-	int numlines = 0, curline = -1;
-	for (lp = lforw(bp->b_linep); lp != bp->b_linep; lp = lforw(lp)) {
-		if (lp == wp->w_dotp)
-			curline = numlines;
-		++numlines;
-	}
-	if (curline == -1)
-		curline = numlines;
-	return sprintf(buf, "(%d/%d)", curline + 1, numlines + 1);
-}
-
 #if RAMSHOW
 static char *raminfo(void)
 {
@@ -631,15 +616,12 @@ static char *raminfo(void)
  */
 static void modeline(struct window *wp)
 {
-	char posinfo_buf[32];
-	struct buffer *bp;
+	struct buffer *bp = wp->w_bufp;
 	int n;
 
 	n = wp->w_toprow + wp->w_ntrows;
 	vscreen[n]->v_flag |= VFCHG | VFREQ;
 	vtmove(n, 0);
-
-	bp = wp->w_bufp;
 
 	vtputs(wp == curwp ? "@" : " ");
 	if (bp->b_flag & BFCHG)
@@ -654,18 +636,12 @@ static void modeline(struct window *wp)
 	if (bp->b_fname[0] != 0 && strcmp(bp->b_bname, bp->b_fname) != 0)
 		vtputs(bp->b_fname);
 
-	n = term.t_ncol - posinfo(wp, posinfo_buf) - 1;
-#if RAMSHOW
-	n -= 7;		/* 6 char for ram info, 1 spaces */
-#endif
-	while (vtcol < n)
+	while (vtcol < term.t_ncol)
 		vtputc(' ');
 #if RAMSHOW
+	vtcol = term.t_ncol - 7;	/* 6 char for ram info, 1 spaces */
 	vtputs(raminfo());
-	vtputc(' ');
 #endif
-	vtputs(posinfo_buf);
-	vtputc(' ');
 }
 
 void update_modelines(void)
