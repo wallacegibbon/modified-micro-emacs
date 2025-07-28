@@ -490,27 +490,23 @@ int ldelnewline(void)
 	return TRUE;
 }
 
-/*
- * Delete all of the text saved in the kill buffer.  Called by commands when a
- * new kill context is being created.  The kill buffer array is released, just
- * in case the buffer has grown to immense size.
- */
-void kdelete(void)
+/* Copy contents of the kill buffer into current buffer */
+int linsert_kbuf(void)
 {
 	struct kill *kp;
+	char *sp;
+	int n;
 
-	if (kbufh == NULL)
-		return;
-
-	for (kbufp = kbufh; kbufp != NULL; kbufp = kp) {
-		kp = kbufp->d_next;
-		free(kbufp);
+	for_each_kbuf(kp) {
+		n = kp->d_next == NULL ? kused : KBLOCK;
+		sp = kp->d_chunk;
+		while (n--) {
+			if (linsert_regular(*sp++) == FALSE)
+				return FALSE;
+		}
 	}
 
-	/* Reset all the kill buffer pointers */
-	kbufh = NULL;
-	kbufp = NULL;
-	kused = KBLOCK;
+	return TRUE;
 }
 
 /* Insert a character to the kill buffer, allocating new chunks as needed. */
@@ -533,20 +529,25 @@ int kinsert(int c)
 	return TRUE;
 }
 
-int kdump(void)
+/*
+ * Delete all of the text saved in the kill buffer.  Called by commands when a
+ * new kill context is being created.  The kill buffer array is released, just
+ * in case the buffer has grown to immense size.
+ */
+void kdelete(void)
 {
 	struct kill *kp;
-	char *sp;
-	int n;
 
-	for_each_kbuf(kp) {
-		n = kp->d_next == NULL ? kused : KBLOCK;
-		sp = kp->d_chunk;
-		while (n--) {
-			if (linsert_regular(*sp++) == FALSE)
-				return FALSE;
-		}
+	if (kbufh == NULL)
+		return;
+
+	for (kbufp = kbufh; kbufp != NULL; kbufp = kp) {
+		kp = kbufp->d_next;
+		free(kbufp);
 	}
 
-	return TRUE;
+	/* Reset all the kill buffer pointers */
+	kbufh = NULL;
+	kbufp = NULL;
+	kused = KBLOCK;
 }

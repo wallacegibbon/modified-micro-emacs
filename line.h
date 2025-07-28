@@ -23,9 +23,9 @@ int linsert(int n, int c);
 int lnewline(void);
 int ldelete(long n, int kflag);
 int ldelnewline(void);
+int linsert_kbuf(void);
 
-void kdelete(void);
 int kinsert(int c);
-int kdump(void);
+void kdelete(void);
 
 #endif

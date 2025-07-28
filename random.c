@@ -235,7 +235,7 @@ int yank(int f, int n)
 		return FALSE;
 
 	while (n--) {
-		if (kdump() == FALSE)
+		if (linsert_kbuf() == FALSE)
 			return FALSE;
 	}
 
