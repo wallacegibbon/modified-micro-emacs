@@ -17,9 +17,7 @@ int showpos(int flag, int n)
 	if (curline == -1)
 		curline = numlines;
 
-	mlwrite("Current line: %d (Total lines: %d)",
-			curline + 1, numlines);
-
+	mlwrite("Position: %d/%d %s", curline + 1, numlines, curbp->b_fname);
 	return TRUE;
 }
 
