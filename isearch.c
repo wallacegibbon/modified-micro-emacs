@@ -167,8 +167,6 @@ pat_append:
 	goto char_loop;
 
 success:
-	/* Update the line number in modeline */
-	curwp->w_flag |= WFMODE;
 	return TRUE;
 }
 

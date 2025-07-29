@@ -302,13 +302,11 @@ int adjust_on_scr_resize(void)
 		lastwp = wp;
 	}
 
-	/* free spaces are given to the bottom window */
+	/* Free space created by enlarging is given to the bottom window */
 	if (wp != NULL) {
 		lastline = wp->w_toprow + wp->w_ntrows - 1;
-		if (lastline < scr_rows - 1) {
+		if (lastline < scr_rows - 1)
 			wp->w_ntrows = scr_rows - wp->w_toprow - 1;
-			wp->w_flag |= WFHARD | WFMODE;
-		}
 	}
 
 	sgarbf = TRUE;
