@@ -105,7 +105,7 @@ char_loop:
 		if (cmd_offset <= 1) {
 			/* We don't want to lose the saved pattern */
 			strcpy(pat, pat_save);
-			goto success;
+			return TRUE;
 		}
 		--cmd_offset;			/* Ignore the '\b' or 0x7F */
 		cmd_buff[--cmd_offset] = '\0';	/* Delete last char */
@@ -118,7 +118,7 @@ char_loop:
 
 	if (c < 0x20 && c != '\t') {
 		reeat_char = c;
-		goto success;
+		return TRUE;
 	}
 
 	/* Now we are likely to insert c to pattern */
@@ -132,7 +132,7 @@ pat_append:
 
 	if (cpos >= NPAT - 1) {
 		mlwrite("? Search string too long");
-		goto success;
+		return TRUE;
 	}
 
 	/* If we lost on last char, no more check is needed */
@@ -165,9 +165,6 @@ pat_append:
 
 	c = ectoc(expc = get_char());
 	goto char_loop;
-
-success:
-	return TRUE;
 }
 
 static int search_next_dispatch(char *pattern, int dir)
