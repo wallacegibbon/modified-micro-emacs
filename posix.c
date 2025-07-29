@@ -55,10 +55,6 @@ void ttopen(void)
 	 * the type ahead detection works better (more often)
 	 */
 	setbuffer(stdout, tobuf, TBUFSIZ);
-
-	/* on screens we are not sure of the initial position of the cursor */
-	ttrow = 999;
-	ttcol = 999;
 }
 
 /*
