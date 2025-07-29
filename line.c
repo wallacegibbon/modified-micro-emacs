@@ -407,20 +407,20 @@ static int ljoin_nextline_try(struct line *lp)
 	while (cp2 != &lp_next->l_text[lp_next->l_used])
 		*cp1++ = *cp2++;
 
-	lp->l_used += lp_next->l_used;
-
 	for_each_wind(wp) {
 		if (wp->w_linep == lp_next)
 			wp->w_linep = lp;
 		if (wp->w_dotp == lp_next) {
 			wp->w_dotp = lp;
-			wp->w_doto += lp_next->l_used;
+			wp->w_doto += lp->l_used;
 		}
 		if (wp->w_markp == lp_next) {
 			wp->w_markp = lp;
-			wp->w_marko += lp_next->l_used;
+			wp->w_marko += lp->l_used;
 		}
 	}
+
+	lp->l_used += lp_next->l_used;
 
 	line_unlink(lp_next);
 	free(lp_next);
@@ -437,6 +437,7 @@ int ldelnewline(void)
 	struct window *wp;
 	struct line *lp = curwp->w_dotp, *lp2 = lp->l_fp, *lp_new;
 	char *cp1, *cp2;
+	int total_used;
 
 	if (curbp->b_flag & BFRDONLY)
 		return rdonly();
@@ -453,7 +454,8 @@ int ldelnewline(void)
 
 	/* For simplicity, we create a new line to hold lp and lp2 */
 
-	if ((lp_new = lalloc(lp->l_used + lp2->l_used)) == NULL)
+	total_used = lp->l_used + lp2->l_used;
+	if ((lp_new = lalloc(total_used)) == NULL)
 		return FALSE;
 
 	cp1 = &lp->l_text[0];
@@ -465,6 +467,7 @@ int ldelnewline(void)
 	while (cp1 != &lp2->l_text[lp2->l_used])
 		*cp2++ = *cp1++;
 
+	lp_new->l_used = total_used;
 	line_unlink(lp2);
 	line_replace(lp, lp_new);
 
