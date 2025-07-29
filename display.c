@@ -584,32 +584,6 @@ partial_update:
 	return TRUE;
 }
 
-#if RAMSHOW
-static char *raminfo(void)
-{
-#define GB (1024 * 1024 * 1024)
-#define MB (1024 * 1024)
-#define KB 1024
-#define I(v, unit) ((short)((v) / (unit)))
-#define D(v, unit) ((char)((v) * 10 / (unit) % 10))
-	static char s[16] = { 0 };
-	if (envram >= 1000 * MB)
-		sprintf(s, "%3d.%dG", I(envram, GB), D(envram, GB));
-	else if (envram >= 1000 * KB)
-		sprintf(s, "%3d.%dM", I(envram, MB), D(envram, MB));
-	else if (envram >= 100000)
-		sprintf(s, "%3d.%dK", I(envram, KB), D(envram, KB));
-	else
-		sprintf(s, "%6d", (int)envram);
-	return s;
-#undef D
-#undef I
-#undef KB
-#undef MB
-#undef GB
-}
-#endif
-
 /*
  * Redisplay the mode line for the window pointed to by the "wp".  This is the
  * only routine that has any idea of how the modeline is formatted.
@@ -638,10 +612,6 @@ static void modeline(struct window *wp)
 
 	while (vtcol < term.t_ncol)
 		vtputc(' ');
-#if RAMSHOW
-	vtcol = term.t_ncol - 7;	/* 6 char for ram info, 1 spaces */
-	vtputs(raminfo());
-#endif
 }
 
 void update_modelines(void)

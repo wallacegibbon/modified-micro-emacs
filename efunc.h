@@ -35,6 +35,7 @@ int forwdel(int f, int n);
 int backdel(int f, int n);
 int killtext(int f, int n);
 int yank(int f, int n);
+int show_raminfo(int f, int n);
 
 /* main.c */
 int (*getbind(int c))(int, int);

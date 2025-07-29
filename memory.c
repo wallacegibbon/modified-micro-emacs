@@ -6,8 +6,6 @@
 #include "estruct.h"
 #include "edef.h"
 
-#if RAMSHOW
-
 /* Undefine macros defined in estruct.h to unshadow `malloc` and `free`. */
 #undef malloc
 #undef free
@@ -45,6 +43,4 @@ void release(void *mp)
 
 #ifndef __clang__
 #pragma GCC diagnostic pop
-#endif
-
 #endif

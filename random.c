@@ -17,7 +17,7 @@ int showpos(int flag, int n)
 	if (curline == -1)
 		curline = numlines;
 
-	mlwrite("Position: %d/%d %s", curline + 1, numlines, curbp->b_fname);
+	mlwrite("Position: %d/%d", curline + 1, numlines);
 	return TRUE;
 }
 
@@ -240,4 +240,29 @@ int yank(int f, int n)
 	}
 
 	return TRUE;
+}
+
+int show_raminfo(int f, int n)
+{
+#define GB (1024 * 1024 * 1024)
+#define MB (1024 * 1024)
+#define KB 1024
+#define I(v, unit) ((v) / (unit))
+#define D(v, unit) ((v) * 10 / (unit) % 10)
+
+	if (envram >= 1000 * MB)
+		mlwrite("%d.%dG (%ld)", I(envram, GB), D(envram, GB), envram);
+	else if (envram >= 1000 * KB)
+		mlwrite("%d.%dM (%ld)", I(envram, MB), D(envram, MB), envram);
+	else if (envram >= 100000)
+		mlwrite("%d.%dK (%ld)", I(envram, KB), D(envram, KB), envram);
+	else
+		mlwrite("%ld", envram);
+
+	return TRUE;
+#undef D
+#undef I
+#undef KB
+#undef MB
+#undef GB
 }

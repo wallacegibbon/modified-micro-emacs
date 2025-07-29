@@ -36,6 +36,7 @@ struct key_tab keytab[] = {
 	{ CTLX | '1', onlywind },
 	{ CTLX | '2', splitwind },
 	{ CTLX | '=', showpos },
+	{ CTLX | '?', show_raminfo },
 	{ CTLX | 'C', spawncli },
 	{ CTLX | 'E', ctlxe },
 	{ CTLX | 'G', gotoline },

@@ -28,6 +28,7 @@ int nextbuffer(int f, int n)
 		}
 		bbp = bp;
 	}
+
 	return swbuffer(bp);
 }
 
@@ -118,17 +119,13 @@ int zotbuf(struct buffer *bp)
 		bp1 = bp2;
 		bp2 = bp2->b_bufp;
 	}
-	bp2 = bp2->b_bufp;	/* Next one in chain. */
-	if (bp1 == NULL)	/* Unlink it. */
+	bp2 = bp2->b_bufp;
+	if (bp1 == NULL)
 		bheadp = bp2;
 	else
 		bp1->b_bufp = bp2;
 
 	free(bp);
-
-#if RAMSHOW
-	curwp->w_flag |= WFMODE;	/* update memory usage */
-#endif
 	return TRUE;
 }
 

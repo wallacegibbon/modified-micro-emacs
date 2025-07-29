@@ -4,7 +4,6 @@ PROGRAM = me
 SHOWKEYS = showkeys
 USE_TERMCAP = 0
 CC = gcc
-RAMSHOW = 0
 
 ifeq ($(USE_TERMCAP), 1)
 TT = termcap
@@ -45,8 +44,6 @@ LIBS += -ltinfo
 #LIBS += -ltermcap
 #LIBS += -L/usr/lib/termcap -ltermcap
 endif
-
-DEFINES += -DRAMSHOW=$(RAMSHOW)
 
 $(PROGRAM): $(OBJ)
 	@echo "	LINK	$@"

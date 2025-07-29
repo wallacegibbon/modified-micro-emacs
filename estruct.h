@@ -110,10 +110,8 @@ static inline int ensure_upper(int c)
 	return islower(c) ? c ^ DIFCASE : c;
 }
 
-#if RAMSHOW
 #define malloc	allocate
 #define free	release
-#endif
 
 #if CLEAN
 #define exit(a)	cexit(a)
