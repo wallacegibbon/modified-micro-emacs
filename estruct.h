@@ -42,11 +42,12 @@
 #define NPAT    128		/* # of bytes, pattern */
 #define NLOCKS	100		/* max # of file locks active */
 
-#define HUGE    1000		/* Huge number */
 #define KBLOCK	250		/* sizeof kill buffer chunks */
 
-#define CTL	0x2000		/* Control flag, or'ed in */
-#define CTLX	0x4000		/* ^X flag, or'ed in */
+#define HUGE    1000		/* Huge number */
+
+#define CTLX	0x8000		/* ^X flag, or'ed in */
+#define CTL	0x4000		/* Control flag, or'ed in */
 
 #ifdef FALSE
 #undef FALSE
@@ -154,22 +155,22 @@ struct window {
  */
 struct buffer {
         struct buffer *b_bufp;	/* Link to next struct buffer */
+	struct line *b_linep;	/* Link to the header struct line */
 	struct line *b_dotp;	/* Link to "." struct line structure */
 	struct line *b_markp;	/* The same as the above two, */
-	struct line *b_linep;	/* Link to the header struct line */
 	int b_doto;		/* Offset of "." in above struct line */
 	int b_marko;		/* but for the "mark" */
-	char b_active;		/* window activated flag */
 	char b_nwnd;		/* Count of windows on buffer */
 	char b_flag;		/* Flags */
 	char b_fname[NFILEN];	/* File name */
 	char b_bname[NBUFN];	/* Buffer name */
 };
 
-#define BFINVS  	0x01	/* Internal invisable buffer */
-#define BFCHG   	0x02	/* Changed since last write */
-#define BFTRUNC		0x04	/* Buffer was truncated when read */
-#define BFRDONLY	0x08	/* Buffer is readonly */
+#define BFACTIVE	0x01	/* window activated flag */
+#define BFINVS  	0x02	/* Internal invisable buffer */
+#define BFCHG   	0x04	/* Changed since last write */
+#define BFTRUNC		0x08	/* Buffer was truncated when read */
+#define BFRDONLY	0x10	/* Buffer is readonly */
 
 struct region {
 	struct line *r_linep;	/* Origin struct line address. */
@@ -188,13 +189,11 @@ struct terminal {
 	int (*t_getchar)(void);	/* Get character from keyboard. */
 	int (*t_putchar)(int);	/* Put character to display. */
 	void (*t_flush)(void);	/* Flush output buffers. */
-	void (*t_move)(int, int);
-				/* Move the cursor, origin 0. */
+	void (*t_move)(int, int);	/* Move the cursor, origin 0. */
 	void (*t_eeol)(void);	/* Erase to end of line. */
 	void (*t_eeop)(void);	/* Erase to end of page. */
 	void (*t_beep)(void);	/* Beep. */
 	void (*t_rev)(int);	/* set reverse video state */
-	int (*t_rez)(char *);	/* change screen resolution */
 };
 
 #define TTopen		(term.t_open)
@@ -207,7 +206,6 @@ struct terminal {
 #define TTeeop		(term.t_eeop)
 #define TTbeep		(term.t_beep)
 #define TTrev		(term.t_rev)
-#define TTrez		(term.t_rez)
 
 struct key_tab {
 	int k_code;
@@ -250,11 +248,6 @@ struct kill {
 
 /* Miscellaneous */
 #define TABMASK		0x07
-
-#define PROGRAM_NAME	"me"
-#define PROGRAM_NAME_LONG	"Modified Micro Emacs"
-
-#define VERSION	"0.1.0"
 
 #define NULLPROC_KEY	1
 

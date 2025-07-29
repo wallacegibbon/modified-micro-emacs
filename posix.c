@@ -18,25 +18,22 @@
 #define XCASE 0000004
 #endif
 
-static struct termios otermios;		/* original terminal characteristics */
-static struct termios ntermios;		/* charactoristics to use inside */
-
-#define TBUFSIZ 128
-static char tobuf[TBUFSIZ];		/* terminal output buffer */
+static struct termios otermios;	/* original terminal characteristics */
+static struct termios ntermios;	/* charactoristics to use inside */
 
 /*
  * This function is called once to set up the terminal device streams.
  */
 void ttopen(void)
 {
-	tcgetattr(0, &otermios);	/* save old settings */
+	tcgetattr(0, &otermios);
 	ntermios = otermios;
 
-	/* raw CR/NL etc input handling, but keep ISTRIP if we're on a 7-bit line */
+	/* Raw CR/NL etc input handling, but keep ISTRIP on a 7-bit line. */
 	ntermios.c_iflag &= ~(IGNBRK | BRKINT | IGNPAR | PARMRK
 		| INPCK | INLCR | IGNCR | ICRNL);
 
-	/* raw CR/NR etc output handling */
+	/* Raw CR/NR etc output handling */
 	ntermios.c_oflag &=
 		~(OPOST | ONLCR | OLCUC | OCRNL | ONOCR | ONLRET);
 
@@ -45,25 +42,19 @@ void ttopen(void)
 		| ECHONL | NOFLSH | TOSTOP | ECHOCTL
 		| ECHOPRT | ECHOKE | FLUSHO | PENDIN | IEXTEN);
 
-	/* one character, no timeout */
+	/* One character, no timeout */
 	ntermios.c_cc[VMIN] = 1;
 	ntermios.c_cc[VTIME] = 0;
-	tcsetattr(0, TCSADRAIN, &ntermios);	/* and activate them */
 
-	/*
-	 * provide a smaller terminal output buffer so that
-	 * the type ahead detection works better (more often)
-	 */
-	setbuffer(stdout, tobuf, TBUFSIZ);
+	tcsetattr(0, TCSADRAIN, &ntermios);
 }
 
 /*
- * This function gets called just before we go back home to the command
- * interpreter.
+ * This function gets called just before we go back to the command interpreter.
  */
 void ttclose(void)
 {
-	tcsetattr(0, TCSADRAIN, &otermios);	/* restore terminal settings */
+	tcsetattr(0, TCSADRAIN, &otermios);
 }
 
 int ttputc(int c)

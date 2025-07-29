@@ -36,7 +36,7 @@ int swbuffer(struct buffer *bp)
 {
 	struct window *wp;
 
-	if (--curbp->b_nwnd == 0) {	/* Last use. */
+	if (--curbp->b_nwnd == 0) {
 		curbp->b_dotp = curwp->w_dotp;
 		curbp->b_doto = curwp->w_doto;
 		curbp->b_markp = curwp->w_markp;
@@ -44,18 +44,17 @@ int swbuffer(struct buffer *bp)
 	}
 
 	curbp = bp;
-
-	if (curbp->b_active != TRUE) {	/* buffer not active yet */
+	if (!(curbp->b_flag & BFACTIVE)) {
 		readin(curbp->b_fname, TRUE);
 		curbp->b_dotp = lforw(curbp->b_linep);
 		curbp->b_doto = 0;
-		curbp->b_active = TRUE;
+		curbp->b_flag |= BFACTIVE;
 	}
 
 	curwp->w_bufp = bp;
-	curwp->w_linep = bp->b_linep;	/* For macros, ignored. */
-	curwp->w_flag |= WFMODE | WFFORCE | WFHARD;	/* Quite nasty. */
-	if (bp->b_nwnd++ == 0) {	/* First use. */
+	curwp->w_linep = bp->b_linep;
+	curwp->w_flag |= WFMODE | WFFORCE | WFHARD;
+	if (bp->b_nwnd++ == 0) {
 		curwp->w_dotp = bp->b_dotp;
 		curwp->w_doto = bp->b_doto;
 		curwp->w_markp = bp->b_markp;
@@ -191,12 +190,11 @@ struct buffer *bfind(char *bname, int cflag, int bflag)
 		bp->b_bufp = sb->b_bufp;
 		sb->b_bufp = bp;
 	}
-	bp->b_active = TRUE;
 	bp->b_dotp = lp;
 	bp->b_doto = 0;
 	bp->b_markp = NULL;
 	bp->b_marko = 0;
-	bp->b_flag = bflag;
+	bp->b_flag = bflag | BFACTIVE;
 	bp->b_nwnd = 0;
 	bp->b_linep = lp;
 	strcpy(bp->b_fname, "");

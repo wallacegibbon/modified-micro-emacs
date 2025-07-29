@@ -15,7 +15,6 @@ static void ansieeol(void);
 static void ansieeop(void);
 static void ansibeep(void);
 static void ansirev(int);
-static int ansicres(char *);
 
 static void ansiparm(int n);
 
@@ -36,8 +35,7 @@ struct terminal term = {
 	ansieeol,
 	ansieeop,
 	ansibeep,
-	ansirev,
-	ansicres
+	ansirev
 };
 
 static inline void ttputs(char *s)
@@ -122,11 +120,6 @@ static void ansirev(int is_rev)
 	ttputs("\033[");
 	ttputc(is_rev ? '7' : '0');
 	ttputc('m');
-}
-
-static int ansicres(char *res)
-{
-	return TRUE;
 }
 
 static void ansibeep(void)

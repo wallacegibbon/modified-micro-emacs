@@ -17,7 +17,6 @@ static void tcapeeol(void);
 static void tcapeeop(void);
 static void tcapbeep(void);
 static void tcaprev(int);
-static int tcapcres(char *);
 
 /* On Ubuntu 24.04 x86-64 GNOME Terminal, tcapbuf takes 76 bytes */
 #define TCAPSLEN 128
@@ -38,8 +37,7 @@ struct terminal term = {
 	tcapeeol,
 	tcapeeop,
 	tcapbeep,
-	tcaprev,
-	tcapcres,
+	tcaprev
 };
 
 static inline void putpad(char *str)
@@ -123,11 +121,6 @@ static void tcapeeop(void)
 static void tcaprev(int is_rev)
 {
 	putpad(is_rev ? SO : SE);
-}
-
-static int tcapcres(char *res)
-{
-	return TRUE;
 }
 
 static void tcapbeep(void)

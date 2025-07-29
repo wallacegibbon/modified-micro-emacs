@@ -13,13 +13,13 @@ void sizesignal(int);
 #endif
 #endif
 
-void usage(int status)
+void usage(const char *program_name, int status)
 {
-	printf("%s (version %s)\n\n", PROGRAM_NAME_LONG, VERSION);
-	printf("\tUSAGE: %s [OPTIONS] [FILENAMES]\n\n", PROGRAM_NAME);
+	printf("USAGE: %s [OPTIONS] [FILENAMES]\n\n", program_name);
 	fputs("\t+<n>\tGo to line <n>\n", stdout);
 	fputs("\t-v\tOpen read only\n", stdout);
 	fputs("\t--help\tDisplay this help and exit\n", stdout);
+	fputs("\n", stdout);
 	exit(status);
 }
 
@@ -38,7 +38,7 @@ int main(int argc, char **argv)
 #endif
 	if (argc == 2) {
 		if (strcmp(argv[1], "--help") == 0)
-			usage(EXIT_SUCCESS);
+			usage(argv[0], EXIT_SUCCESS);
 	}
 
 	vtinit();
@@ -55,7 +55,7 @@ int main(int argc, char **argv)
 			unqname(bname);
 			bp = bfind(bname, TRUE, rdonlyflag ? BFRDONLY : 0);
 			strncpy_safe(bp->b_fname, argv[i], NFILEN);
-			bp->b_active = FALSE;
+			bp->b_flag &= ~BFACTIVE;
 			if (firstfile) {
 				firstbp = bp;
 				firstfile = FALSE;
@@ -248,7 +248,8 @@ int quit(int f, int n)
 	int s;
 
 	if (f != FALSE || anycb() == FALSE /* All buffers clean. */
-			|| (s = mlyesno("Modified buffers exist.  Quit")) == TRUE) {
+			|| (s = mlyesno("Modified buffers exist.  Quit"))
+				== TRUE) {
 #if (FILOCK && BSD) || SVR4
 		if (lockrel() != TRUE) {
 			TTputc('\n');
@@ -358,7 +359,8 @@ int cexit(int status)
 	bp = bheadp;
 	while (bp) {
 		bp->b_nwnd = 0;
-		bp->b_flag = 0;	/* don't say anything about a changed buffer! */
+		/* don't say anything about a changed buffer! */
+		bp->b_flag = 0;
 		zotbuf(bp);
 		bp = bheadp;
 	}
