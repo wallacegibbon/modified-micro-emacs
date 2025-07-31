@@ -59,5 +59,5 @@ struct key_tab keytab[] = {
 	{ CTLX | CTL | 'X', swapmark },
 	{ CTLX | CTL | 'Z', quickexit },
 
-	{ 0, NULL },	/* the end tag */
+	{ 0, NULL }
 };

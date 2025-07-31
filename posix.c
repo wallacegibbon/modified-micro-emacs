@@ -10,7 +10,9 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <errno.h>
-#include <sys/ioctl.h>	/* TIOCGWINSZ is define in this file */
+
+/* Have to include this file since TIOCGWINSZ is define in this file */
+#include <sys/ioctl.h>
 
 /* Mac OS X's termios.h doesn't have the following 2 macros, define them. */
 #if defined(_DARWIN_C_SOURCE) || defined(_FREEBSD_C_SOURCE)

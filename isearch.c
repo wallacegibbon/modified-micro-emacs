@@ -172,14 +172,14 @@ static int search_next_dispatch(char *pattern, int dir)
 	int status;
 
 	if (dir < 0) {	/* reverse search? */
-		rvstrcpy(tap, pattern);	/* Put reversed string in tap */
+		rvstrcpy(tap, pattern);
 		status = search_next(tap, REVERSE, PTBEG);
 	} else {
 		status = search_next(pattern, FORWARD, PTEND);
 	}
 
 	if (!status) {
-		TTputc(BELL);	/* Beep if search fails */
+		TTputc(BELL);
 		TTflush();
 	}
 
