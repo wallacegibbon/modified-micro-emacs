@@ -23,8 +23,7 @@ int filefind(int f, int n)
 		return s;
 
 	for_each_buff(bp) {
-		if (!(bp->b_flag & BFINVS) &&
-				strcmp(bp->b_fname, fname) == 0) {
+		if (strcmp(bp->b_fname, fname) == 0) {
 			swbuffer(bp);
 			lp = curwp->w_dotp;
 			i = curwp->w_ntrows / 2;
@@ -89,7 +88,7 @@ int readin(char *fname, int lockfl)
 	if (bclear(curbp) != TRUE)	/* Might be old. */
 		return FALSE;
 
-	curbp->b_flag &= ~(BFINVS | BFCHG);
+	curbp->b_flag &= ~BFCHG;
 	strncpy_safe(curbp->b_fname, fname, NFILEN);
 
 	if ((s = ffropen(fname)) == FIOERR)

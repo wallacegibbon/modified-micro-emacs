@@ -165,10 +165,9 @@ struct buffer {
 };
 
 #define BFACTIVE	0x01	/* window activated flag */
-#define BFINVS  	0x02	/* Internal invisable buffer */
-#define BFCHG   	0x04	/* Changed since last write */
-#define BFTRUNC		0x08	/* Buffer was truncated when read */
-#define BFRDONLY	0x10	/* Buffer is readonly */
+#define BFCHG   	0x02	/* Changed since last write */
+#define BFTRUNC		0x04	/* Buffer was truncated when read */
+#define BFRDONLY	0x08	/* Buffer is readonly */
 
 struct region {
 	struct line *r_linep;	/* Origin struct line address. */

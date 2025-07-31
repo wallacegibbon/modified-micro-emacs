@@ -219,8 +219,7 @@ int quickexit(int f, int n)
 	int status;
 
 	for_each_buff(bp) {
-		if ((bp->b_flag & BFCHG) && !(bp->b_flag & BFTRUNC)
-				&& !(bp->b_flag & BFINVS)) {
+		if ((bp->b_flag & BFCHG) && !(bp->b_flag & BFTRUNC)) {
 			curbp = bp;
 			mlwrite("(Saving %s)", bp->b_fname);
 			if ((status = filesave(f, n)) != TRUE) {

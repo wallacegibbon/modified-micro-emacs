@@ -15,13 +15,8 @@ int nextbuffer(int f, int n)
 	bbp = curbp;
 	while (n-- > 0) {
 		bp = bbp->b_bufp;
-		/* cycle through the buffers to find an eligable one */
-		while (bp == NULL || bp->b_flag & BFINVS) {
-			if (bp == NULL)
-				bp = bheadp;
-			else
-				bp = bp->b_bufp;
-
+		while (bp == NULL) {
+			bp = (bp == NULL) ? bheadp : bp->b_bufp;
 			/* don't get caught in an infinite loop! */
 			if (bp == bbp)
 				return FALSE;
@@ -85,9 +80,6 @@ int killbuffer(int f, int n)
 	if ((bp = bfind(bufn, FALSE, 0)) == NULL)
 		return TRUE;
 
-	if (bp->b_flag & BFINVS)
-		return TRUE;
-
 	return zotbuf(bp);
 }
 
@@ -138,7 +130,7 @@ int anycb(void)
 {
 	struct buffer *bp;
 	for_each_buff(bp) {
-		if (!(bp->b_flag & BFINVS) && (bp->b_flag & BFCHG))
+		if ((bp->b_flag & BFCHG))
 			return TRUE;
 	}
 	return FALSE;
@@ -213,8 +205,7 @@ int bclear(struct buffer *bp)
 {
 	struct line *lp;
 
-	if (!(bp->b_flag & BFINVS) && (bp->b_flag & BFCHG)
-			&& mlyesno("Discard changes") != TRUE)
+	if ((bp->b_flag & BFCHG) && mlyesno("Discard changes") != TRUE)
 		return FALSE;
 	bp->b_flag &= ~BFCHG;
 	while ((lp = lforw(bp->b_linep)) != bp->b_linep)
