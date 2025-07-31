@@ -1,6 +1,6 @@
 -------------------------------------------------------------------------------
-A BUFFER is a named area containing a FILE being edited. Many buffers may
-be active at once. Many WINDOWS may be active at once on the screen. All
+A BUFFER is a named area containing a FILE being edited.  Many buffers may
+be active at once.  Many WINDOWS may be active at once on the screen.  All
 windows may show different parts of the same buffer, or each may display a
 different one.
 

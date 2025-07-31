@@ -53,9 +53,10 @@ int get1key(void)
 
 /*
  * Drop CSI arguments and return the CSI command char.
- * Escape sequences are messes of `CSI`, `SS3`, .... and non-standard stuff.
+ * Escape sequences are messes of `CSI`(\033[), `SS3`(\033O), ... etc.
  * We only handle a tiny subset of them to support mouse/touchpad scrolling.
  */
+
 static int csi_drop_args(void)
 {
 	int c;
