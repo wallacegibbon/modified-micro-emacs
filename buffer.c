@@ -98,20 +98,24 @@ int zotbuf(struct buffer *bp)
 {
 	struct buffer *bp1, *bp2;
 
-	if (bp->b_nwnd != 0) {	/* Error if on screen. */
+	if (bp->b_nwnd != 0) {
 		mlwrite("Buffer is being displayed");
 		return FALSE;
 	}
-	if (bclear(bp) != TRUE)	/* Blow text away. */
+	if (bclear(bp) != TRUE)
 		return FALSE;
-	free(bp->b_linep);	/* Release header line. */
-	bp1 = NULL;		/* Find the header. */
+
+	free(bp->b_linep);
+
+	/* Iterate through the buffer list until we found bp. */
+	bp1 = NULL;
 	bp2 = bheadp;
 	while (bp2 != bp) {
 		bp1 = bp2;
 		bp2 = bp2->b_bufp;
 	}
 	bp2 = bp2->b_bufp;
+
 	if (bp1 == NULL)
 		bheadp = bp2;
 	else
@@ -137,14 +141,12 @@ int anycb(void)
 }
 
 /*
- * Find a buffer, by name.  Return a pointer to the buffer structure
- * associated with it.
- * If the buffer is not found and the "cflag" is TRUE, create it.
- * The "bflag" is the settings for the flags in in buffer.
+ * Find a buffer by name.  If the buffer is not found and the "cflag" is TRUE,
+ * create it.  The "bflag" is the settings for the flags in in buffer.
  */
 struct buffer *bfind(char *bname, int cflag, int bflag)
 {
-	struct buffer *bp, *sb;
+	struct buffer *bp;
 	struct line *lp;
 
 	for_each_buff(bp) {
@@ -155,30 +157,17 @@ struct buffer *bfind(char *bname, int cflag, int bflag)
 	if (cflag == FALSE)
 		return NULL;
 
-	/* create a buffer */
-
 	if ((bp = malloc(sizeof(struct buffer))) == NULL)
 		return NULL;
 	if ((lp = lalloc(0)) == NULL) {
 		free(bp);
 		return NULL;
 	}
-	/* find the place in the list to insert this buffer */
-	if (bheadp == NULL || strcmp(bheadp->b_bname, bname) > 0) {
-		/* insert at the beginning */
-		bp->b_bufp = bheadp;
-		bheadp = bp;
-	} else {
-		sb = bheadp;
-		while (sb->b_bufp != NULL) {
-			if (strcmp(sb->b_bufp->b_bname, bname) > 0)
-				break;
-			sb = sb->b_bufp;
-		}
-		/* and insert it */
-		bp->b_bufp = sb->b_bufp;
-		sb->b_bufp = bp;
-	}
+
+	/* The order of buffers does not matter, so we insert it at head */
+	bp->b_bufp = bheadp;
+	bheadp = bp;
+
 	bp->b_dotp = lp;
 	bp->b_doto = 0;
 	bp->b_markp = NULL;
@@ -207,9 +196,11 @@ int bclear(struct buffer *bp)
 
 	if ((bp->b_flag & BFCHG) && mlyesno("Discard changes") != TRUE)
 		return FALSE;
+
 	bp->b_flag &= ~BFCHG;
 	while ((lp = lforw(bp->b_linep)) != bp->b_linep)
 		lfree(lp);
+
 	bp->b_dotp = bp->b_linep;
 	bp->b_doto = 0;
 	bp->b_markp = NULL;
