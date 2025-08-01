@@ -1,6 +1,5 @@
-#include "estruct.h"
-#include "edef.h"
 #include "efunc.h"
+#include "edef.h"
 #include "line.h"
 #include <stdio.h>
 #include <stdlib.h>

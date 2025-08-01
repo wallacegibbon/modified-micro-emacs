@@ -1,4 +1,91 @@
+#ifndef __EFUNC_H
+#define __EFUNC_H
+
+#include "estruct.h"
+#include <stddef.h>
 #include <stdarg.h>
+
+/* Loop utilities */
+#define for_each_wind(wp) \
+	for ((wp) = wheadp; (wp) != NULL; (wp) = (wp)->w_wndp)
+
+#define for_each_buff(bp) \
+	for ((bp) = bheadp; (bp) != NULL; (bp) = (bp)->b_bufp)
+
+#define for_each_kbuf(kp) \
+	for ((kp) = kbufh; (kp) != NULL; (kp) = (kp)->d_next)
+
+#define isvisible(c) \
+	(((c) >= 0x20 && (c) <= 0x7E) || (c) == '\t')
+
+#define malloc	allocate
+#define free	release
+
+#if CLEAN
+#define exit(a)	cexit(a)
+#endif
+
+#ifdef islower
+#undef islower
+#endif
+
+#ifdef isupper
+#undef isupper
+#endif
+
+/* The simplified macro version of functions in ctype.h */
+#define islower(c)	('a' <= (c) && (c) <= 'z')
+#define isupper(c)	('A' <= (c) && (c) <= 'Z')
+#define isalpha(c)	(islower(c) || isupper(c))
+#define isdigit(c)	('0' <= (c) && (c) <= '9')
+
+#define TTopen		(term.t_open)
+#define TTclose		(term.t_close)
+#define TTgetc		(term.t_getchar)
+#define TTputc		(term.t_putchar)
+#define TTflush		(term.t_flush)
+#define TTmove		(term.t_move)
+#define TTeeol		(term.t_eeol)
+#define TTeeop		(term.t_eeop)
+#define TTbeep		(term.t_beep)
+#define TTrev		(term.t_rev)
+
+
+/* Useful inline functions */
+static inline int ensure_lower(int c)
+{
+	return isupper(c) ? c ^ DIFCASE : c;
+}
+
+static inline int ensure_upper(int c)
+{
+	return islower(c) ? c ^ DIFCASE : c;
+}
+
+static inline void wstate_restore(struct window *wp, struct buffer *bp)
+{
+	wp->w_dotp = bp->b_dotp;
+	wp->w_doto = bp->b_doto;
+	wp->w_markp = bp->b_markp;
+	wp->w_marko = bp->b_marko;
+}
+
+static inline void wstate_save(struct window *wp, struct buffer *bp)
+{
+	bp->b_dotp = wp->w_dotp;
+	bp->b_doto = wp->w_doto;
+	bp->b_markp = wp->w_markp;
+	bp->b_marko = wp->w_marko;
+}
+
+static inline void wstate_copy(struct window *wp, struct window *wp2)
+{
+	wp->w_dotp = wp2->w_dotp;
+	wp->w_doto = wp2->w_doto;
+	wp->w_markp = wp2->w_markp;
+	wp->w_marko = wp2->w_marko;
+}
+
 
 /* window.c */
 int redraw(int f, int n);
@@ -144,3 +231,5 @@ void release(void *mp);
 
 /* util.c */
 char *strncpy_safe(char *dest, const char *src, size_t size);
+
+#endif

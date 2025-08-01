@@ -8,10 +8,9 @@
  * It isn't here for any good reason.
  */
 
-#include "estruct.h"
-#include "line.h"
-#include "edef.h"
 #include "efunc.h"
+#include "edef.h"
+#include "line.h"
 
 #define BLOCK_SIZE	16	/* Line block chunk size. */
 

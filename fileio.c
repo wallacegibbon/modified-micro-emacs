@@ -1,6 +1,5 @@
-#include "estruct.h"
-#include "edef.h"
 #include "efunc.h"
+#include "edef.h"
 #include <stdio.h>
 
 static FILE *ffp;			/* File pointer, all functions. */

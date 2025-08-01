@@ -1,6 +1,5 @@
-#include "estruct.h"
-#include "edef.h"
 #include "efunc.h"
+#include "edef.h"
 #include "line.h"
 
 static int isearch(int f, int n);

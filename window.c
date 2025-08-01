@@ -1,6 +1,5 @@
-#include "estruct.h"
-#include "edef.h"
 #include "efunc.h"
+#include "edef.h"
 #include "line.h"
 #include "wrapper.h"
 
@@ -80,23 +79,15 @@ int onlywind(int f, int n)
 	while (wheadp != curwp) {
 		wp = wheadp;
 		wheadp = wp->w_wndp;
-		if (--wp->w_bufp->b_nwnd == 0) {
-			wp->w_bufp->b_dotp = wp->w_dotp;
-			wp->w_bufp->b_doto = wp->w_doto;
-			wp->w_bufp->b_markp = wp->w_markp;
-			wp->w_bufp->b_marko = wp->w_marko;
-		}
+		if (--wp->w_bufp->b_nwnd == 0)
+			wstate_save(wp, wp->w_bufp);
 		free(wp);
 	}
 	while (curwp->w_wndp != NULL) {
 		wp = curwp->w_wndp;
 		curwp->w_wndp = wp->w_wndp;
-		if (--wp->w_bufp->b_nwnd == 0) {
-			wp->w_bufp->b_dotp = wp->w_dotp;
-			wp->w_bufp->b_doto = wp->w_doto;
-			wp->w_bufp->b_markp = wp->w_markp;
-			wp->w_bufp->b_marko = wp->w_marko;
-		}
+		if (--wp->w_bufp->b_nwnd == 0)
+			wstate_save(wp, wp->w_bufp);
 		free(wp);
 	}
 	lp = curwp->w_linep;
@@ -164,12 +155,8 @@ int delwind(int f, int n)
 	}
 
 	/* get rid of the current window */
-	if (--curwp->w_bufp->b_nwnd == 0) {
-		curwp->w_bufp->b_dotp = curwp->w_dotp;
-		curwp->w_bufp->b_doto = curwp->w_doto;
-		curwp->w_bufp->b_markp = curwp->w_markp;
-		curwp->w_bufp->b_marko = curwp->w_marko;
-	}
+	if (--curwp->w_bufp->b_nwnd == 0)
+		wstate_save(curwp, curwp->w_bufp);
 	if (lwp == NULL)
 		wheadp = curwp->w_wndp;
 	else
@@ -205,10 +192,7 @@ int splitwind(int f, int n)
 
 	++curbp->b_nwnd;	/* Displayed twice. */
 	wp->w_bufp = curbp;
-	wp->w_dotp = curwp->w_dotp;
-	wp->w_doto = curwp->w_doto;
-	wp->w_markp = curwp->w_markp;
-	wp->w_marko = curwp->w_marko;
+	wstate_copy(wp, curwp);
 	wp->w_flag = 0;
 	wp->w_force = 0;
 	ntru = (curwp->w_ntrows - 1) / 2;	/* Upper size */
@@ -272,12 +256,8 @@ int adjust_on_scr_resize(void)
 		/* get rid of it if it is too low */
 		if (wp->w_toprow > scr_rows - 1) {
 			/* save the point/mark if needed */
-			if (--wp->w_bufp->b_nwnd == 0) {
-				wp->w_bufp->b_dotp = wp->w_dotp;
-				wp->w_bufp->b_doto = wp->w_doto;
-				wp->w_bufp->b_markp = wp->w_markp;
-				wp->w_bufp->b_marko = wp->w_marko;
-			}
+			if (--wp->w_bufp->b_nwnd == 0)
+				wstate_save(wp, wp->w_bufp);
 
 			/* update curwp and lastwp if needed */
 			if (wp == curwp)

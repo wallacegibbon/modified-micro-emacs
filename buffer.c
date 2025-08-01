@@ -1,6 +1,5 @@
-#include "estruct.h"
-#include "edef.h"
 #include "efunc.h"
+#include "edef.h"
 #include "line.h"
 #include "wrapper.h"
 
@@ -32,12 +31,8 @@ int swbuffer(struct buffer *bp)
 {
 	struct window *wp;
 
-	if (--curbp->b_nwnd == 0) {
-		curbp->b_dotp = curwp->w_dotp;
-		curbp->b_doto = curwp->w_doto;
-		curbp->b_markp = curwp->w_markp;
-		curbp->b_marko = curwp->w_marko;
-	}
+	if (--curbp->b_nwnd == 0)
+		wstate_save(curwp, curbp);
 
 	curbp = bp;
 	if (!(curbp->b_flag & BFACTIVE)) {
@@ -51,18 +46,12 @@ int swbuffer(struct buffer *bp)
 	curwp->w_linep = bp->b_linep;
 	curwp->w_flag |= WFMODE | WFFORCE | WFHARD;
 	if (bp->b_nwnd++ == 0) {
-		curwp->w_dotp = bp->b_dotp;
-		curwp->w_doto = bp->b_doto;
-		curwp->w_markp = bp->b_markp;
-		curwp->w_marko = bp->b_marko;
+		wstate_restore(curwp, bp);
 		return TRUE;
 	}
 	for_each_wind(wp) {
 		if (wp != curwp && wp->w_bufp == bp) {
-			curwp->w_dotp = wp->w_dotp;
-			curwp->w_doto = wp->w_doto;
-			curwp->w_markp = wp->w_markp;
-			curwp->w_marko = wp->w_marko;
+			wstate_copy(curwp, wp);
 			break;
 		}
 	}

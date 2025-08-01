@@ -1,4 +1,4 @@
-#include "estruct.h"
+#include "efunc.h"
 #include "edef.h"
 #include <stdio.h>
 

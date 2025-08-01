@@ -4,9 +4,8 @@
  * physical display screen the same as the virtual display screen.
  */
 
-#include "estruct.h"
-#include "edef.h"
 #include "efunc.h"
+#include "edef.h"
 #include "line.h"
 #include "wrapper.h"
 #include <errno.h>

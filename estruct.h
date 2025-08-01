@@ -1,3 +1,6 @@
+#ifndef __ESTRUCT_H
+#define __ESTRUCT_H
+
 #if defined(BSD) || defined(sun) || defined(ultrix) || defined(__osf__) || \
 		(defined(vax) && defined(unix))
 	#ifndef BSD
@@ -84,39 +87,6 @@
 /* Integer difference between upper and lower case letters. */
 #define DIFCASE	0x20
 
-#ifdef islower
-#undef islower
-#endif
-
-#ifdef isupper
-#undef isupper
-#endif
-
-#define isvisible(c)	(((c) >= 0x20 && (c) <= 0x7E) || (c) == '\t')
-
-/* The simplified macro version of functions in ctype.h */
-#define islower(c)	('a' <= (c) && (c) <= 'z')
-#define isupper(c)	('A' <= (c) && (c) <= 'Z')
-#define isalpha(c)	(islower(c) || isupper(c))
-#define isdigit(c)	('0' <= (c) && (c) <= '9')
-
-static inline int ensure_lower(int c)
-{
-	return isupper(c) ? c ^ DIFCASE : c;
-}
-
-static inline int ensure_upper(int c)
-{
-	return islower(c) ? c ^ DIFCASE : c;
-}
-
-#define malloc	allocate
-#define free	release
-
-#if CLEAN
-#define exit(a)	cexit(a)
-#endif
-
 /*
  * The windows are kept in a big list, in top to bottom screen order, with the
  * listhead at "wheadp".
@@ -180,7 +150,6 @@ struct terminal {
 	short t_ncol;		/* current Number of columns. */
 	short t_margin;		/* min margin for extended lines */
 	short t_scrsiz;		/* size of scroll region " */
-
 	void (*t_open)(void);	/* Open terminal at the start. */
 	void (*t_close)(void);	/* Close terminal at end. */
 	int (*t_getchar)(void);	/* Get character from keyboard. */
@@ -192,17 +161,6 @@ struct terminal {
 	void (*t_beep)(void);	/* Beep. */
 	void (*t_rev)(int);	/* set reverse video state */
 };
-
-#define TTopen		(term.t_open)
-#define TTclose		(term.t_close)
-#define TTgetc		(term.t_getchar)
-#define TTputc		(term.t_putchar)
-#define TTflush		(term.t_flush)
-#define TTmove		(term.t_move)
-#define TTeeol		(term.t_eeol)
-#define TTeeop		(term.t_eeop)
-#define TTbeep		(term.t_beep)
-#define TTrev		(term.t_rev)
 
 struct key_tab {
 	int k_code;
@@ -248,12 +206,4 @@ struct kill {
 
 #define NULLPROC_KEY	1
 
-/* Loop utilities */
-#define for_each_wind(wp) \
-	for ((wp) = wheadp; (wp) != NULL; (wp) = (wp)->w_wndp)
-
-#define for_each_buff(bp) \
-	for ((bp) = bheadp; (bp) != NULL; (bp) = (bp)->b_bufp)
-
-#define for_each_kbuf(kp) \
-	for ((kp) = kbufh; (kp) != NULL; (kp) = (kp)->d_next)
+#endif

@@ -1,6 +1,5 @@
-#include "estruct.h"
-#include "edef.h"
 #include "efunc.h"
+#include "edef.h"
 #include <unistd.h>
 
 /* Create a subjob with a copy of the command intrepreter in it. */
