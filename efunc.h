@@ -109,7 +109,6 @@ int swapmark(int f, int n);
 int showpos(int flag, int n);
 int getccol(int bflg);
 int quote(int f, int n);
-int openline(int f, int n);
 int newline(int f, int n);
 int newline_and_indent(int f, int n);
 int forwdel(int f, int n);

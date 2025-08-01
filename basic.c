@@ -126,7 +126,7 @@ int forwline(int f, int n)
 		return FALSE;
 
 	/* if the last command was not note a line move */
-	if ((lastflag & CFCPCN) == 0)
+	if (!(lastflag & CFCPCN))
 		curgoal = getccol(FALSE);
 
 	thisflag |= CFCPCN;
@@ -151,7 +151,7 @@ int backline(int f, int n)
 		return FALSE;
 
 	/* if the last command was not note a line move */
-	if ((lastflag & CFCPCN) == 0)
+	if (!(lastflag & CFCPCN))
 		curgoal = getccol(FALSE);
 
 	thisflag |= CFCPCN;

@@ -16,7 +16,8 @@ int showpos(int flag, int n)
 	if (curline == -1)
 		curline = numlines;
 
-	mlwrite("Position: %d/%d", curline + 1, numlines);
+	mlwrite("Position: (%d,%d) Total lines: %d",
+			curline + 1, getccol(FALSE) + 1, numlines);
 	return TRUE;
 }
 
@@ -24,11 +25,11 @@ int showpos(int flag, int n)
 int getccol(int bflg)
 {
 	struct line *lp = curwp->w_dotp;
-	int byte_offset = curwp->w_doto;
-	int col = 0, i;
+	int offset = curwp->w_doto;
+	int col = 0, i, c;
 
-	for (i = 0; i < byte_offset; ++i) {
-		unsigned char c = lgetc(lp, i);
+	for (i = 0; i < offset; ++i) {
+		c = lgetc(lp, i);
 		if (c != ' ' && c != '\t' && bflg)
 			break;
 		col = next_col(col, c);
@@ -44,62 +45,30 @@ int getccol(int bflg)
  */
 int quote(int f, int n)
 {
-	int s, c;
+	int c;
 	if (curbp->b_flag & BFRDONLY)
 		return rdonly();
+
 	c = tgetc();
 	if (n < 0)
 		return FALSE;
 	if (n == 0)
 		return TRUE;
-	if (c == '\n') {
-		do { s = lnewline(); }
-		while (s == TRUE && --n);
-		return s;
-	}
+	if (c == '\n')
+		return linsert(n, '\n');
+
 	return linsert(n, c);
-}
-
-/*
- * Open up some blank space.  The basic plan is to insert a bunch of newlines,
- * and then back up over them.
- */
-int openline(int f, int n)
-{
-	int i, s;
-
-	if (curbp->b_flag & BFRDONLY)
-		return rdonly();
-	if (n < 0)
-		return FALSE;
-	if (n == 0)
-		return TRUE;
-
-	i = n;
-	do { s = lnewline(); }
-	while (s == TRUE && --i);
-
-	if (s == TRUE)
-		s = backchar(f, n);
-
-	return s;
 }
 
 int newline(int f, int n)
 {
-	int s;
-
 	if (curbp->b_flag & BFRDONLY)
 		return rdonly();
 	if (n < 0)
 		return FALSE;
 
-	while (n--) {
-		if ((s = lnewline()) != TRUE)
-			return s;
-		curwp->w_flag |= WFINS;
-	}
-	return TRUE;
+	curwp->w_flag |= WFINS;
+	return linsert(n, '\n');
 }
 
 static int newline_and_indent_one(void)
@@ -116,7 +85,7 @@ static int newline_and_indent_one(void)
 		++nicol;
 	}
 
-	if (lnewline() == FALSE)
+	if (linsert(1, '\n') == FALSE)
 		return FALSE;
 
 	curwp->w_flag |= WFINS;
@@ -159,7 +128,7 @@ int forwdel(int f, int n)
 		return backdel(f, -n);
 
 	if (f != FALSE) {
-		if ((lastflag & CFKILL) == 0)
+		if (!(lastflag & CFKILL))
 			kdelete();
 		thisflag |= CFKILL;
 	}
@@ -179,7 +148,7 @@ int backdel(int f, int n)
 		return forwdel(f, -n);
 
 	if (f != FALSE) {
-		if ((lastflag & CFKILL) == 0)
+		if (!(lastflag & CFKILL))
 			kdelete();
 		thisflag |= CFKILL;
 	}
@@ -203,7 +172,7 @@ int killtext(int f, int n)
 		return FALSE;
 
 	/* If last command is not a kill, clear the kill buffer */
-	if ((lastflag & CFKILL) == 0)
+	if (!(lastflag & CFKILL))
 		kdelete();
 
 	thisflag |= CFKILL;

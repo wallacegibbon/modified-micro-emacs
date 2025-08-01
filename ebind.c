@@ -18,7 +18,6 @@ struct key_tab keytab[] = {
 	{ CTL | 'L', redraw },
 	{ CTL | 'M', newline },
 	{ CTL | 'N', forwline },
-	{ CTL | 'O', openline },
 	{ CTL | 'P', backline },
 	{ CTL | 'Q', quote },
 	{ CTL | 'R', risearch },

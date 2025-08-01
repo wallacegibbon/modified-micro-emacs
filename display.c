@@ -264,7 +264,7 @@ static int reframe(struct window *wp)
 	int i = 0;
 
 	/* if not a requested reframe, check for a needed one */
-	if ((wp->w_flag & WFFORCE) == 0) {
+	if (!(wp->w_flag & WFFORCE)) {
 		/* loop from one line above the window to one line after */
 		lp = wp->w_linep;
 		lp0 = lback(lp);

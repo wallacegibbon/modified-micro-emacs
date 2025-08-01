@@ -135,7 +135,7 @@ static int dolock(char *fname, char **errstr)
 #if defined(S_ISREG)
 		if (!S_ISREG(sbuf.st_mode)) {
 #else
-		if (!(((sbuf.st_mode) & 070000) == 0)) {	/* SysV R2 */
+		if (sbuf.st_mode & 070000) {	/* SysV R2 */
 #endif
 			*errstr = "LOCK ERROR: not a regular file";
 			return -1;
