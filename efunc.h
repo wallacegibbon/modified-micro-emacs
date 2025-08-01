@@ -106,8 +106,8 @@ int setmark(int f, int n);
 int swapmark(int f, int n);
 
 /* random.c */
-int showpos(int flag, int n);
-int getccol(int bflg);
+int show_misc_info(int f, int n);
+int getccol(void);
 int quote(int f, int n);
 int newline(int f, int n);
 int newline_and_indent(int f, int n);
@@ -115,7 +115,6 @@ int forwdel(int f, int n);
 int backdel(int f, int n);
 int killtext(int f, int n);
 int yank(int f, int n);
-int show_raminfo(int f, int n);
 
 /* main.c */
 int (*getbind(int c))(int, int);

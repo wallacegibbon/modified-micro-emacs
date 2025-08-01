@@ -3,12 +3,12 @@
  * address, it go wrong.  So this is a dirty HACK.
  */
 
-#include "estruct.h"
 #include "edef.h"
 
-/* Undefine macros defined in estruct.h to unshadow `malloc` and `free`. */
-#undef malloc
-#undef free
+/*
+ * Please make sure malloc and free in this file are not shadowed by macros,
+ * Use `undef` on them when necessary.
+ */
 
 void *malloc(unsigned long);
 void free(void *);

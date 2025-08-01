@@ -2,8 +2,7 @@
 #include "edef.h"
 #include "line.h"
 
-/* Show the line info (the current line number and the total line number) */
-int showpos(int flag, int n)
+int show_misc_info(int f, int n)
 {
 	struct line *lp;
 	int curline = -1, numlines = 0;
@@ -16,24 +15,21 @@ int showpos(int flag, int n)
 	if (curline == -1)
 		curline = numlines;
 
-	mlwrite("Position: (%d,%d) Total lines: %d",
-			curline + 1, getccol(FALSE) + 1, numlines);
+	mlwrite("Row: %d/%d, Column: %d, Dynamic RAM: %ld",
+		curline + 1, numlines, getccol(), envram);
+
 	return TRUE;
 }
 
 /* Return current column.  Stop at first non-blank given TRUE argument. */
-int getccol(int bflg)
+int getccol(void)
 {
 	struct line *lp = curwp->w_dotp;
-	int offset = curwp->w_doto;
-	int col = 0, i, c;
+	int offset = curwp->w_doto, col = 0, i;
 
-	for (i = 0; i < offset; ++i) {
-		c = lgetc(lp, i);
-		if (c != ' ' && c != '\t' && bflg)
-			break;
-		col = next_col(col, c);
-	}
+	for (i = 0; i < offset; ++i)
+		col = next_col(col, lgetc(lp, i));
+
 	return col;
 }
 
@@ -208,29 +204,4 @@ int yank(int f, int n)
 	}
 
 	return TRUE;
-}
-
-int show_raminfo(int f, int n)
-{
-#define GB (1024 * 1024 * 1024)
-#define MB (1024 * 1024)
-#define KB 1024
-#define I(v, unit) ((v) / (unit))
-#define D(v, unit) ((v) * 10 / (unit) % 10)
-
-	if (envram >= 1000 * MB)
-		mlwrite("%d.%dG (%ld)", I(envram, GB), D(envram, GB), envram);
-	else if (envram >= 1000 * KB)
-		mlwrite("%d.%dM (%ld)", I(envram, MB), D(envram, MB), envram);
-	else if (envram >= 100000)
-		mlwrite("%d.%dK (%ld)", I(envram, KB), D(envram, KB), envram);
-	else
-		mlwrite("%ld", envram);
-
-	return TRUE;
-#undef D
-#undef I
-#undef KB
-#undef MB
-#undef GB
 }

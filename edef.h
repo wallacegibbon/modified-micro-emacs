@@ -1,6 +1,7 @@
 #ifndef __EDEF_H
 #define __EDEF_H
 
+#include "estruct.h"
 #include <stdlib.h>
 #include <string.h>
 

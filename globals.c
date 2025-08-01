@@ -1,5 +1,4 @@
 #include "estruct.h"
-#include "edef.h"
 
 char hex[] = "0123456789ABCDEF";
 
