@@ -80,14 +80,14 @@ int onlywind(int f, int n)
 		wp = wheadp;
 		wheadp = wp->w_wndp;
 		if (--wp->w_bufp->b_nwnd == 0)
-			wstate_save(wp, wp->w_bufp);
+			wstate_save(wp);
 		free(wp);
 	}
 	while (curwp->w_wndp != NULL) {
 		wp = curwp->w_wndp;
 		curwp->w_wndp = wp->w_wndp;
 		if (--wp->w_bufp->b_nwnd == 0)
-			wstate_save(wp, wp->w_bufp);
+			wstate_save(wp);
 		free(wp);
 	}
 	lp = curwp->w_linep;
@@ -156,7 +156,7 @@ int delwind(int f, int n)
 
 	/* get rid of the current window */
 	if (--curwp->w_bufp->b_nwnd == 0)
-		wstate_save(curwp, curwp->w_bufp);
+		wstate_save(curwp);
 	if (lwp == NULL)
 		wheadp = curwp->w_wndp;
 	else
@@ -257,7 +257,7 @@ int adjust_on_scr_resize(void)
 		if (wp->w_toprow > scr_rows - 1) {
 			/* save the point/mark if needed */
 			if (--wp->w_bufp->b_nwnd == 0)
-				wstate_save(wp, wp->w_bufp);
+				wstate_save(wp);
 
 			/* update curwp and lastwp if needed */
 			if (wp == curwp)

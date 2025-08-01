@@ -32,7 +32,7 @@ int swbuffer(struct buffer *bp)
 	struct window *wp;
 
 	if (--curbp->b_nwnd == 0)
-		wstate_save(curwp, curbp);
+		wstate_save(curwp);
 
 	curbp = bp;
 	if (!(curbp->b_flag & BFACTIVE)) {

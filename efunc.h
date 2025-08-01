@@ -63,8 +63,9 @@ static inline void wstate_restore(struct window *wp, struct buffer *bp)
 	wp->w_marko = bp->b_marko;
 }
 
-static inline void wstate_save(struct window *wp, struct buffer *bp)
+static inline void wstate_save(struct window *wp)
 {
+	struct buffer *bp = wp->w_bufp;
 	bp->b_dotp = wp->w_dotp;
 	bp->b_doto = wp->w_doto;
 	bp->b_markp = wp->w_markp;
