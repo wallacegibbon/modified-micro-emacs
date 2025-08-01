@@ -77,7 +77,7 @@ int readin(char *fname, int lockfl)
 	int s, i, nbytes, nline;
 	char mesg[NSTRING];
 
-#if (FILOCK && BSD) || SVR4
+#if UNIX
 	if (lockfl && lockchk(fname) == ABORT) {
 		strcpy(curbp->b_fname, "");
 		s = FIOFNF;

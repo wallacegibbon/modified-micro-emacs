@@ -248,7 +248,7 @@ int quit(int f, int n)
 	if (f != FALSE || anycb() == FALSE /* All buffers clean. */
 			|| (s = mlyesno("Modified buffers exist.  Quit"))
 				== TRUE) {
-#if (FILOCK && BSD) || SVR4
+#if UNIX
 		if (lockrel() != TRUE) {
 			TTputc('\n');
 			TTputc('\r');

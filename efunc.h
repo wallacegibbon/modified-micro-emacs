@@ -15,29 +15,24 @@
 #define for_each_kbuf(kp) \
 	for ((kp) = kbufh; (kp) != NULL; (kp) = (kp)->d_next)
 
+#define atleast(n, limit) \
+	((n) > (limit) ? (n) : (limit))
+
 #define isvisible(c) \
 	(((c) >= 0x20 && (c) <= 0x7E) || (c) == '\t')
-
-#define malloc	allocate
-#define free	release
-
-#if CLEAN
-#define exit(a)	cexit(a)
-#endif
-
-#ifdef islower
-#undef islower
-#endif
-
-#ifdef isupper
-#undef isupper
-#endif
 
 /* The simplified macro version of functions in ctype.h */
 #define islower(c)	('a' <= (c) && (c) <= 'z')
 #define isupper(c)	('A' <= (c) && (c) <= 'Z')
 #define isalpha(c)	(islower(c) || isupper(c))
 #define isdigit(c)	('0' <= (c) && (c) <= '9')
+
+#define malloc		allocate
+#define free		release
+
+#if CLEAN
+#define exit(a)		cexit(a)
+#endif
 
 #define TTopen		(term.t_open)
 #define TTclose		(term.t_close)
@@ -50,8 +45,6 @@
 #define TTbeep		(term.t_beep)
 #define TTrev		(term.t_rev)
 
-
-/* Useful inline functions */
 static inline int ensure_lower(int c)
 {
 	return isupper(c) ? c ^ DIFCASE : c;

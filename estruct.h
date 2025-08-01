@@ -1,99 +1,69 @@
 #ifndef __ESTRUCT_H
 #define __ESTRUCT_H
 
-#if defined(BSD) || defined(sun) || defined(ultrix) || defined(__osf__) || \
-		(defined(vax) && defined(unix))
-	#ifndef BSD
-	#define BSD 1
-	#endif
-#else
-	#define BSD 0
+#if defined(__FreeBSD__) || defined(__OpenBSD__) || defined(__NetBSD__) || \
+		(defined(__APPLE__) && defined(__MACH__)) || \
+		defined(__DragonFly__) || defined(__linux__)
+#define UNIX		1	/* Major modern BSDs and Linux */
 #endif
 
-#if defined(SVR4) || defined(__linux__)	/* ex. SunOS 5.3 */
-	#define SVR4 1
-	#define SYSV 1
-	#undef BSD
-#endif
+#define VISMAC		0	/* update display during keyboard macros */
+#define CLEAN		0	/* de-alloc memory on exit */
 
-#if defined(SYSV) || defined(u3b2) || defined(_AIX) || defined(__hpux) || \
-		(defined(i386) && defined(unix))
-	#define USG 1
-#else
-	#define USG 0
-#endif
+#define NFILEN		256	/* # of bytes, file name */
+#define NBUFN		16	/* # of bytes, buffer name */
+#define NLINE		256	/* # of bytes, input line */
+#define NSTRING		128	/* # of bytes, string buffers */
+#define NKBDM		256	/* # of strokes, keyboard macro */
+#define NPAT		128	/* # of bytes, pattern */
+#define NLOCKS		100	/* max # of file locks active */
 
-#define UNIX	(BSD | USG)
+#define KBLOCK		250	/* sizeof kill buffer chunks */
 
-#define VISMAC	0		/* update display during keyboard macros */
+#define HUGE		1000	/* Huge number */
 
-#ifdef SVR4
-#define FILOCK  1
-#else
-#define FILOCK	BSD
-#endif
+#define CTLX		0x8000	/* ^X flag, or'ed in */
+#define CTL		0x4000	/* Control flag, or'ed in */
 
-#define CLEAN	0  /* de-alloc memory on exit */
+#define CTLXC		(CTL | 'X')	/* CTL-X prefix char */
+#define ESCAPEC		(CTL | '[')	/* ESCAPE character */
+#define ABORTC		(CTL | 'G')	/* ABORT command char */
+#define ENTERC		(CTL | 'M')	/* ENTER char */
+#define QUOTEC		(CTL | 'Q')	/* QUOTE char */
+#define REPTC		(CTL | 'U')	/* Universal repeat char */
 
-#define XONXOFF	UNIX
+#define FALSE		0	/* False, no, bad, etc. */
+#define TRUE		1	/* True, yes, good, etc. */
 
-#define NFILEN  256		/* # of bytes, file name */
-#define NBUFN   16		/* # of bytes, buffer name */
-#define NLINE   256		/* # of bytes, input line */
-#define NSTRING	128		/* # of bytes, string buffers */
-#define NKBDM   256		/* # of strokes, keyboard macro */
-#define NPAT    128		/* # of bytes, pattern */
-#define NLOCKS	100		/* max # of file locks active */
+#define ABORT		2	/* Death, ^G, abort, etc. */
+#define FAILED		3	/* not-quite fatal false return */
 
-#define KBLOCK	250		/* sizeof kill buffer chunks */
+#define STOP		0	/* keyboard macro not in use */
+#define PLAY		1	/* playing */
+#define RECORD		2	/* recording */
 
-#define HUGE    1000		/* Huge number */
+#define PTBEG		0	/* Leave the point at the beginning */
+#define PTEND		1	/* Leave the point at the end */
+#define FORWARD		0	/* forward direction */
+#define REVERSE		1	/* backwards direction */
 
-#define CTLX	0x8000		/* ^X flag, or'ed in */
-#define CTL	0x4000		/* Control flag, or'ed in */
+#define FIOSUC		0	/* File I/O, success. */
+#define FIOFNF		1	/* File I/O, file not found. */
+#define FIOEOF		2	/* File I/O, end of file. */
+#define FIOERR		3	/* File I/O, error. */
+#define FIOMEM		4	/* File I/O, out of memory */
 
-#ifdef FALSE
-#undef FALSE
-#endif
-#ifdef TRUE
-#undef TRUE
-#endif
+#define CFCPCN		0x0001	/* Last command was C-P, C-N */
+#define CFKILL		0x0002	/* Last command was a kill */
 
-#define FALSE   0		/* False, no, bad, etc. */
-#define TRUE    1		/* True, yes, good, etc. */
-#define ABORT   2		/* Death, ^G, abort, etc. */
-#define FAILED	3		/* not-quite fatal false return */
+#define BELL		0x07	/* BELL character */
 
-#define STOP	0		/* keyboard macro not in use */
-#define PLAY	1		/* playing */
-#define RECORD	2		/* recording */
-
-#define PTBEG	0		/* Leave the point at the beginning on search */
-#define PTEND	1		/* Leave the point at the end on search */
-#define FORWARD	0		/* forward direction */
-#define REVERSE	1		/* backwards direction */
-
-#define FIOSUC	0		/* File I/O, success. */
-#define FIOFNF	1		/* File I/O, file not found. */
-#define FIOEOF	2		/* File I/O, end of file. */
-#define FIOERR	3		/* File I/O, error. */
-#define FIOMEM	4		/* File I/O, out of memory */
-
-#define CFCPCN  0x0001		/* Last command was C-P, C-N */
-#define CFKILL  0x0002		/* Last command was a kill */
-
-#define BELL	0x07		/* BELL character */
-
-/* Integer difference between upper and lower case letters. */
-#define DIFCASE	0x20
+#define DIFCASE		0x20	/* 'a' - 'A' */
 
 /*
  * The windows are kept in a big list, in top to bottom screen order, with the
  * listhead at "wheadp".
- * The flag field contains some bits that are set by commands to guide
- * redisplay.  Although this is a bit of a compromise in terms of decoupling,
- * the full blown redisplay is just too expensive to run for every input
- * character.
+ * The flag field contains bits that are set by commands to guide redisplay.
  */
 struct window {
 	struct window *w_wndp;	/* Next window */
@@ -109,13 +79,13 @@ struct window {
 	char w_flag;		/* Flags. */
 };
 
-#define WFFORCE 0x01		/* Window needs forced reframe */
-#define WFMOVE  0x02		/* Movement from line to line */
-#define WFEDIT  0x04		/* Editing within a line */
-#define WFHARD  0x08		/* Better to a full display */
-#define WFMODE  0x10		/* Update mode line. */
-#define WFKILLS 0x40		/* Something was deleted */
-#define WFINS   0x80		/* Something was inserted */
+#define WFFORCE		0x01	/* Window needs forced reframe */
+#define WFMOVE		0x02	/* Movement from line to line */
+#define WFEDIT		0x04	/* Editing within a line */
+#define WFHARD		0x08	/* Better to a full display */
+#define WFMODE		0x10	/* Update mode line. */
+#define WFKILLS		0x40	/* Something was deleted */
+#define WFINS		0x80	/* Something was inserted */
 
 /*
  * Buffers may be "Inactive" which means the files associated with them
@@ -173,35 +143,22 @@ struct name_bind {
 };
 
 /*
- * The kill buffer is logically a stream of ascii characters, however
- * due to its unpredicatable size, it gets implemented as a linked
- * list of chunks.
+ * The kill buffer is logically a stream of ascii characters.
  * `d_` prefix is for "deleted" text, as `k_` was taken up by the keycode.
  */
 struct kill {
 	struct kill *d_next;   /* Link to next chunk, NULL if last. */
-	char d_chunk[KBLOCK];  /* Deleted text. */
+	char d_chunk[KBLOCK];  /* Text. */
 };
 
 #define CMDBUFLEN	256	/* Length of our command buffer */
 
-/* Incremental search defines. */
-#define IS_REVERSE	0x12	/* Search backward */
-#define IS_FORWARD	0x13	/* Search forward */
-
-#define CTLXC		(CTL | 'X')	/* CTL-X prefix char */
-#define ESCAPEC		(CTL | '[')	/* ESCAPE character */
-#define ABORTC		(CTL | 'G')	/* ABORT command char */
-#define ENTERC		(CTL | 'M')	/* ENTER char */
-#define QUOTEC		(CTL | 'Q')	/* QUOTE char */
-#define REPTC		(CTL | 'U')	/* Universal repeat char */
-
-#define atleast(n, limit)	((n) > (limit) ? (n) : (limit))
+#define IS_REVERSE	0x12	/* Incremental search backward */
+#define IS_FORWARD	0x13	/* Incremental search forward */
 
 #define SCR_MIN_ROWS	3
 #define SCR_MIN_COLS	8
 
-/* Miscellaneous */
 #define TABMASK		0x07
 
 #define NULLPROC_KEY	1
