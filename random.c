@@ -16,21 +16,10 @@ int show_misc_info(int f, int n)
 		curline = numlines;
 
 	mlwrite("Row: %d/%d, Column: %d, Dynamic RAM: %ld",
-		curline + 1, numlines, getccol(), envram);
+		curline + 1, numlines, get_col(curwp->w_dotp, curwp->w_doto),
+		envram);
 
 	return TRUE;
-}
-
-/* Return current column.  Stop at first non-blank given TRUE argument. */
-int getccol(void)
-{
-	struct line *lp = curwp->w_dotp;
-	int offset = curwp->w_doto, col = 0, i;
-
-	for (i = 0; i < offset; ++i)
-		col = next_col(col, lgetc(lp, i));
-
-	return col;
 }
 
 /*
@@ -48,10 +37,6 @@ int quote(int f, int n)
 	c = tgetc();
 	if (n < 0)
 		return FALSE;
-	if (n == 0)
-		return TRUE;
-	if (c == '\n')
-		return linsert(n, '\n');
 
 	return linsert(n, c);
 }

@@ -2,26 +2,57 @@
 #include "edef.h"
 #include "line.h"
 
-/*
- * Given a pointer to a struct line, and the current cursor goal column,
- * return the best choice for the offset.
- */
-static int getgoal(struct line *lp)
+/* Convert character index/offset into column number */
+int get_col(struct line *lp, int offset)
 {
-	int col = 0, dbo, len;
-	for (dbo = 0, len = llength(lp); dbo != len; dbo++) {
-		int newcol = next_col(col, lgetc(lp, dbo));
-		if (newcol > curgoal)
+	int col = 0, i = 0;
+	while (i < offset)
+		col = next_col(col, lgetc(lp, i++));
+	return col;
+}
+
+/* Convert column number to character index/offset */
+int get_idx(struct line *lp, int col)
+{
+	int c = 0, i = 0, len = llength(lp);
+	while (i < len) {
+		if ((c = next_col(c, lgetc(lp, i))) > col)
 			break;
-		col = newcol;
+		else
+			++i;
 	}
-	return dbo;
+	return i;
+}
+
+/* Goto the beginning of the buffer */
+int gotobob(int f, int n)
+{
+	curwp->w_dotp = lforw(curbp->b_linep);
+	curwp->w_doto = 0;
+	curwp->w_flag |= WFHARD;
+	return TRUE;
+}
+
+/* Move to the end of the buffer.  Dot is always put at the end of the file */
+int gotoeob(int f, int n)
+{
+	curwp->w_dotp = curbp->b_linep;
+	curwp->w_doto = 0;
+	curwp->w_flag |= WFHARD;
+	return TRUE;
 }
 
 /* Move the cursor to the beginning of the current line. */
 int gotobol(int f, int n)
 {
 	curwp->w_doto = 0;
+	return TRUE;
+}
+
+/* Move the cursor to the end of the current line */
+int gotoeol(int f, int n)
+{
+	curwp->w_doto = llength(curwp->w_dotp);
 	return TRUE;
 }
 
@@ -42,13 +73,6 @@ int backchar(int f, int n)
 			--curwp->w_doto;
 		}
 	}
-	return TRUE;
-}
-
-/* Move the cursor to the end of the current line */
-int gotoeol(int f, int n)
-{
-	curwp->w_doto = llength(curwp->w_dotp);
 	return TRUE;
 }
 
@@ -97,24 +121,6 @@ int gotoline(int f, int n)
 	return forwline(f, n - 1);
 }
 
-/* Goto the beginning of the buffer */
-int gotobob(int f, int n)
-{
-	curwp->w_dotp = lforw(curbp->b_linep);
-	curwp->w_doto = 0;
-	curwp->w_flag |= WFHARD;
-	return TRUE;
-}
-
-/* Move to the end of the buffer.  Dot is always put at the end of the file */
-int gotoeob(int f, int n)
-{
-	curwp->w_dotp = curbp->b_linep;
-	curwp->w_doto = 0;
-	curwp->w_flag |= WFHARD;
-	return TRUE;
-}
-
 int forwline(int f, int n)
 {
 	struct line *lp;
@@ -127,7 +133,7 @@ int forwline(int f, int n)
 
 	/* if the last command was not note a line move */
 	if (!(lastflag & CFCPCN))
-		curgoal = getccol();
+		curgoal = get_col(curwp->w_dotp, curwp->w_doto);
 
 	thisflag |= CFCPCN;
 	lp = curwp->w_dotp;
@@ -135,7 +141,7 @@ int forwline(int f, int n)
 		lp = lforw(lp);
 
 	curwp->w_dotp = lp;
-	curwp->w_doto = getgoal(lp);
+	curwp->w_doto = get_idx(lp, curgoal);
 	curwp->w_flag |= WFMOVE;
 	return TRUE;
 }
@@ -152,7 +158,7 @@ int backline(int f, int n)
 
 	/* if the last command was not note a line move */
 	if (!(lastflag & CFCPCN))
-		curgoal = getccol();
+		curgoal = get_col(curwp->w_dotp, curwp->w_doto);
 
 	thisflag |= CFCPCN;
 	lp = curwp->w_dotp;
@@ -160,7 +166,7 @@ int backline(int f, int n)
 		lp = lback(lp);
 
 	curwp->w_dotp = lp;
-	curwp->w_doto = getgoal(lp);
+	curwp->w_doto = get_idx(lp, curgoal);
 	curwp->w_flag |= WFMOVE;
 	return TRUE;
 }

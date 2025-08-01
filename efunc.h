@@ -91,6 +91,8 @@ int splitwind(int f, int n);
 int adjust_on_scr_resize(void);
 
 /* basic.c */
+int get_col(struct line *lp, int offset);
+int get_idx(struct line *lp, int col);
 int forwchar(int f, int n);
 int backchar(int f, int n);
 int forwline(int f, int n);
@@ -107,7 +109,6 @@ int swapmark(int f, int n);
 
 /* random.c */
 int show_misc_info(int f, int n);
-int getccol(void);
 int quote(int f, int n);
 int newline(int f, int n);
 int newline_and_indent(int f, int n);

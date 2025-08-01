@@ -289,9 +289,10 @@ static int lnewline(void)
 
 int linsert(int n, int c)
 {
-	int s;
+	int s = TRUE;
 	if (c == '\n') {
-		do { s = lnewline(); } while (s && --n);
+		while (s && n--)
+			s = lnewline();
 		return s;
 	} else {
 		return lnonnewline(n, c);
