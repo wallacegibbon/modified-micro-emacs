@@ -4,13 +4,13 @@ PROGRAM = me
 SHOWKEYS = showkeys
 CC = gcc
 
-SRC = main.c buffer.c window.c line.c display.c basic.c random.c \
-	file.c fileio.c input.c search.c isearch.c lock.c region.c spawn.c \
-	ansi.c posix.c ebind.c globals.c memory.c util.c
+SRC = main.c buffer.c window.c line.c display.c input.c basic.c random.c \
+	file.c fileio.c search.c isearch.c region.c spawn.c posix.c ansi.c \
+	ebind.c globals.c memory.c util.c
 
-OBJ = main.o buffer.o window.o line.o display.o basic.o random.o \
-	file.o fileio.o input.o search.o isearch.o lock.o region.o spawn.o \
-	ansi.o posix.o ebind.o globals.o memory.o util.o
+OBJ = main.o buffer.o window.o line.o display.o input.o basic.o random.o \
+	file.o fileio.o search.o isearch.o region.o spawn.o posix.o ansi.o \
+	ebind.o globals.o memory.o util.o
 
 WARNINGS = -Wall -Wextra -Wstrict-prototypes -Wno-unused-parameter
 
@@ -62,7 +62,6 @@ fileio.o: fileio.c estruct.h edef.h
 input.o: input.c estruct.h edef.h
 isearch.o: isearch.c estruct.h edef.h line.h
 line.o: line.c estruct.h edef.h line.h
-lock.o: lock.c estruct.h edef.h
 main.o: main.c estruct.h efunc.h edef.h line.h
 posix.o: posix.c estruct.h
 random.o: random.c estruct.h edef.h line.h

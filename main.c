@@ -235,24 +235,13 @@ static void emergencyexit(int signr)
  */
 int quit(int f, int n)
 {
-	int s;
-
-	if (f != FALSE || anycb() == FALSE /* All buffers clean. */
-			|| (s = mlyesno("Modified buffers exist.  Quit"))
-				== TRUE) {
-#if UNIX
-		if (lockrel() != TRUE) {
-			TTputc('\n');
-			TTputc('\r');
-			TTclose();
-			exit(1);
-		}
-#endif
+	if (f != FALSE || anycb() == FALSE ||
+			mlyesno("Modified buffers exist.  Quit") == TRUE) {
 		vttidy();
 		exit(f ? n : 0);
 	}
 	mlerase();
-	return s;
+	return TRUE;
 }
 
 /* Begin a keyboard macro. */

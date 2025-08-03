@@ -35,7 +35,7 @@ int swbuffer(struct buffer *bp)
 
 	curbp = bp;
 	if (!(curbp->b_flag & BFACTIVE)) {
-		readin(curbp->b_fname, TRUE);
+		readin(curbp->b_fname);
 		curbp->b_dotp = lforw(curbp->b_linep);
 		curbp->b_doto = 0;
 		curbp->b_flag |= BFACTIVE;

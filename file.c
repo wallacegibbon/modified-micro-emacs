@@ -60,8 +60,7 @@ int filefind(int f, int n)
 	curwp->w_bufp = bp;
 	curbp->b_nwnd++;
 
-	s = readin(fname, TRUE);
-	return s;
+	return readin(fname);
 }
 
 /*
@@ -70,20 +69,13 @@ int filefind(int f, int n)
  * Also called by the mainline, to read in a file specified on the command line
  * as an argument.
  */
-int readin(char *fname, int lockfl)
+int readin(char *fname)
 {
 	struct line *lp1, *lp2;
 	struct window *wp;
 	int s, i, nbytes, nline;
 	char mesg[NSTRING];
 
-#if UNIX
-	if (lockfl && lockchk(fname) == ABORT) {
-		strcpy(curbp->b_fname, "");
-		s = FIOFNF;
-		goto out;
-	}
-#endif
 	if (bclear(curbp) != TRUE)	/* Might be old. */
 		return FALSE;
 

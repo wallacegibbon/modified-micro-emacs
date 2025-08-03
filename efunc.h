@@ -186,7 +186,7 @@ struct buffer *bfind(char *bname, int cflag, int bflag);
 
 /* file.c */
 int filefind(int f, int n);
-int readin(char *fname, int lockfl);
+int readin(char *fname);
 void makename(char *bname, char *fname);
 void unqname(char *name);
 int filewrite(int f, int n);

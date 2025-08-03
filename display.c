@@ -52,27 +52,29 @@ static struct video *video_new(size_t text_size)
 
 static void screen_init(void)
 {
+	int i, failflag = 0;
 	char *mlbuf_old;
-	int i;
 
 	display_ok = 0;
 
 	if ((vscreen = malloc(term.t_nrow * sizeof(struct video *))) == NULL)
 		return;
 	if ((pscreen = malloc(term.t_nrow * sizeof(struct video *))) == NULL)
-		return;
+		goto fail1;
 
 	for (i = 0; i < term.t_nrow; ++i) {
 		if ((vscreen[i] = video_new(term.t_ncol)) == NULL)
-			return;
+			failflag = 1;
 		if ((pscreen[i] = video_new(term.t_ncol)) == NULL)
-			return;
+			failflag = 1;
 	}
+	if (failflag)
+		goto fail2;
 
 	mlbuf_old = mlbuf;
 	mlbuf_size = term.t_ncol + 1;
 	if ((mlbuf = malloc(mlbuf_size)) == NULL)
-		return;
+		goto fail2;
 
 	if (mlbuf_old != NULL) {
 		strncpy_safe(mlbuf, mlbuf_old, mlbuf_size);
@@ -82,6 +84,15 @@ static void screen_init(void)
 	}
 
 	display_ok = 1;
+	return;
+fail2:
+	for (i = 0; i < term.t_nrow; ++i) {
+		free(pscreen[i]);
+		free(vscreen[i]);
+	}
+	free(pscreen);
+fail1:
+	free(vscreen);
 }
 
 static void screen_deinit(void)
@@ -89,11 +100,11 @@ static void screen_deinit(void)
 	int i;
 	display_ok = 0;
 	for (i = 0; i < term.t_nrow; ++i) {
-		free(vscreen[i]);
 		free(pscreen[i]);
+		free(vscreen[i]);
 	}
-	free(vscreen);
 	free(pscreen);
+	free(vscreen);
 }
 
 void vtinit(void)
