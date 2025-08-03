@@ -176,7 +176,7 @@ int delwind(int f, int n)
  */
 int splitwind(int f, int n)
 {
-	struct window *wp, *wp1, *wp2;
+	struct window *wp;
 	struct line *lp;
 	int ntru, ntrl, ntrd;
 
@@ -203,35 +203,16 @@ int splitwind(int f, int n)
 		lp = lforw(lp);
 	}
 	lp = curwp->w_linep;
-	if (((f == FALSE) && (ntrd <= ntru)) || ((f == TRUE) && (n == 1))) {
-		/* Old is upper window. */
-		if (ntrd == ntru)	/* Hit mode line. */
-			lp = lforw(lp);
-		curwp->w_ntrows = ntru;
-		wp->w_wndp = curwp->w_wndp;
-		curwp->w_wndp = wp;
-		wp->w_toprow = curwp->w_toprow + ntru + 1;
-		wp->w_ntrows = ntrl;
-	} else {		/* Old is lower window */
-		wp1 = NULL;
-		wp2 = wheadp;
-		while (wp2 != curwp) {
-			wp1 = wp2;
-			wp2 = wp2->w_wndp;
-		}
-		if (wp1 == NULL)
-			wheadp = wp;
-		else
-			wp1->w_wndp = wp;
-		wp->w_wndp = curwp;
-		wp->w_toprow = curwp->w_toprow;
-		wp->w_ntrows = ntru;
-		++ntru;		/* Mode line. */
-		curwp->w_toprow += ntru;
-		curwp->w_ntrows = ntrl;
-		while (ntru--)
-			lp = lforw(lp);
-	}
+
+	if (ntrd == ntru)	/* Hit mode line. */
+		lp = lforw(lp);
+
+	curwp->w_ntrows = ntru;
+	wp->w_wndp = curwp->w_wndp;
+	curwp->w_wndp = wp;
+	wp->w_toprow = curwp->w_toprow + ntru + 1;
+	wp->w_ntrows = ntrl;
+
 	curwp->w_linep = lp;
 	wp->w_linep = lp;
 	curwp->w_flag |= WFMODE | WFHARD;
