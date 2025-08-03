@@ -2,7 +2,7 @@
 #include "edef.h"
 #include "line.h"
 
-/* Convert character index/offset into column number */
+/* Convert character index/offset into terminal column number of this line. */
 int get_col(struct line *lp, int offset)
 {
 	int col = 0, i = 0;
@@ -11,7 +11,7 @@ int get_col(struct line *lp, int offset)
 	return col;
 }
 
-/* Convert column number to character index/offset */
+/* Convert terminal column number of this line into character index/offset. */
 int get_idx(struct line *lp, int col)
 {
 	int c = 0, i = 0, len = llength(lp);
@@ -81,8 +81,7 @@ int forwchar(int f, int n)
 	if (n < 0)
 		return backchar(f, -n);
 	while (n--) {
-		int len = llength(curwp->w_dotp);
-		if (curwp->w_doto == len) {
+		if (curwp->w_doto == llength(curwp->w_dotp)) {
 			if (curwp->w_dotp == curbp->b_linep)
 				return FALSE;
 			curwp->w_dotp = lforw(curwp->w_dotp);
@@ -100,14 +99,14 @@ int gotoline(int f, int n)
 	char arg[NSTRING];
 	int status;
 
-	/* Get an argument if one doesnt exist. */
 	if (f == FALSE) {
-		if ((status = mlreply("Line to GO: ", arg, NSTRING)) != TRUE) {
+		if ((status = mlreply("GO: ", arg, NSTRING)) != TRUE) {
 			mlwrite("(Aborted)");
 			return status;
 		}
 		n = atoi(arg);
 	}
+
         /* Handle the case where `me` is called like this: me filename + */
 	if (n == 0)
 		return gotoeob(f, n);
@@ -131,7 +130,7 @@ int forwline(int f, int n)
 	if (curwp->w_dotp == curbp->b_linep)
 		return FALSE;
 
-	/* if the last command was not note a line move */
+	/* If the last command was not a line move, update the goal */
 	if (!(lastflag & CFCPCN))
 		curgoal = get_col(curwp->w_dotp, curwp->w_doto);
 
@@ -156,7 +155,7 @@ int backline(int f, int n)
 	if (lback(curwp->w_dotp) == curbp->b_linep)
 		return FALSE;
 
-	/* if the last command was not note a line move */
+	/* If the last command was not a line move, update the goal */
 	if (!(lastflag & CFCPCN))
 		curgoal = get_col(curwp->w_dotp, curwp->w_doto);
 
@@ -227,7 +226,7 @@ int setmark(int f, int n)
 	return TRUE;
 }
 
-/* Swap the values of "." and "mark" in the current window */
+/* Swap the values of "." and "mark" in the current window. */
 int swapmark(int f, int n)
 {
 	struct line *odotp;

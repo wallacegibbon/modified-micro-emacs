@@ -16,10 +16,15 @@ extern char rpat[];		/* Replacement pattern */
 
 extern int sgarbf;		/* State of screen unknown */
 extern int mpresf;		/* Stuff in message line */
-extern int vtrow;		/* Row location of SW cursor */
-extern int vtcol;		/* Column location of SW cursor */
+
 extern int ttrow;		/* Row location of HW cursor */
 extern int ttcol;		/* Column location of HW cursor */
+
+extern int vtrow;		/* Row location of SW cursor */
+extern int vtcol;		/* Column location of SW cursor */
+
+extern int display_ok;		/* Display resources is ready or not */
+
 extern int lbound;		/* leftmost column of current line displayed */
 extern int taboff;		/* tab offset for display */
 

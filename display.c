@@ -7,7 +7,6 @@
 #include "efunc.h"
 #include "edef.h"
 #include "line.h"
-#include "wrapper.h"
 #include <errno.h>
 #include <stdio.h>
 #include <stdarg.h>
@@ -23,21 +22,6 @@ struct video {
 #define VFREV	0x0004		/* reverse video status */
 #define VFREQ	0x0008		/* reverse video request */
 
-static struct video **vscreen;	/* Virtual screen. */
-static struct video **pscreen;	/* Physical screen. */
-static char *mlbuf = NULL;	/* Message line buffer */
-static size_t mlbuf_size = 0;
-
-#if UNIX
-#include <signal.h>
-#endif
-
-#ifdef SIGWINCH
-/* Variables that will be accessed by signal handler */
-static volatile sig_atomic_t screen_size_changed = 0;
-static volatile sig_atomic_t is_updating = 0;
-#endif
-
 static int reframe(struct window *wp);
 static int flush_to_physcr(void);
 static void update_one(struct window *wp);
@@ -51,13 +35,17 @@ static void update_pos(void);
 
 static int mlflush(void);
 
-#ifdef SIGWINCH
-static void newscreensize(void);
-#endif
+static struct video **vscreen;	/* Virtual screen. */
+static struct video **pscreen;	/* Physical screen. */
+static char *mlbuf = NULL;	/* Message line buffer */
+static size_t mlbuf_size = 0;
 
 static struct video *video_new(size_t text_size)
 {
-	struct video *vp = xmalloc(sizeof(*vp) + text_size);
+	struct video *vp;
+	if ((vp = malloc(sizeof(*vp) + text_size)) == NULL)
+		return NULL;
+
 	vp->v_flag = 0;
 	return vp;
 }
@@ -67,23 +55,33 @@ static void screen_init(void)
 	char *mlbuf_old;
 	int i;
 
-	vscreen = xmalloc(term.t_nrow * sizeof(struct video *));
-	pscreen = xmalloc(term.t_nrow * sizeof(struct video *));
+	display_ok = 0;
+
+	if ((vscreen = malloc(term.t_nrow * sizeof(struct video *))) == NULL)
+		return;
+	if ((pscreen = malloc(term.t_nrow * sizeof(struct video *))) == NULL)
+		return;
 
 	for (i = 0; i < term.t_nrow; ++i) {
-		vscreen[i] = video_new(term.t_ncol);
-		pscreen[i] = video_new(term.t_ncol);
+		if ((vscreen[i] = video_new(term.t_ncol)) == NULL)
+			return;
+		if ((pscreen[i] = video_new(term.t_ncol)) == NULL)
+			return;
 	}
 
 	mlbuf_old = mlbuf;
 	mlbuf_size = term.t_ncol + 1;
-	mlbuf = xmalloc(mlbuf_size);
+	if ((mlbuf = malloc(mlbuf_size)) == NULL)
+		return;
+
 	if (mlbuf_old != NULL) {
 		strncpy_safe(mlbuf, mlbuf_old, mlbuf_size);
 		free(mlbuf_old);
 	} else {
 		mlbuf[0] = '\0';
 	}
+
+	display_ok = 1;
 }
 
 static void screen_deinit(void)
@@ -107,7 +105,7 @@ void vtinit(void)
 void vtdeinit(void)
 {
 	screen_deinit();
-	/* mlbuf is not like screen lines, it keeps contents on resize */
+	/* mlbuf is not like screen lines, it keeps contents on resizing */
 	free(mlbuf);
 	TTclose();
 }
@@ -133,46 +131,34 @@ void vttidy(void)
  * Write a character to the virtual screen.
  * If the line is too long put a "$" in the last column.
  */
-static int vtputc(int c)
+static void vtputc(int c)
 {
-	struct video *vp;
-
-	/* In case somebody passes us a signed char.. */
-	if (c < 0) {
-		c += 256;
-		if (c < 0)
-			return 0;
-	}
-
-	vp = vscreen[vtrow];
-
+	struct video *vp = vscreen[vtrow];
 	if (vtcol >= term.t_ncol) {
 		vp->v_text[term.t_ncol - 1] = '$';
-		return 1;
+		++vtcol;
+		return;
 	}
-
 	if (c == '\t') {
 		do { vtputc(' '); }
 		while (((vtcol + taboff) & TABMASK) != 0);
-		return 1;
+		return;
 	}
-
-	if (!isvisible(c))
-		return put_c(c, vtputc);
-
-	if (vtcol >= 0)
+	if (!isvisible(c)) {
+		put_c(c, vtputc);
+		return;
+	}
+	if (vtcol >= 0) {
 		vp->v_text[vtcol] = c;
-
+	}
 	++vtcol;
-	return 1;
 }
 
-static int vtputs(const char *s)
+static void vtputs(const char *s)
 {
-	int c, n = 0;
+	int c;
 	while ((c = *s++) != '\0')
-		n += vtputc(c);
-	return n;
+		vtputc(c);
 }
 
 /*
@@ -197,10 +183,10 @@ int update(int force)
 		return TRUE;
 #endif
 
-#if SIGWINCH
-	/* It's NOT safe to change screen size from here. */
-	is_updating = 1;
-#endif
+	if (!display_ok) {
+		fprintf(stderr, "Display is not ready, update is not done");
+		return FALSE;
+	}
 
 	/*
 	 * first, propagate mode line changes to all instances of a buffer
@@ -246,14 +232,6 @@ int update(int force)
 	movecursor(currow, curcol - lbound);
 
 	TTflush();
-
-#if SIGWINCH
-	/* It's safe to change screen size now. */
-	is_updating = 0;
-
-	if (screen_size_changed)
-		newscreensize();
-#endif
 	return TRUE;
 }
 
@@ -590,9 +568,8 @@ partial_update:
 static void modeline(struct window *wp)
 {
 	struct buffer *bp = wp->w_bufp;
-	int n;
+	int n = wp->w_toprow + wp->w_ntrows;
 
-	n = wp->w_toprow + wp->w_ntrows;
 	vscreen[n]->v_flag |= VFCHG | VFREQ;
 	vtmove(n, 0);
 
@@ -671,8 +648,6 @@ int mlvwrite(const char *fmt, va_list ap)
 		return 0;
 
 	vsnprintf(mlbuf, mlbuf_size, fmt, ap);
-
-	/* CAUTION: vsnprintf do not have the right size, mlflush does. */
 	n = mlflush();
 
 	TTflush();
@@ -692,42 +667,6 @@ static int mlflush(void)
 	return ttcol;
 }
 
-#ifdef SIGWINCH
-void sizesignal(int signr)
-{
-	int old_errno = errno;
-
-	screen_size_changed = 1;
-	signal(SIGWINCH, sizesignal);
-
-	errno = old_errno;
-
-	/* Make `newscreensize` called in all cases */
-	if (!is_updating)
-		update(TRUE);
-}
-
-static void newscreensize(void)
-{
-	if (screen_size_changed == 0)
-		return;
-
-	screen_size_changed = 0;
-
-	screen_deinit();
-
-	/* Re-open the terminal to get the new size of the screen */
-	TTclose();
-	TTopen();
-
-	screen_init();
-
-	adjust_on_scr_resize();
-	update(TRUE);
-}
-
-#endif
-
 static inline void ttputs(char *s)
 {
 	int c;
@@ -746,7 +685,7 @@ int unput_c(unsigned char c)
 	}
 }
 
-int put_c(unsigned char c, int (*p)(int))
+int put_c(unsigned char c, void (*p)(int))
 {
 	if (c < 0x20 || c == 0x7F) {
 		p('^'); p(c ^ 0x40); return 2;

@@ -18,15 +18,6 @@ removed.
 The default build uses ANSI control sequences directly.  We don't need extra
 libraries besides `libc` to run this program.
 
-To support non-ANSI terminals, build this program with `terminfo`.
-
-```sh
-make USE_TERMCAP=1
-```
-
-> The deprecated `termcap` is supported, too.  But we need to change the
-> Makefile to use `termcap`.
-
 
 ## Miscellaneous
 

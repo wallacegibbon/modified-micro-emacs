@@ -88,7 +88,7 @@ int prevwind(int f, int n);
 int onlywind(int f, int n);
 int delwind(int f, int n);
 int splitwind(int f, int n);
-int adjust_on_scr_resize(void);
+int adjust_on_scr_resize(int scr_rows);
 
 /* basic.c */
 int get_col(struct line *lp, int offset);
@@ -119,7 +119,7 @@ int yank(int f, int n);
 
 /* main.c */
 int (*getbind(int c))(int, int);
-void edinit(char *bname);
+int edinit(char *bname);
 int execute(int c, int f, int n);
 int quickexit(int f, int n);
 int quit(int f, int n);
@@ -144,7 +144,7 @@ void mlerase(void);
 int mlwrite(const char *fmt, ...);
 int mlvwrite(const char *fmt, va_list ap);
 int unput_c(unsigned char c);
-int put_c(unsigned char c, int (*p)(int));
+int put_c(unsigned char c, void (*p)(int));
 int next_col(int col, unsigned char c);
 
 /* region.c */
@@ -155,12 +155,12 @@ int upperregion(int f, int n);
 int getregion(struct region *rp);
 
 /* posix.c */
+void getscreensize(int *widthp, int *heightp);
 void ttopen(void);
 void ttclose(void);
-int ttputc(int c);
 void ttflush(void);
+void ttputc(int c);
 int ttgetc(void);
-void getscreensize(int *widthp, int *heightp);
 
 /* input.c */
 int mlyesno(char *prompt);
@@ -224,5 +224,6 @@ void release(void *mp);
 
 /* util.c */
 char *strncpy_safe(char *dest, const char *src, size_t size);
+void die(int code, const char *fmt, ...);
 
 #endif

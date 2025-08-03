@@ -1,6 +1,5 @@
 #include "efunc.h"
 #include "edef.h"
-#include "wrapper.h"
 
 /*
  * CAUTION: Prefixed chars (e.g. `CTL | 'A'`) may be stored in this variable,
@@ -109,8 +108,6 @@ int mlgetstring(char *buf, int nbuf, int eolchar, const char *fmt, ...)
 char_loop:
 	TTflush();
 	c = ectoc(expc = get1key());
-
-	/* All return points should clear message line */
 	if (expc == eolchar)
 		goto normal_exit;
 
@@ -155,8 +152,6 @@ int mlgetchar(const char *fmt, ...)
 	va_end(ap);
 
 	c = ctoec(tgetc());
-
-	/* Clear message line after `tgetc` */
 	mlerase();
 	return c;
 }

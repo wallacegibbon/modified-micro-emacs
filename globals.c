@@ -16,6 +16,8 @@ int ttcol = HUGE;		/* Column location of HW cursor */
 int vtrow;			/* Row location of SW cursor */
 int vtcol;			/* Column location of SW cursor */
 
+int display_ok = 0;		/* Display resources is ready or not */
+
 int currow;			/* Cursor row */
 int curcol;			/* Cursor column */
 

@@ -8,9 +8,11 @@
 #include <signal.h>
 static void emergencyexit(int);
 #ifdef SIGWINCH
-void sizesignal(int);
+static void resizeexit(int);
 #endif
 #endif
+
+static const char *quitmsg = NULL;
 
 void usage(const char *program_name, int status)
 {
@@ -22,17 +24,18 @@ void usage(const char *program_name, int status)
 	exit(status);
 }
 
+static int get_universal_arg(int *arg);
+
 int main(int argc, char **argv)
 {
 	struct buffer *firstbp = NULL, *bp;
 	char bname[NBUFN];
 	int firstfile = TRUE, rdonlyflag = FALSE, gotoflag = FALSE, gline = 0;
-	int c = 0, i;
-	int f, n;
+	int c = 0, i, f, n;
 
 #if UNIX
 #ifdef SIGWINCH
-	signal(SIGWINCH, sizesignal);
+	signal(SIGWINCH, resizeexit);
 #endif
 #endif
 	if (argc == 2) {
@@ -41,7 +44,11 @@ int main(int argc, char **argv)
 	}
 
 	vtinit();
-	edinit("main");
+	if (!display_ok)
+		die(1, "Failed initializing virtual terminal\n");
+
+	if (edinit("main"))
+		die(1, "Failed initializing editor\n");
 
 	for (i = 1; i < argc; ++i) {
 		if (argv[i][0] == '-' && (argv[i][1] | DIFCASE) == 'v') {
@@ -82,41 +89,40 @@ int main(int argc, char **argv)
 		}
 	}
 
-loop:
-	update(FALSE);
-	c = getcmd();
-
-	/* if there is something on the command line, clear it */
-	if (mpresf != FALSE)
-		mlerase();
-
-	f = FALSE;
-	n = 1;
-
-	/* do ^U repeat argument processing */
-	if (c == REPTC) {
-		i = 0;	/* A sign for the first loop */
-		f = TRUE;
-		n = 4;
-		mlwrite("Arg: 4");
+	for (;;) {
+		update(FALSE);
 		c = getcmd();
-		while (isdigit(c) || c == REPTC) {
-			if (c == REPTC) {
-				n = n * 4;
-			} else {
-				if (i == 0)
-					n = c - '0';
-				else
-					n = 10 * n + c - '0';
-			}
-			i = 1;
-			mlwrite("Arg: %d", n);
-			c = getcmd();
+		if (mpresf != FALSE)
+			mlerase();
+
+		f = FALSE;
+		n = 1;
+		if (c == REPTC) {
+			c = get_universal_arg(&n);
+			f = TRUE;
+		}
+
+		execute(c, f, n);
+	}
+}
+
+static int get_universal_arg(int *arg)
+{
+	int n = 4, first_flag = 0, c;
+	for (;;) {
+		mlwrite("Arg: %d", n);
+		c = getcmd();
+		if (isdigit(c)) {
+			n = !first_flag ? (c - '0') : (10 * n + c - '0');
+			first_flag = 1;
+		} else if (c == REPTC) {
+			n *= 4;
+			first_flag = 1;
+		} else {
+			*arg = n;
+			return c;
 		}
 	}
-
-	execute(c, f, n);
-	goto loop;
 }
 
 /*
@@ -124,7 +130,7 @@ loop:
  * as an argument, because the main routine may have been told to read in a
  * file by default, and we want the buffer name to be right.
  */
-void edinit(char *bname)
+int edinit(char *bname)
 {
 	struct buffer *bp;
 	struct window *wp;
@@ -132,13 +138,14 @@ void edinit(char *bname)
 	bp = bfind(bname, TRUE, 0); /* First buffer */
 	wp = malloc(sizeof(struct window)); /* First window */
 	if (bp == NULL || wp == NULL)
-		exit(1);
+		return 1;
+
 	curbp = bp;
 	wheadp = wp;
 	curwp = wp;
-	wp->w_wndp = NULL;	/* Initialize window */
+	wp->w_wndp = NULL;
 	wp->w_bufp = bp;
-	bp->b_nwnd = 1;		/* Displayed. */
+	bp->b_nwnd = 1;
 	wp->w_linep = bp->b_linep;
 	wp->w_dotp = bp->b_linep;
 	wp->w_doto = 0;
@@ -147,7 +154,8 @@ void edinit(char *bname)
 	wp->w_toprow = 0;
 	wp->w_ntrows = term.t_nrow - 1;	/* "-1" for mode line. */
 	wp->w_force = 0;
-	wp->w_flag = WFMODE | WFHARD;	/* Full. */
+	wp->w_flag = WFMODE | WFHARD;
+	return 0;
 }
 
 /* This function looks a key binding up in the binding table. */
@@ -208,32 +216,33 @@ int execute(int c, int f, int n)
 	return status;
 }
 
-/*
- * Fancy quit command, as implemented by Norm.  If the any buffer has
- * changed do a write on that buffer and exit emacs, otherwise simply exit.
- */
-int quickexit(int f, int n)
+static void save_buffers(void)
 {
-	struct buffer *curbp_bak = curbp, *bp;
-	int status;
-
+	struct buffer *bp;
 	for_each_buff(bp) {
 		if ((bp->b_flag & BFCHG) && !(bp->b_flag & BFTRUNC)) {
-			curbp = bp;
 			mlwrite("(Saving %s)", bp->b_fname);
-			if ((status = filesave(f, n)) != TRUE) {
-				curbp = curbp_bak;
-				return status;
-			}
+			filesave(FALSE, 0);
 		}
 	}
-	quit(f, n);
-	return TRUE;
+}
+
+int quickexit(int f, int n)
+{
+	save_buffers();
+	return quit(f, n);
 }
 
 static void emergencyexit(int signr)
 {
-	quickexit(FALSE, 0);
+	save_buffers();
+	quit(TRUE, 0);
+}
+
+static void resizeexit(int signr)
+{
+	save_buffers();
+	quitmsg = "me is exited since terminal is resized.";
 	quit(TRUE, 0);
 }
 
@@ -257,10 +266,9 @@ int quit(int f, int n)
 		}
 #endif
 		vttidy();
-		if (f)
-			exit(n);
-		else
-			exit(0);
+		if (quitmsg != NULL)
+			fprintf(stderr, "%s\n", quitmsg);
+		exit(f ? n : 0);
 	}
 	mlerase();
 	return s;
@@ -344,7 +352,6 @@ int cexit(int status)
 	struct window *wp, *tp;
 	struct buffer *bp;
 
-	/* First clean up the windows */
 	wp = wheadp;
 	while (wp) {
 		tp = wp->w_wndp;
@@ -353,19 +360,14 @@ int cexit(int status)
 	}
 	wheadp = NULL;
 
-	/* Then the buffers */
 	bp = bheadp;
 	while (bp) {
 		bp->b_nwnd = 0;
-		/* don't say anything about a changed buffer! */
-		bp->b_flag = 0;
+		bp->b_flag = 0;	/* ignore changed buffers */
 		zotbuf(bp);
 		bp = bheadp;
 	}
-
-	/* and the kill buffer */
 	kdelete();
-	/* and the video buffers */
 	vtdeinit();
 #undef exit
 	exit(status);

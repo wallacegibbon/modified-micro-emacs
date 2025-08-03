@@ -2,8 +2,6 @@
 #include "edef.h"
 #include <stdio.h>
 
-#if !USE_TERMCAP
-
 #define SCRSIZ	64		/* scroll size for extended lines */
 #define MARGIN	8		/* size of minimim margin and */
 
@@ -14,12 +12,6 @@ static void ansieeol(void);
 static void ansieeop(void);
 static void ansibeep(void);
 static void ansirev(int);
-
-static void ansiparm(int n);
-
-/* Not ANSI, but supported by many terminals. */
-static void alternate_screen_init(void);
-static void alternate_screen_end(void);
 
 struct terminal term = {
 	0, 0,			/* These 2 values are set at open time. */
@@ -37,11 +29,21 @@ struct terminal term = {
 	ansirev
 };
 
-static inline void ttputs(char *s)
+static inline void putpad(char *str)
 {
 	int c;
-	while ((c = *s++))
+	while ((c = *str++))
 		ttputc(c);
+}
+
+static inline void ascr_init(void) /* Not ANSI, but widely supported */
+{
+	putpad("\033[?1049h");
+}
+
+static inline void ascr_end(void) /* Not ANSI, but widely supported */
+{
+	putpad("\033[?1049l");
 }
 
 static inline int ansi_compatible(const char *name)
@@ -53,16 +55,16 @@ static inline int ansi_compatible(const char *name)
 
 static void ansiopen(void)
 {
-	char *cp;
 	int cols, rows;
+	char *cp;
 
 	if ((cp = getenv("TERM")) == NULL) {
-		puts("Shell variable TERM not defined!");
-		exit(1);
+		fputs("Shell variable TERM not defined!", stderr);
+		return;
 	}
 	if (!ansi_compatible(cp)) {
-		puts("Terminal type not ANSI-compatible!");
-		exit(1);
+		fputs("Terminal type not ANSI-compatible!", stderr);
+		return;
 	}
 
 	getscreensize(&cols, &rows);
@@ -70,55 +72,29 @@ static void ansiopen(void)
 	term.t_ncol = atleast(cols, SCR_MIN_COLS);
 
 	ttopen();
-	alternate_screen_init();
+	ascr_init();
 	ttflush();
-
 	sgarbf = TRUE;
 }
 
 static void ansiclose(void)
 {
 	ansimove(term.t_nrow, 0);
-	alternate_screen_end();
+	ascr_end();
 	ttflush();
 	ttclose();
 }
 
 static void ansimove(int row, int col)
 {
-	ttputs("\033[");
-	ansiparm(row + 1);
-	ttputc(';');
-	ansiparm(col + 1);
-	ttputc('H');
-}
-
-/* The following 2 are not in ANSI, but useful in modern terminals */
-static void alternate_screen_init(void)
-{
-	ttputs("\033[?1049h");
-}
-
-static void alternate_screen_end(void)
-{
-	ttputs("\033[?1049l");
-}
-
-static void ansieeol(void)
-{
-	ttputs("\033[K");
-}
-
-static void ansieeop(void)
-{
-	ttputs("\033[J");
+	char buf[32];
+	snprintf(buf, 32, "\033[%d;%dH", row + 1, col + 1);
+	putpad(buf);
 }
 
 static void ansirev(int is_rev)
 {
-	ttputs("\033[");
-	ttputc(is_rev ? '7' : '0');
-	ttputc('m');
+	putpad(is_rev ? "\033[7m" : "\033[0m");
 }
 
 static void ansibeep(void)
@@ -127,17 +103,12 @@ static void ansibeep(void)
 	ttflush();
 }
 
-static void ansiparm(int n)
+static void ansieeol(void)
 {
-	int q, r;
-	q = n / 10;
-	if (q != 0) {
-		r = q / 10;
-		if (r != 0)
-			ttputc((r % 10) + '0');
-		ttputc((q % 10) + '0');
-	}
-	ttputc((n % 10) + '0');
+	putpad("\033[K");
 }
 
-#endif
+static void ansieeop(void)
+{
+	putpad("\033[J");
+}

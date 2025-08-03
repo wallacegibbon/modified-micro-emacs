@@ -15,16 +15,14 @@
 
 /* Mac OS X's termios.h doesn't have the following 2 macros, define them. */
 #if defined(_DARWIN_C_SOURCE) || defined(_FREEBSD_C_SOURCE)
-#define OLCUC 0000002
-#define XCASE 0000004
+#define OLCUC	0000002
+#define XCASE	0000004
 #endif
 
 static struct termios otermios;	/* original terminal characteristics */
 static struct termios ntermios;	/* charactoristics to use inside */
 
-/*
- * This function is called once to set up the terminal device streams.
- */
+/* This function is called once to set up the terminal device streams. */
 void ttopen(void)
 {
 	tcgetattr(0, &otermios);
@@ -52,16 +50,17 @@ void ttopen(void)
 
 /*
  * This function gets called just before we go back to the command interpreter.
+ * Return 0 on success.
  */
 void ttclose(void)
 {
 	tcsetattr(0, TCSADRAIN, &otermios);
 }
 
-int ttputc(int c)
+/* Return 0 on success */
+void ttputc(int c)
 {
 	fputc(c, stdout);
-	return 0;
 }
 
 int ttgetc(void)
@@ -82,13 +81,12 @@ int ttgetc(void)
 void ttflush(void)
 {
 	int status;
+
 	status = fflush(stdout);
 	while (status < 0 && errno == EAGAIN) {
 		sleep(1);
 		status = fflush(stdout);
 	}
-	if (status < 0)
-		exit(15);
 }
 
 void getscreensize(int *widthp, int *heightp)
@@ -97,8 +95,11 @@ void getscreensize(int *widthp, int *heightp)
 	struct winsize size;
 	*widthp = 0;
 	*heightp = 0;
-	if (ioctl(0, TIOCGWINSZ, &size) < 0)
+	if (ioctl(0, TIOCGWINSZ, &size) < 0) {
+		*widthp = 0;
+		*heightp = 0;
 		return;
+	}
 	*widthp = size.ws_col;
 	*heightp = size.ws_row;
 #else

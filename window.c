@@ -1,7 +1,6 @@
 #include "efunc.h"
 #include "edef.h"
 #include "line.h"
-#include "wrapper.h"
 
 /*
  * With no argument, it just does the refresh.  With an argument "n",
@@ -233,62 +232,9 @@ int splitwind(int f, int n)
 		while (ntru--)
 			lp = lforw(lp);
 	}
-	curwp->w_linep = lp;	/* Adjust the top lines */
-	wp->w_linep = lp;	/* if necessary. */
+	curwp->w_linep = lp;
+	wp->w_linep = lp;
 	curwp->w_flag |= WFMODE | WFHARD;
 	wp->w_flag |= WFMODE | WFHARD;
-	return TRUE;
-}
-
-int adjust_on_scr_resize(void)
-{
-	struct window *wp = NULL, *lastwp = NULL, *nextwp;
-	int scr_rows = term.t_nrow, lastline;
-
-	if (scr_rows < SCR_MIN_ROWS - 1)
-		return FALSE;
-
-	for (nextwp = wheadp; nextwp != NULL;) {
-		wp = nextwp;
-		/* Have to update nextwp here, since wp could change it. */
-		nextwp = nextwp->w_wndp;
-
-		/* get rid of it if it is too low */
-		if (wp->w_toprow > scr_rows - 1) {
-			/* save the point/mark if needed */
-			if (--wp->w_bufp->b_nwnd == 0)
-				wstate_save(wp);
-
-			/* update curwp and lastwp if needed */
-			if (wp == curwp)
-				curwp = wheadp;
-			curbp = curwp->w_bufp;
-			if (lastwp != NULL)
-				lastwp->w_wndp = NULL;
-
-			free(wp);
-			wp = NULL;
-		} else {
-			/* need to change this window size? */
-			lastline = wp->w_toprow + wp->w_ntrows - 1;
-			if (lastline >= scr_rows - 1)
-				wp->w_ntrows = scr_rows - wp->w_toprow - 1;
-		}
-
-		/* Every window should be redrawn during resizing */
-		if (wp != NULL)
-			wp->w_flag |= WFHARD | WFMODE;
-
-		lastwp = wp;
-	}
-
-	/* Free space created by enlarging is given to the bottom window */
-	if (wp != NULL) {
-		lastline = wp->w_toprow + wp->w_ntrows - 1;
-		if (lastline < scr_rows - 1)
-			wp->w_ntrows = scr_rows - wp->w_toprow - 1;
-	}
-
-	sgarbf = TRUE;
 	return TRUE;
 }
