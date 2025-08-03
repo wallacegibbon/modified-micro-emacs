@@ -87,6 +87,7 @@ static void screen_init(void)
 static void screen_deinit(void)
 {
 	int i;
+	display_ok = 0;
 	for (i = 0; i < term.t_nrow; ++i) {
 		free(vscreen[i]);
 		free(pscreen[i]);
@@ -178,15 +179,15 @@ int update(int force)
 {
 	struct window *wp, *w;
 
+	if (!display_ok) {
+		fprintf(stderr, "Display is not ready, nothing to update.");
+		return FALSE;
+	}
+
 #if VISMAC == 0
 	if (force == FALSE && kbdmode == PLAY)
 		return TRUE;
 #endif
-
-	if (!display_ok) {
-		fprintf(stderr, "Display is not ready, update is not done");
-		return FALSE;
-	}
 
 	/*
 	 * first, propagate mode line changes to all instances of a buffer

@@ -7,12 +7,7 @@
 #if UNIX
 #include <signal.h>
 static void emergencyexit(int);
-#ifdef SIGWINCH
-static void resizeexit(int);
 #endif
-#endif
-
-static const char *quitmsg = NULL;
 
 void usage(const char *program_name, int status)
 {
@@ -33,11 +28,6 @@ int main(int argc, char **argv)
 	int firstfile = TRUE, rdonlyflag = FALSE, gotoflag = FALSE, gline = 0;
 	int c = 0, i, f, n;
 
-#if UNIX
-#ifdef SIGWINCH
-	signal(SIGWINCH, resizeexit);
-#endif
-#endif
 	if (argc == 2) {
 		if (strcmp(argv[1], "--help") == 0)
 			usage(argv[0], EXIT_SUCCESS);
@@ -239,13 +229,6 @@ static void emergencyexit(int signr)
 	quit(TRUE, 0);
 }
 
-static void resizeexit(int signr)
-{
-	save_buffers();
-	quitmsg = "me is exited since terminal is resized.";
-	quit(TRUE, 0);
-}
-
 /*
  * Quit command.  If an argument, always quit.  Otherwise confirm if a buffer
  * has been changed and not written out.
@@ -266,8 +249,6 @@ int quit(int f, int n)
 		}
 #endif
 		vttidy();
-		if (quitmsg != NULL)
-			fprintf(stderr, "%s\n", quitmsg);
 		exit(f ? n : 0);
 	}
 	mlerase();
