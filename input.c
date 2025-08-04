@@ -63,34 +63,39 @@ static int csi_drop_args(void)
 	return c;
 }
 
-/* Get a command from the keyboard.  Process all applicable prefix keys. */
+/* Get a command from the keyboard.  Escape key is ignored (except for CSI) */
 int getcmd(void)
 {
 	int cmask = 0, c;
 	c = get1key();
-#if UNIX
 	if (c == ESCAPEC) {
-		c = get1key();
-		if (c == '[' || c == 'O') {
-			switch (csi_drop_args()) {
-			case 'A':	return CTL | 'P';
-			case 'B':	return CTL | 'N';
-			default:	return NULLPROC_KEY;
-			}
-		}
-	}
-#endif
-	if (c == CTLXC) {
-		cmask |= CTLX;
-ctlx_loop:
+escape_loop:
 		c = get1key();
 		if (c == ESCAPEC)
-			goto ctlx_loop;
-
-		return cmask | ensure_upper(c);
+			goto escape_loop;
+#if UNIX
+		if (c == '[' || c == 'O') {
+			switch (csi_drop_args()) {
+			case 'A':
+				return CTL | 'P';
+			case 'B':
+				return CTL | 'N';
+			default:
+				return NULLPROC_KEY;
+			}
+		}
+#endif
 	}
-
-	return c;
+	if (c == CTLXC && cmask == 0) {
+		cmask |= CTLX;
+		c = get1key();
+		if (c == ESCAPEC)
+			goto escape_loop;
+	}
+	if (cmask)
+		return cmask | ensure_upper(c);
+	else
+		return c;
 }
 
 int mlgetstring(char *buf, int nbuf, int eolchar, const char *fmt, ...)
@@ -165,9 +170,12 @@ int mlyesno(char *prompt)
 {
 	for (;;) {
 		switch (mlgetchar("%s (y/n)? ", prompt)) {
-		case 'y':	return TRUE;
-		case 'n':	return FALSE;
-		case ABORTC:	return ABORT;
+		case 'y':
+			return TRUE;
+		case 'n':
+			return FALSE;
+		case ABORTC:
+			return ABORT;
 		}
 	}
 }
