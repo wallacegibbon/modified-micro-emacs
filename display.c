@@ -22,11 +22,11 @@ struct video {
 #define VFREV	0x0004		/* reverse video status */
 #define VFREQ	0x0008		/* reverse video request */
 
-static int reframe(struct window *wp);
-static int flush_to_physcr(void);
+static void reframe(struct window *wp);
+static void flush_to_physcr(void);
 static void update_one(struct window *wp);
 static void update_all(struct window *wp);
-static int update_line(int row, struct video *vp1, struct video *vp2);
+static void update_line(int row, struct video *vp1, struct video *vp2);
 static void modeline(struct window *wp);
 
 static void update_extended(void);
@@ -242,7 +242,7 @@ int update(int force)
 }
 
 /* Check to see if the cursor is in the window and re-frame it if needed. */
-static int reframe(struct window *wp)
+static void reframe(struct window *wp)
 {
 	struct line *lp;
 	int i;
@@ -251,7 +251,7 @@ static int reframe(struct window *wp)
 		lp = wp->w_linep;
 		for (i = wp->w_ntrows; i && lp != wp->w_bufp->b_linep; --i) {
 			if (lp == wp->w_dotp)
-				return TRUE;
+				return;
 			lp = lforw(lp);
 		}
 	}
@@ -268,7 +268,6 @@ static int reframe(struct window *wp)
 	wp->w_linep = lp;
 	wp->w_flag |= WFHARD;
 	wp->w_flag &= ~WFFORCE;
-	return TRUE;
 }
 
 static void show_line(struct line *lp)
@@ -391,7 +390,7 @@ void update_garbage(void)
 	sgarbf = FALSE;
 }
 
-static int flush_to_physcr(void)
+static void flush_to_physcr(void)
 {
 	struct video *vp1;
 	int i;
@@ -400,7 +399,6 @@ static int flush_to_physcr(void)
 		if (vp1->v_flag & VFCHG)
 			update_line(i, vp1, pscreen[i]);
 	}
-	return TRUE;
 }
 
 /*
@@ -431,7 +429,7 @@ static void update_extended(void)
 }
 
 /* Update the line to terminal.  The physical column will be updated. */
-static int update_line(int row, struct video *vp1, struct video *vp2)
+static void update_line(int row, struct video *vp1, struct video *vp2)
 {
 	char *cp1, *cp2, *cp3, *cp4;
 	int rev, req, should_send_rev;
@@ -491,7 +489,7 @@ full_update:
 	else
 		vp1->v_flag &= ~VFREV;
 
-	return TRUE;
+	return;
 
 partial_update:
 	/* Ignore common chars on the left */
@@ -503,7 +501,7 @@ partial_update:
 	/* if both lines are the same, no update needs to be done */
 	if (cp1 == cp3) {
 		vp1->v_flag &= ~VFCHG;
-		return TRUE;
+		return;
 	}
 
 	/* Ignore common chars on the right */
@@ -526,7 +524,6 @@ partial_update:
 		TTrev(FALSE);
 
 	vp1->v_flag &= ~VFCHG;	/* flag this line as updated */
-	return TRUE;
 }
 
 /*
