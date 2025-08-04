@@ -190,7 +190,7 @@ int forwpage(int f, int n)
 	curwp->w_linep = lp;
 	curwp->w_dotp = lp;
 	curwp->w_doto = 0;
-	curwp->w_flag |= WFHARD | WFKILLS;
+	curwp->w_flag |= WFHARD;
 	return TRUE;
 }
 
@@ -214,7 +214,7 @@ int backpage(int f, int n)
 	curwp->w_linep = lp;
 	curwp->w_dotp = lp;
 	curwp->w_doto = 0;
-	curwp->w_flag |= WFHARD | WFINS;
+	curwp->w_flag |= WFHARD;
 	return TRUE;
 }
 

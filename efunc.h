@@ -18,6 +18,9 @@
 #define atleast(n, limit) \
 	((n) > (limit) ? (n) : (limit))
 
+#define inside(n, min, max) \
+	((n) < (min) ? (min) : (n) > (max) ? (max) : n)
+
 #define isvisible(c) \
 	(((c) >= 0x20 && (c) <= 0x7E) || (c) == '\t')
 

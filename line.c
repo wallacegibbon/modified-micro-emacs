@@ -247,7 +247,7 @@ static int lnewline(void)
 	if (curbp->b_flag & BFRDONLY)
 		return rdonly();
 
-	lchange(WFHARD | WFINS);
+	lchange(WFHARD);
 
 	if ((lp_new = lalloc(doto)) == NULL)
 		return FALSE;
@@ -434,7 +434,7 @@ static int ldelete_once(int n, int kflag)
 	 * We call `ldelnewline`, and leave the rest work to the next loop.
 	 */
 	if (chunk == 0) {
-		lchange(WFHARD | WFKILLS);
+		lchange(WFHARD);
 		if (ldelnewline() == FALSE)
 			return -1;
 		if (kflag && kinsert('\n') == FALSE)

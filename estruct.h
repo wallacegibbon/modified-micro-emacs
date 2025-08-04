@@ -84,8 +84,6 @@ struct window {
 #define WFEDIT		0x04	/* Editing within a line */
 #define WFHARD		0x08	/* Better to a full display */
 #define WFMODE		0x10	/* Update mode line. */
-#define WFKILLS		0x40	/* Something was deleted */
-#define WFINS		0x80	/* Something was inserted */
 
 /*
  * Buffers may be "Inactive" which means the files associated with them

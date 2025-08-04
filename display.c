@@ -184,8 +184,6 @@ static void vteeol(void)
 		vcp[vtcol++] = ' ';
 }
 
-static int scrflags;
-
 int update(int force)
 {
 	struct window *wp, *w;
@@ -219,15 +217,11 @@ int update(int force)
 	for_each_wind(wp) {
 		if (wp->w_flag) {
 			reframe(wp);
-			if (wp->w_flag & (WFKILLS | WFINS)) {
-				scrflags |= (wp->w_flag & (WFINS | WFKILLS));
-				wp->w_flag &= ~(WFKILLS | WFINS);
-			}
 			if ((wp->w_flag & ~WFMODE) == WFEDIT)
 				update_one(wp);
 			else if (wp->w_flag & ~WFMOVE)
 				update_all(wp);
-			if (scrflags || (wp->w_flag & WFMODE))
+			if (wp->w_flag & WFMODE)
 				modeline(wp);
 			wp->w_flag = 0;
 			wp->w_force = 0;
@@ -247,68 +241,30 @@ int update(int force)
 	return TRUE;
 }
 
-/* Check to see if the cursor is on in the window and re-frame it if needed. */
+/* Check to see if the cursor is in the window and re-frame it if needed. */
 static int reframe(struct window *wp)
 {
-	struct line *lp, *lp0;
-	int i = 0;
+	struct line *lp;
+	int i;
 
-	/* if not a requested reframe, check for a needed one */
 	if (!(wp->w_flag & WFFORCE)) {
-		/* loop from one line above the window to one line after */
 		lp = wp->w_linep;
-		lp0 = lback(lp);
-		if (lp0 == wp->w_bufp->b_linep) {
-			i = 0;
-		} else {
-			i = -1;
-			lp = lp0;
-		}
-		for (; i <= wp->w_ntrows; ++i, lp = lforw(lp)) {
-			/* if the line is in the window, no reframe */
-			if (lp == wp->w_dotp) {
-				/* if not _quite_ in, we'll reframe gently */
-				if (i < 0 || i == wp->w_ntrows) {
-					i = wp->w_force;
-					break;
-				}
+		for (i = wp->w_ntrows; i && lp != wp->w_bufp->b_linep; --i) {
+			if (lp == wp->w_dotp)
 				return TRUE;
-			}
-			/* if we are at the end of the file, reframe */
-			if (lp == wp->w_bufp->b_linep)
-				break;
+			lp = lforw(lp);
 		}
 	}
-	if (i == -1) {			/* we're just above the window */
-		i = scrollcount;	/* put dot at first line */
-		scrflags |= WFINS;
-	} else if (i == wp->w_ntrows) {	/* we're just below the window */
-		i = -scrollcount;	/* put dot at last line */
-		scrflags |= WFKILLS;
-	} else {			/* put dot where requested */
-		i = wp->w_force;	/* (is 0, unless reposition() was called) */
-	}
 
-	wp->w_flag |= WFMODE;
-
-	/* how far back to reframe? */
-	if (i > 0) {		/* only one screen worth of lines max */
-		if (--i >= wp->w_ntrows)
-			i = wp->w_ntrows - 1;
-	} else if (i < 0) {	/* negative update???? */
-		i += wp->w_ntrows;
-		if (i < 0)
-			i = 0;
-	} else {
+	if (wp->w_flag & WFFORCE)
+		i = inside(wp->w_force - 1, 0, wp->w_ntrows - 1);
+	else
 		i = wp->w_ntrows / 2;
-	}
 
-	/* backup to new line at top of window */
 	lp = wp->w_dotp;
 	while (i-- && lback(lp) != wp->w_bufp->b_linep)
 		lp = lback(lp);
 
-	/* and reset the current line at top of window */
 	wp->w_linep = lp;
 	wp->w_flag |= WFHARD;
 	wp->w_flag &= ~WFFORCE;

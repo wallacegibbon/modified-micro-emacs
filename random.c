@@ -48,7 +48,6 @@ int newline(int f, int n)
 	if (n < 0)
 		return FALSE;
 
-	curwp->w_flag |= WFINS;
 	return linsert(n, '\n');
 }
 
@@ -68,8 +67,6 @@ static int newline_and_indent_one(void)
 
 	if (linsert(1, '\n') == FALSE)
 		return FALSE;
-
-	curwp->w_flag |= WFINS;
 
 	/* Insert leading TABs (and white spaces) */
 
