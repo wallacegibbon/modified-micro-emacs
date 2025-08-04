@@ -44,6 +44,7 @@ int swbuffer(struct buffer *bp)
 	curwp->w_bufp = bp;
 	curwp->w_linep = bp->b_linep;
 	curwp->w_flag |= WFMODE | WFFORCE | WFHARD;
+	curwp->w_force = curwp->w_ntrows / 2;
 	if (bp->b_nwnd++ == 0) {
 		wstate_restore(curwp, bp);
 		return TRUE;

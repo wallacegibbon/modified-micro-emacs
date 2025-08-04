@@ -254,6 +254,8 @@ static void reframe(struct window *wp)
 				return;
 			lp = lforw(lp);
 		}
+		if (i > 0 && lp == wp->w_dotp)	/* w_dotp == b_linep */
+			return;
 	}
 
 	if (wp->w_flag & WFFORCE)
