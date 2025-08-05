@@ -5,8 +5,10 @@
 
 char *strncpy_safe(char *dest, const char *src, size_t size)
 {
-	dest[size - 1] = '\0';
-	return strncpy(dest, src, size - 1);
+	if (!size)
+		return dest;
+	dest[--size] = '\0';
+	return strncpy(dest, src, size);
 }
 
 void die(int code, const char *fmt, ...)
