@@ -56,7 +56,7 @@ int copyregion(int f, int n)
 			++loffs;
 		}
 	}
-	mlwrite("(region copied)");
+	mlwrite("Region copied");
 	return TRUE;
 }
 

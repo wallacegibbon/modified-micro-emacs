@@ -30,7 +30,7 @@ int filefind(int f, int n)
 				lp = lback(lp);
 			curwp->w_linep = lp;
 			curwp->w_flag |= WFMODE | WFHARD;
-			mlwrite("(Old buffer)");
+			mlwrite("Old buffer");
 			return TRUE;
 		}
 	}
@@ -86,12 +86,12 @@ int readin(char *fname)
 		return FALSE;
 
 	if (s == FIOFNF) {
-		mlwrite("(New file)");
+		mlwrite("New file");
 		s = FIOSUC;
 		goto out;
 	}
 
-	mlwrite("(Reading file)");
+	mlwrite("Reading file");
 	nline = 0;
 	while ((s = ffgetline(&nbytes)) == FIOSUC) {
 		if ((lp1 = lalloc(nbytes)) == NULL) {
@@ -112,7 +112,7 @@ int readin(char *fname)
 		++nline;
 	}
 	ffclose();		/* Ignore errors. */
-	strcpy(mesg, "(");
+	mesg[0] = '\0';
 	if (s == FIOERR) {
 		strcat(mesg, "I/O ERROR, ");
 		curbp->b_flag |= BFTRUNC;
@@ -124,7 +124,6 @@ int readin(char *fname)
 	sprintf(&mesg[strlen(mesg)], "Read %d line", nline);
 	if (nline != 1)
 		strcat(mesg, "s");
-	strcat(mesg, ")");
 	mlwrite("%s", mesg);
 
 out:
@@ -229,7 +228,7 @@ int filesave(int f, int n)
 
 	if (curbp->b_flag & BFTRUNC) {
 		if (mlyesno("Truncated file ... write it out") == FALSE) {
-			mlwrite("(Aborted)");
+			mlwrite("Aborted");
 			return FALSE;
 		}
 	}
@@ -252,7 +251,7 @@ int writeout(char *fn)
 	if ((s = ffwopen(fn)) != FIOSUC)
 		return FALSE;
 
-	mlwrite("(Writing...)");
+	mlwrite("Writing...");
 	nline = 0;
 	for (lp = lforw(curbp->b_linep); lp != curbp->b_linep; lp = lforw(lp)) {
 		if ((s = ffputline(&lp->l_text[0], llength(lp))) != FIOSUC)
@@ -263,9 +262,9 @@ int writeout(char *fn)
 		s = ffclose();
 		if (s == FIOSUC) {
 			if (nline == 1)
-				mlwrite("(Wrote 1 line)");
+				mlwrite("Wrote 1 line");
 			else
-				mlwrite("(Wrote %d lines)", nline);
+				mlwrite("Wrote %d lines", nline);
 		}
 	} else {
 		ffclose();

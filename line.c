@@ -24,7 +24,7 @@ struct line *lalloc(int used)
 		size = BLOCK_SIZE;
 
 	if ((lp = malloc(sizeof(struct line) + size)) == NULL) {
-		mlwrite("(OUT OF MEMORY)");
+		mlwrite("OUT OF MEMORY");
 		return NULL;
 	}
 

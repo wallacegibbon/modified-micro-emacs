@@ -101,7 +101,7 @@ int gotoline(int f, int n)
 
 	if (f == FALSE) {
 		if ((status = mlreply("GO: ", arg, NSTRING)) != TRUE) {
-			mlwrite("(Aborted)");
+			mlwrite("Aborted");
 			return status;
 		}
 		n = atoi(arg);
@@ -222,7 +222,7 @@ int setmark(int f, int n)
 {
 	curwp->w_markp = curwp->w_dotp;
 	curwp->w_marko = curwp->w_doto;
-	mlwrite("(Mark set)");
+	mlwrite("Mark set");
 	return TRUE;
 }
 

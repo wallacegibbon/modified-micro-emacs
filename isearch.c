@@ -20,7 +20,7 @@ int fisearch(int f, int n)
 		curwp->w_doto = curoff;
 		curwp->w_flag |= WFMOVE;
 		update(FALSE);
-		mlwrite("(search failed)");
+		mlwrite("Search failed");
 	} else {
 		mlerase();
 	}

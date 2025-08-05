@@ -20,13 +20,14 @@ void usage(const char *program_name, int status)
 }
 
 static int get_universal_arg(int *arg);
+static int command_loop(void);
 
 int main(int argc, char **argv)
 {
 	struct buffer *firstbp = NULL, *bp;
 	char bname[NBUFN];
 	int firstfile = TRUE, rdonlyflag = FALSE, gotoflag = FALSE, gline = 0;
-	int c = 0, i, f, n;
+	int i;
 
 	if (argc == 2) {
 		if (strcmp(argv[1], "--help") == 0)
@@ -75,39 +76,48 @@ int main(int argc, char **argv)
 	if (gotoflag) {
 		if (gotoline(TRUE, gline) == FALSE) {
 			update(FALSE);
-			mlwrite("(Bogus goto argument)");
+			mlwrite("Bogus goto argument");
 		}
 	}
 
-	for (;;) {
-		update(FALSE);
-		c = getcmd();
-		if (mpresf != FALSE)
-			mlerase();
+	for (;;)
+		command_loop();
+}
 
-		f = FALSE;
-		n = 1;
-		if (c == REPTC) {
-			c = get_universal_arg(&n);
-			f = TRUE;
-		}
+static int command_loop(void)
+{
+	int f = FALSE, n = 1, c;
 
-		execute(c, f, n);
+	/* The `update` should be called in each command loop. */
+	update(FALSE);
+
+	/* Loop pauses on `getcmd` to get the next keyboard input. */
+	c = getcmd();
+
+	/* Call mlerase after getcmd, so messages exist until next input */
+	if (mpresf != FALSE)
+		mlerase();
+
+	if (c == REPTC) {
+		c = get_universal_arg(&n);
+		f = TRUE;
 	}
+
+	return execute(c, f, n);
 }
 
 static int get_universal_arg(int *arg)
 {
-	int n = 4, first_flag = 0, c;
+	int n = 4, first_flag = 1, c;
 	for (;;) {
 		mlwrite("Arg: %d", n);
 		c = getcmd();
 		if (isdigit(c)) {
-			n = !first_flag ? (c - '0') : (10 * n + c - '0');
-			first_flag = 1;
+			n = first_flag ? (c - '0') : (10 * n + c - '0');
+			first_flag = 0;
 		} else if (c == REPTC) {
 			n *= 4;
-			first_flag = 1;
+			first_flag = 0;
 		} else {
 			*arg = n;
 			return c;
@@ -189,7 +199,7 @@ int execute(int c, int f, int n)
 
 	if (c > 0xFF) {
 		TTbeep();
-		mlwrite("(Key not bound)");
+		mlwrite("Key not bound");
 		lastflag = 0;	/* Fake last flags. */
 		return FALSE;
 	}
@@ -211,7 +221,7 @@ static void save_buffers(void)
 	struct buffer *bp;
 	for_each_buff(bp) {
 		if ((bp->b_flag & BFCHG) && !(bp->b_flag & BFTRUNC)) {
-			mlwrite("(Saving %s)", bp->b_fname);
+			mlwrite("Saving %s", bp->b_fname);
 			filesave(FALSE, 0);
 		}
 	}
@@ -248,10 +258,10 @@ int quit(int f, int n)
 int ctlxlp(int f, int n)
 {
 	if (kbdmode != STOP) {
-		mlwrite("%%Macro already active");
+		mlwrite("Macro is already active");
 		return FALSE;
 	}
-	mlwrite("(Start macro)");
+	mlwrite("Start macro");
 	kbdptr = kbdm;
 	kbdend = kbdptr;
 	kbdmode = RECORD;
@@ -262,11 +272,11 @@ int ctlxlp(int f, int n)
 int ctlxrp(int f, int n)
 {
 	if (kbdmode == STOP) {
-		mlwrite("%%Macro not active");
+		mlwrite("Macro is not active");
 		return FALSE;
 	}
 	if (kbdmode == RECORD) {
-		mlwrite("(End macro)");
+		mlwrite("End macro");
 		kbdmode = STOP;
 	}
 	return TRUE;
@@ -276,7 +286,7 @@ int ctlxrp(int f, int n)
 int ctlxe(int f, int n)
 {
 	if (kbdmode != STOP) {
-		mlwrite("%%Macro already active");
+		mlwrite("Macro already active");
 		return FALSE;
 	}
 	if (n <= 0)
@@ -295,7 +305,7 @@ int ctrlg(int f, int n)
 {
 	TTbeep();
 	kbdmode = STOP;
-	mlwrite("(Aborted)");
+	mlwrite("Aborted");
 	return ABORT;
 }
 
@@ -303,7 +313,7 @@ int ctrlg(int f, int n)
 int rdonly(void)
 {
 	TTbeep();
-	mlwrite("(Key illegal in read-only mode)");
+	mlwrite("Key illegal in read-only mode");
 	return FALSE;
 }
 
@@ -333,7 +343,8 @@ int cexit(int status)
 	bp = bheadp;
 	while (bp) {
 		bp->b_nwnd = 0;
-		bp->b_flag = 0;	/* ignore changed buffers */
+		/* clear b_flag to make `zotbuf` run without prompt */
+		bp->b_flag = 0;
 		zotbuf(bp);
 		bp = bheadp;
 	}

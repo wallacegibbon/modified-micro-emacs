@@ -107,7 +107,7 @@ static int delins(int dlength, char *instr, int use_meta)
 {
 	int status;
 	if ((status = ldelete((long)dlength, FALSE)) != TRUE)
-		mlwrite("%%ERROR while deleting");
+		mlwrite("ERROR while deleting");
 	else
 		status = linstr(instr);
 	return status;
