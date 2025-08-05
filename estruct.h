@@ -12,13 +12,11 @@
 
 #define NFILEN		256	/* # of bytes, file name */
 #define NBUFN		16	/* # of bytes, buffer name */
-#define NLINE		256	/* # of bytes, input line */
 #define NSTRING		128	/* # of bytes, string buffers */
 #define NKBDM		256	/* # of strokes, keyboard macro */
-#define NPAT		128	/* # of bytes, pattern */
-#define NLOCKS		100	/* max # of file locks active */
+#define NPAT		64	/* # of bytes, pattern */
 
-#define KBLOCK		250	/* sizeof kill buffer chunks */
+#define KBLOCK		256	/* sizeof kill buffer chunks */
 
 #define HUGE		1000	/* Huge number */
 

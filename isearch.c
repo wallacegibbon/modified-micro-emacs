@@ -153,11 +153,12 @@ int risearch(int f, int n)
 
 static int search_next_dispatch(char *pattern, int dir)
 {
+	char reversed_pattern[NPAT];
 	int status;
 
 	if (dir < 0) {	/* reverse search? */
-		rvstrcpy(tap, pattern);
-		status = search_next(tap, REVERSE, PTBEG);
+		rvstrcpy(reversed_pattern, pattern);
+		status = search_next(reversed_pattern, REVERSE, PTBEG);
 	} else {
 		status = search_next(pattern, FORWARD, PTEND);
 	}

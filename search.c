@@ -178,8 +178,7 @@ static int boundry(struct line *curline, int curoff, int dir)
 static int nextch(struct line **pcurline, int *pcuroff, int dir)
 {
 	struct line *curline = *pcurline;
-	int curoff = *pcuroff;
-	int c;
+	int curoff = *pcuroff, c;
 
 	if (dir == FORWARD) {
 		if (curoff == llength(curline)) {

@@ -47,5 +47,4 @@ int thisflag;			/* Flags, this command */
 int lastflag;			/* Flags, last command */
 
 char pat[NPAT];			/* Search pattern */
-char tap[NPAT];			/* Reversed pattern array. */
 char rpat[NPAT];		/* Replacement pattern */

@@ -55,7 +55,6 @@ extern int thisflag;		/* Flags, this command */
 extern int lastflag;		/* Flags, last command */
 
 extern char pat[];		/* Search pattern. */
-extern char tap[];		/* Reversed pattern array. */
 extern char rpat[];		/* Replacement pattern. */
 
 extern struct terminal term;
