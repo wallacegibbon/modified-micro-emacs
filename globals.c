@@ -28,8 +28,6 @@ struct kill *kbufp;		/* current kill buffer chunk pointer */
 struct kill *kbufh;		/* kill buffer header pointer */
 int kused = KBLOCK;		/* # of bytes used in kill buffer */
 
-int lastkey;			/* last keystoke */
-
 long envram;			/* # of bytes current in use by malloc */
 
 char *fline;			/* dynamic return line */
@@ -38,15 +36,15 @@ int flen;			/* current length of fline */
 int scrollcount = 1;		/* number of lines to scroll */
 
 struct window *curwp;		/* Current window */
-struct buffer *curbp;		/* Current buffer */
 struct window *wheadp;		/* Head of list of windows */
+
+struct buffer *curbp;		/* Current buffer */
 struct buffer *bheadp;		/* Head of list of buffers */
 
 int curgoal;			/* Goal for C-P, C-N */
 
 int thisflag;			/* Flags, this command */
 int lastflag;			/* Flags, last command */
-int saveflag;
 
 char pat[NPAT];			/* Search pattern */
 char tap[NPAT];			/* Reversed pattern array. */

@@ -31,7 +31,6 @@ int tgetc(void)
 		}
 	}
 	c = TTgetc();
-	lastkey = c;
 	if (kbdmode == RECORD) {
 		*kbdptr++ = c;
 		kbdend = kbdptr;
