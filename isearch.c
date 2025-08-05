@@ -2,7 +2,6 @@
 #include "edef.h"
 #include "line.h"
 
-static int isearch(int f, int n);
 static int search_next_dispatch(char *pattern, int dir);
 static int get_char(void);
 
@@ -11,29 +10,6 @@ static int cmd_offset;			/* Current offset into command buff */
 static int cmd_reexecute = -1;		/* > 0 if re-executing command */
 
 int fisearch(int f, int n)
-{
-	struct line *curline = curwp->w_dotp;
-	int curoff = curwp->w_doto;
-
-	if (!(isearch(f, n))) {
-		curwp->w_dotp = curline;
-		curwp->w_doto = curoff;
-		curwp->w_flag |= WFMOVE;
-		update(FALSE);
-		mlwrite("Aborted");
-	} else {
-		mlerase();
-	}
-	matchlen = strlen(pat);
-	return TRUE;
-}
-
-int risearch(int f, int n)
-{
-	return fisearch(f, -n);
-}
-
-static int isearch(int f, int n)
 {
 	struct line *curline = curwp->w_dotp, *tmpline = NULL;
 	int curoff = curwp->w_doto, tmpoff = 0;
@@ -85,6 +61,10 @@ char_loop:
 	/* ^G stops the searching and restore the search pattern */
 	if (expc == ABORTC) {
 		strcpy(pat, pat_save);
+		curwp->w_dotp = curline;
+		curwp->w_doto = curoff;
+		curwp->w_flag |= WFMOVE;
+		mlwrite("Aborted");
 		return FALSE;
 	}
 
@@ -130,7 +110,7 @@ pat_append:
 	TTflush();
 
 	if (cpos >= NPAT - 1) {
-		mlwrite("? Search string too long");
+		mlwrite("Search string too long");
 		return TRUE;
 	}
 
@@ -166,6 +146,11 @@ pat_append:
 	goto char_loop;
 }
 
+int risearch(int f, int n)
+{
+	return fisearch(f, -n);
+}
+
 static int search_next_dispatch(char *pattern, int dir)
 {
 	int status;
@@ -198,7 +183,7 @@ static int get_char(void)
 	cmd_reexecute = -1;
 	update(FALSE);
 	if (cmd_offset >= CMDBUFLEN - 1) {
-		mlwrite("? command too long");
+		mlwrite("Command too long");
 		return ABORTC;
 	}
 	c = get1key();

@@ -21,8 +21,8 @@ static inline int eq(unsigned char bc, unsigned char pc)
  */
 int search_next(const char *pattern, int direct, int beg_or_end)
 {
-	struct line *curline = curwp->w_dotp, *scanline;
-	int curoff = curwp->w_doto, scanoff;
+	struct line *curline = curwp->w_dotp, *scanline, *matchline;
+	int curoff = curwp->w_doto, scanoff, matchoff;
 	const char *patptr;
 	int c;
 
@@ -77,10 +77,8 @@ static int readpattern(char *prompt, char *apat, int is_search)
 
 	if (status == TRUE) {
 		strcpy(apat, tpat);
-		if (is_search) {
+		if (is_search)
 			rvstrcpy(tap, apat);
-			matchlen = strlen(apat);
-		}
 	} else if (status == FALSE && apat[0] != 0) {	/* Use old pattern */
 		status = TRUE;
 	}
@@ -116,7 +114,7 @@ static int delins(int dlength, char *instr, int use_meta)
 /* Query search for a string and replace it with another string. */
 int qreplace(int f, int n)
 {
-	int numsub, nummatch, interactive, status, c = 0;
+	int numsub, nummatch, interactive, status, dlength, c = 0;
 
 	if (curbp->b_flag & BFRDONLY)
 		return rdonly();
@@ -126,6 +124,7 @@ int qreplace(int f, int n)
 	if ((status = readpattern("with", rpat, FALSE)) == ABORT)
 		return status;
 
+	dlength = strlen(pat);
 	numsub = 0;
 	nummatch = 0;
 	interactive = 1;
@@ -161,7 +160,7 @@ qprompt:
 	}
 
 do_replace:
-	if ((status = delins(matchlen, rpat, TRUE)) != TRUE)
+	if ((status = delins(dlength, rpat, TRUE)) != TRUE)
 		return status;
 
 	++numsub;

@@ -64,11 +64,6 @@ extern char pat[];		/* Search pattern. */
 extern char tap[];		/* Reversed pattern array. */
 extern char rpat[];		/* Replacement pattern. */
 
-extern unsigned int matchlen;
-extern char *patmatch;
-extern struct line *matchline;
-extern int matchoff;
-
 extern struct terminal term;
 
 extern int reeat_char;

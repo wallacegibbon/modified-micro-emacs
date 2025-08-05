@@ -140,7 +140,7 @@ char_append:
 	if (cpos < nbuf - 1)
 		goto char_loop;
 
-	mlwrite("? Input too long");
+	mlwrite("Input too long");
 
 normal_exit:
 	mlerase();
