@@ -208,7 +208,6 @@ int spawncli(int f, int n);
 
 /* search.c */
 int search_next(const char *pattern, int direct, int beg_or_end);
-void rvstrcpy(char *rvstr, char *str);
 int qreplace(int f, int n);
 
 /* isearch.c */
@@ -227,6 +226,7 @@ void release(void *mp);
 
 /* util.c */
 char *strncpy_safe(char *dest, const char *src, size_t size);
+void rvstrcpy(char *rvstr, char *str);
 void die(int code, const char *fmt, ...);
 
 #endif

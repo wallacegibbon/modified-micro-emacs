@@ -11,6 +11,17 @@ char *strncpy_safe(char *dest, const char *src, size_t size)
 	return strncpy(dest, src, size);
 }
 
+/* Reverse string copy. */
+void rvstrcpy(char *rvstr, const char *str)
+{
+	int i;
+	str += (i = strlen(str));
+	while (i-- > 0)
+		*rvstr++ = *--str;
+
+	*rvstr = '\0';
+}
+
 void die(int code, const char *fmt, ...)
 {
 	va_list args;

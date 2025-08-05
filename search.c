@@ -3,7 +3,7 @@
 #include "line.h"
 #include <unistd.h>
 
-static int readpattern(char *prompt, char *apat, int srch);
+static int readpattern(char *prompt, char *apat);
 static int nextch(struct line **pcurline, int *pcuroff, int dir);
 static int boundry(struct line *curline, int curoff, int dir);
 static int delins(int dlength, char *instr, int use_meta);
@@ -68,33 +68,18 @@ loop:
 }
 
 /* If the user did not give a string, use the old one (if there is one) */
-static int readpattern(char *prompt, char *apat, int is_search)
+static int readpattern(char *prompt, char *apat)
 {
 	char tpat[NPAT];
 	int status;
 
 	status = mlgetstring(tpat, NPAT, ENTERC, "%s (%s): ", prompt, apat);
-
-	if (status == TRUE) {
+	if (status == TRUE)
 		strcpy(apat, tpat);
-		if (is_search)
-			rvstrcpy(tap, apat);
-	} else if (status == FALSE && apat[0] != 0) {	/* Use old pattern */
+	else if (status == FALSE && apat[0] != 0)	/* Use old pattern */
 		status = TRUE;
-	}
 
 	return status;
-}
-
-/* Reverse string copy. */
-void rvstrcpy(char *rvstr, char *str)
-{
-	int i;
-	str += (i = strlen(str));
-	while (i-- > 0)
-		*rvstr++ = *--str;
-
-	*rvstr = '\0';
 }
 
 /*
@@ -119,9 +104,9 @@ int qreplace(int f, int n)
 	if (curbp->b_flag & BFRDONLY)
 		return rdonly();
 
-	if ((status = readpattern("Query replace", pat, TRUE)) != TRUE)
+	if ((status = readpattern("Query replace", pat)) != TRUE)
 		return status;
-	if ((status = readpattern("with", rpat, FALSE)) == ABORT)
+	if ((status = readpattern("with", rpat)) == ABORT)
 		return status;
 
 	dlength = strlen(pat);
