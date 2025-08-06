@@ -34,7 +34,6 @@ int nextwind(int f, int n)
 		return FALSE;
 
 	wcount = count_window();
-
 	n %= wcount;
 	if (n < 0)
 		n += wcount;
@@ -43,12 +42,10 @@ int nextwind(int f, int n)
 		if ((wp = wp->w_wndp) == NULL)
 			wp = wheadp;
 	}
-
 	if (wp == curwp) {
 		mlwrite("Already in this window");
 		return TRUE;
 	}
-
 	curwp = wp;
 	curbp = wp->w_bufp;
 	update_modelines();
@@ -158,9 +155,10 @@ int delwind(int f, int n)
 		wheadp = curwp->w_wndp;
 	else
 		lwp->w_wndp = curwp->w_wndp;
+
 	free(curwp);
-	curwp = wp;
 	wp->w_flag |= WFHARD;
+	curwp = wp;
 	curbp = wp->w_bufp;
 	update_modelines();
 	return TRUE;

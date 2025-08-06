@@ -12,11 +12,29 @@ I call it **M**dified Micro **E**macs (`me`).
 The script engine is removed.  Concepts like `paragraph` and `word` are also
 removed.
 
+ANSI CSI control sequences is used directly.  We don't need extra libraries
+(like `libncurses`) to run this program.
 
-## Build
 
-The default build uses ANSI control sequences directly.  We don't need extra
-libraries besides `libc` to run this program.
+## Build and Install
+
+Build this program:
+
+```sh
+make -j
+```
+
+Install it:
+
+```sh
+sudo make install
+```
+
+To change the installation path:
+
+```sh
+sudo make install BIN_PATH=/usr/local/bin
+```
 
 
 ## Miscellaneous

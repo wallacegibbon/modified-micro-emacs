@@ -108,12 +108,11 @@ static int edinit(char *bname)
 	if (bp == NULL || wp == NULL)
 		return 1;
 
-	curbp = bp;
 	wheadp = wp;
 	curwp = wp;
+	curbp = bp;
 	wp->w_wndp = NULL;
 	wp->w_bufp = bp;
-	bp->b_nwnd = 1;
 	wp->w_linep = bp->b_linep;
 	wp->w_dotp = bp->b_linep;
 	wp->w_doto = 0;
@@ -123,6 +122,7 @@ static int edinit(char *bname)
 	wp->w_ntrows = term.t_nrow - 1;	/* "-1" for mode line. */
 	wp->w_force = 0;
 	wp->w_flag = WFMODE | WFHARD;
+	bp->b_nwnd = 1;
 	return 0;
 }
 
