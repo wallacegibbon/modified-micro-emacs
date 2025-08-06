@@ -1,8 +1,4 @@
-#include "efunc.h"
-#include "edef.h"
-#include "line.h"
-#include <unistd.h>
-#include <stdio.h>
+#include "me.h"
 
 /* Max number of lines from one file. */
 #define MAXNLINE 10000000

@@ -1,6 +1,4 @@
-#include "efunc.h"
-#include "edef.h"
-#include "line.h"
+#include "me.h"
 #include <unistd.h>
 
 static int readpattern(char *prompt, char *apat);

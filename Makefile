@@ -1,16 +1,16 @@
 UNAME_S := $(shell sh -c 'uname -s 2>/dev/null || echo Unknown')
-BINDIR = /usr/bin
+BIN_PATH = /usr/bin
 PROGRAM = me
 SHOWKEYS = showkeys
-CC = gcc
+CC = cc
 
-SRC = main.c buffer.c window.c line.c display.c input.c basic.c random.c \
-	file.c fileio.c search.c isearch.c region.c spawn.c posix.c ansi.c \
-	ebind.c globals.c memory.c util.c
+SRC = main.c buffer.c window.c line.c display.c input.c command.c ebind.c \
+	file.c fileio.c search.c isearch.c spawn.c posix.c ansi.c global.c \
+	memory.c util.c
 
-OBJ = main.o buffer.o window.o line.o display.o input.o basic.o random.o \
-	file.o fileio.o search.o isearch.o region.o spawn.o posix.o ansi.o \
-	ebind.o globals.o memory.o util.o
+OBJ = main.o buffer.o window.o line.o display.o input.o command.o ebind.o \
+	file.o fileio.o search.o isearch.o spawn.o posix.o ansi.o global.o \
+	memory.o util.o
 
 WARNINGS = -Wall -Wextra -Wstrict-prototypes -Wno-unused-parameter
 
@@ -35,7 +35,7 @@ $(PROGRAM): $(OBJ)
 	@echo "	LINK	$@"
 	@$(CC) $(LDFLAGS) $(DEFINES) -o $@ $^ $(LIBS)
 
-$(SHOWKEYS): showkeys.o posix.o globals.o ansi.o
+$(SHOWKEYS): showkeys.o posix.o global.o ansi.o
 	@echo "	LINK	$@"
 	@$(CC) $(LDFLAGS) $(DEFINES) -o $@ $^ $(LIBS)
 
@@ -43,10 +43,10 @@ clean:
 	@rm -f $(PROGRAM) $(SHOWKEYS) core *.o
 
 install: $(PROGRAM)
-	@echo "	$(BINDIR)/$(PROGRAM)"
-	@cp me $(BINDIR)
-	@strip $(BINDIR)/$(PROGRAM)
-	@chmod 755 $(BINDIR)/$(PROGRAM)
+	@echo "	$(BIN_PATH)/$(PROGRAM)"
+	@cp me $(BIN_PATH)
+	@strip $(BIN_PATH)/$(PROGRAM)
+	@chmod 755 $(BIN_PATH)/$(PROGRAM)
 	@echo
 
 .c.o:
@@ -54,7 +54,7 @@ install: $(PROGRAM)
 	@$(CC) $(CFLAGS) $(DEFINES) -c $*.c
 
 ebind.o: edef.h efunc.h estruct.h line.h
-basic.o: basic.c estruct.h edef.h line.h
+command.o: command.c estruct.h edef.h line.h
 buffer.o: buffer.c estruct.h edef.h line.h
 display.o: display.c estruct.h edef.h line.h
 file.o: file.c estruct.h edef.h line.h
@@ -64,12 +64,10 @@ isearch.o: isearch.c estruct.h edef.h line.h
 line.o: line.c estruct.h edef.h line.h
 main.o: main.c estruct.h efunc.h edef.h line.h
 posix.o: posix.c estruct.h
-random.o: random.c estruct.h edef.h line.h
-region.o: region.c estruct.h edef.h line.h
 search.o: search.c estruct.h edef.h line.h
 spawn.o: spawn.c estruct.h edef.h
 window.o: window.c estruct.h edef.h line.h
-globals.o: estruct.h edef.h
+global.o: estruct.h edef.h
 memory.o: estruct.h edef.h
 ansi.o: ansi.c estruct.h edef.h
 util.o: util.c

@@ -1,8 +1,4 @@
-#include "efunc.h"
-#include "edef.h"
-#include "line.h"
-#include <stdio.h>
-#include <stdlib.h>
+#include "me.h"
 
 #if UNIX
 #include <signal.h>
@@ -21,6 +17,8 @@ void usage(const char *program_name, int status)
 
 static int get_universal_arg(int *arg);
 static int command_loop(void);
+static int edinit(char *bname);
+static int execute(int c, int f, int n);
 
 int main(int argc, char **argv)
 {
@@ -130,7 +128,7 @@ static int get_universal_arg(int *arg)
  * as an argument, because the main routine may have been told to read in a
  * file by default, and we want the buffer name to be right.
  */
-int edinit(char *bname)
+static int edinit(char *bname)
 {
 	struct buffer *bp;
 	struct window *wp;
@@ -159,7 +157,7 @@ int edinit(char *bname)
 }
 
 /* This function looks a key binding up in the binding table. */
-int (*getbind(int c))(int, int)
+static int (*getbind(int c))(int, int)
 {
 	struct key_tab *ktp = keytab;
 
@@ -177,7 +175,7 @@ int (*getbind(int c))(int, int)
  * and arranges to move it to the "lastflag", so that the next command can
  * look at it.  Return the status of command.
  */
-int execute(int c, int f, int n)
+static int execute(int c, int f, int n)
 {
 	int status;
 	int (*execfunc)(int, int);
@@ -251,74 +249,6 @@ int quit(int f, int n)
 		exit(f ? n : 0);
 	}
 	mlerase();
-	return TRUE;
-}
-
-/* Begin a keyboard macro. */
-int ctlxlp(int f, int n)
-{
-	if (kbdmode != STOP) {
-		mlwrite("Macro is already active");
-		return FALSE;
-	}
-	mlwrite("Start macro");
-	kbdptr = kbdm;
-	kbdend = kbdptr;
-	kbdmode = RECORD;
-	return TRUE;
-}
-
-/* End keyboard macro. */
-int ctlxrp(int f, int n)
-{
-	if (kbdmode == STOP) {
-		mlwrite("Macro is not active");
-		return FALSE;
-	}
-	if (kbdmode == RECORD) {
-		mlwrite("End macro");
-		kbdmode = STOP;
-	}
-	return TRUE;
-}
-
-/* Execute a macro. */
-int ctlxe(int f, int n)
-{
-	if (kbdmode != STOP) {
-		mlwrite("Macro already active");
-		return FALSE;
-	}
-	if (n <= 0)
-		return TRUE;
-	kbdrep = n;
-	kbdmode = PLAY;
-	kbdptr = kbdm;
-	return TRUE;
-}
-
-/*
- * Abort.  Kill off any keyboard macro, etc., that is in progress.
- * Sometimes called as a routine, to do general aborting of stuff.
- */
-int ctrlg(int f, int n)
-{
-	TTbeep();
-	kbdmode = STOP;
-	mlwrite("Aborted");
-	return ABORT;
-}
-
-/* Tell the user that this command is illegal in read-only mode. */
-int rdonly(void)
-{
-	TTbeep();
-	mlwrite("Key illegal in read-only mode");
-	return FALSE;
-}
-
-int nullproc(int f, int n)
-{
 	return TRUE;
 }
 

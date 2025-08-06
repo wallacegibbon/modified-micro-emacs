@@ -1,6 +1,4 @@
-#include "efunc.h"
-#include "edef.h"
-#include <stdio.h>
+#include "me.h"
 
 int main(void)
 {

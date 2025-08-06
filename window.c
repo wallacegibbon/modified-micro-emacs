@@ -1,6 +1,4 @@
-#include "efunc.h"
-#include "edef.h"
-#include "line.h"
+#include "me.h"
 
 /*
  * With no argument, it just does the refresh.  With an argument "n",

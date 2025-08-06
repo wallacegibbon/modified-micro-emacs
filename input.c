@@ -1,5 +1,4 @@
-#include "efunc.h"
-#include "edef.h"
+#include "me.h"
 
 /*
  * CAUTION: Prefixed chars (e.g. `CTL | 'A'`) may be stored in this variable,
@@ -114,33 +113,27 @@ char_loop:
 	c = ectoc(expc = get1key());
 	if (expc == eolchar)
 		goto normal_exit;
-
 	if (expc == ABORTC) {
 		mlerase();
 		return ctrlg(FALSE, 0);
 	}
-
 	if (expc == QUOTEC) {
 		c = ectoc(expc = get1key());
 		goto char_append;
 	}
-
 	if (c == '\b' || c == 0x7F) {
 		if (cpos > 0)
 			ttcol -= unput_c(buf[--cpos]);
 		goto char_loop;
 	}
-
 char_append:
 	buf[cpos++] = c;
 	buf[cpos] = '\0';
 	ttcol += put_c(c, TTputc);
-
 	if (cpos < nbuf - 1)
 		goto char_loop;
 
 	mlwrite("Input too long");
-
 normal_exit:
 	mlerase();
 	return buf[0] != '\0';

@@ -1,6 +1,4 @@
-#include "efunc.h"
-#include "edef.h"
-#include "line.h"
+#include "me.h"
 
 struct key_tab keytab[] = {
 	{ NULLPROC_KEY /* should be less than 0x20 */, nullproc },

@@ -1,6 +1,4 @@
-#include "efunc.h"
-#include "edef.h"
-#include <stdio.h>
+#include "me.h"
 
 #define SCRSIZ	64		/* scroll size for extended lines */
 #define MARGIN	8		/* size of minimim margin and */

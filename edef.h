@@ -2,8 +2,6 @@
 #define __EDEF_H
 
 #include "estruct.h"
-#include <stdlib.h>
-#include <string.h>
 
 extern struct key_tab keytab[];	/* key to function table */
 

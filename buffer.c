@@ -1,6 +1,4 @@
-#include "efunc.h"
-#include "edef.h"
-#include "line.h"
+#include "me.h"
 
 int nextbuffer(int f, int n)
 {

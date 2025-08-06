@@ -3,10 +3,8 @@
  * characters, and write characters in a barely buffered fashion on the display.
  */
 
-#include "efunc.h"
-#include "edef.h"
+#include "me.h"
 #include <termios.h>
-#include <stdio.h>
 #include <unistd.h>
 #include <errno.h>
 

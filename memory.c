@@ -4,6 +4,7 @@
  */
 
 #include "edef.h"
+#include <stdlib.h>
 
 /*
  * Please make sure malloc and free in this file are not shadowed by macros,

@@ -1,6 +1,4 @@
-#include "efunc.h"
-#include "edef.h"
-#include "line.h"
+#include "me.h"
 
 static int search_next_dispatch(char *pattern, int dir);
 static int get_char(void);
@@ -32,14 +30,11 @@ start_over:
 
 	/* Restore the pat for a new loop */
 	strcpy(pat, pat_save);
-
 	status = TRUE;
 	cpos = 0;
-
 	c = ectoc(expc = get_char());
 
 	/* When ^S or ^R again, load the pattern and do a search */
-
 	if (pat[0] != '\0' && (c == IS_FORWARD || c == IS_REVERSE)) {
 		for (cpos = 0; pat[cpos] != '\0'; ++cpos) {
 			movecursor(term.t_nrow, col);
@@ -50,14 +45,12 @@ start_over:
 		status = search_next_dispatch(pat, n);
 		c = ectoc(expc = get_char());
 	}
-
 char_loop:
 	/* We don't use ^M to finish a search, use ^F, ^B, etc. */
 	if (expc == ENTERC) {
 		c = ectoc(expc = get_char());
 		goto char_loop;
 	}
-
 	/* ^G stops the searching and restore the search pattern */
 	if (expc == ABORTC) {
 		strcpy(pat, pat_save);
@@ -67,19 +60,16 @@ char_loop:
 		mlwrite("Aborted");
 		return FALSE;
 	}
-
 	if (expc == QUOTEC) {
 		c = ectoc(expc = get_char());
 		goto pat_append;
 	}
-
 	if (c == IS_REVERSE || c == IS_FORWARD) {
 		n = (c == IS_REVERSE) ? -1 : 1;
 		status = search_next_dispatch(pat, n);
 		c = ectoc(expc = get_char());
 		goto char_loop;
 	}
-
 	if (c == '\b' || c == 0x7F) {
 		if (cmd_offset <= 1) {
 			/* We don't want to lose the saved pattern */
@@ -94,26 +84,20 @@ char_loop:
 		curwp->w_flag |= WFMOVE;
 		goto start_over;
 	}
-
 	if (c < 0x20 && c != '\t') {
 		reeat_char = c;
 		return TRUE;
 	}
-
-	/* Now we are likely to insert c to pattern */
-
 pat_append:
 	pat[cpos++] = c;
 	pat[cpos] = '\0';
 	movecursor(term.t_nrow, col);
 	col += put_c(c, TTputc);
 	TTflush();
-
 	if (cpos >= NPAT - 1) {
 		mlwrite("Search string too long");
 		return TRUE;
 	}
-
 	/* If we lost on last char, no more check is needed */
 	if (!status) {
 		TTputc(BELL);
@@ -132,16 +116,13 @@ pat_append:
 	tmpoff = curwp->w_doto;
 	curwp->w_dotp = curline;
 	curwp->w_doto = curoff;
-
 	status = search_next_dispatch(pat, n);
 	if (status == FALSE) {
 		/* When search failed, stay on previous success position */
 		curwp->w_dotp = tmpline;
 		curwp->w_doto = tmpoff;
 	}
-
 	curwp->w_flag |= WFMOVE;
-
 	c = ectoc(expc = get_char());
 	goto char_loop;
 }
@@ -162,12 +143,10 @@ static int search_next_dispatch(char *pattern, int dir)
 	} else {
 		status = search_next(pattern, FORWARD, PTEND);
 	}
-
 	if (!status) {
 		TTputc(BELL);
 		TTflush();
 	}
-
 	return status;
 }
 

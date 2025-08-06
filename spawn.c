@@ -1,6 +1,4 @@
-#include "efunc.h"
-#include "edef.h"
-#include <unistd.h>
+#include "me.h"
 
 /* Create a subjob with a copy of the command intrepreter in it. */
 int spawncli(int f, int n)

@@ -1,6 +1,4 @@
-#include "efunc.h"
-#include "edef.h"
-#include <stdio.h>
+#include "me.h"
 
 static FILE *ffp;			/* File pointer, all functions. */
 static int eofflag;			/* end-of-file flag */

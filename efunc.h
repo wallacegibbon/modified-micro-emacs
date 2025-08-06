@@ -84,6 +84,17 @@ static inline void wstate_copy(struct window *wp, struct window *wp2)
 }
 
 
+/* buffer.c */
+int nextbuffer(int f, int n);
+int swbuffer(struct buffer *bp);
+int killbuffer(int f, int n);
+int zotbuf(struct buffer *bp);
+int bufrdonly(int f, int n);
+void e_ltoa(char *buf, int width, long num);
+int anycb(void);
+int bclear(struct buffer *bp);
+struct buffer *bfind(char *bname, int cflag, int bflag);
+
 /* window.c */
 int redraw(int f, int n);
 int nextwind(int f, int n);
@@ -91,11 +102,8 @@ int prevwind(int f, int n);
 int onlywind(int f, int n);
 int delwind(int f, int n);
 int splitwind(int f, int n);
-int adjust_on_scr_resize(int scr_rows);
 
-/* basic.c */
-int get_col(struct line *lp, int offset);
-int get_idx(struct line *lp, int col);
+/* command.c */
 int forwchar(int f, int n);
 int backchar(int f, int n);
 int forwline(int f, int n);
@@ -109,29 +117,28 @@ int gotoeob(int f, int n);
 int gotoline(int f, int n);
 int setmark(int f, int n);
 int swapmark(int f, int n);
-
-/* random.c */
 int show_misc_info(int f, int n);
 int quote(int f, int n);
 int newline(int f, int n);
 int newline_and_indent(int f, int n);
 int forwdel(int f, int n);
 int backdel(int f, int n);
-int killtext(int f, int n);
 int yank(int f, int n);
-
-/* main.c */
-int (*getbind(int c))(int, int);
-int edinit(char *bname);
-int execute(int c, int f, int n);
-int quickexit(int f, int n);
-int quit(int f, int n);
+int killtext(int f, int n);
+int killregion(int f, int n);
+int copyregion(int f, int n);
+int lowerregion(int f, int n);
+int upperregion(int f, int n);
 int ctlxlp(int f, int n);
 int ctlxrp(int f, int n);
 int ctlxe(int f, int n);
 int ctrlg(int f, int n);
 int rdonly(void);
 int nullproc(int f, int n);
+
+/* main.c */
+int quickexit(int f, int n);
+int quit(int f, int n);
 int cexit(int status);
 
 /* display.c */
@@ -149,13 +156,6 @@ int mlvwrite(const char *fmt, va_list ap);
 int unput_c(unsigned char c);
 int put_c(unsigned char c, void (*p)(int));
 int next_col(int col, unsigned char c);
-
-/* region.c */
-int killregion(int f, int n);
-int copyregion(int f, int n);
-int lowerregion(int f, int n);
-int upperregion(int f, int n);
-int getregion(struct region *rp);
 
 /* posix.c */
 void getscreensize(int *widthp, int *heightp);
@@ -176,20 +176,9 @@ int getcmd(void);
 int mlgetstring(char *buf, int nbuf, int eolchar, const char *fmt, ...);
 int mlgetchar(const char *fmt, ...);
 
-/* buffer.c */
-int nextbuffer(int f, int n);
-int swbuffer(struct buffer *bp);
-int killbuffer(int f, int n);
-int zotbuf(struct buffer *bp);
-int bufrdonly(int f, int n);
-void e_ltoa(char *buf, int width, long num);
-int anycb(void);
-int bclear(struct buffer *bp);
-struct buffer *bfind(char *bname, int cflag, int bflag);
-
 /* file.c */
-int filefind(int f, int n);
 int readin(char *fname);
+int filefind(int f, int n);
 void makename(char *bname, char *fname);
 void unqname(char *name);
 int filewrite(int f, int n);
