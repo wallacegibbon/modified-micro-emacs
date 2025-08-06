@@ -45,6 +45,7 @@ start_over:
 		status = search_next_dispatch(pat, n);
 		c = ectoc(expc = get_char());
 	}
+
 char_loop:
 	/* We don't use ^M to finish a search, use ^F, ^B, etc. */
 	if (expc == ENTERC) {
@@ -88,6 +89,7 @@ char_loop:
 		reeat_char = c;
 		return TRUE;
 	}
+
 pat_append:
 	pat[cpos++] = c;
 	pat[cpos] = '\0';

@@ -82,12 +82,14 @@ static void screen_init(void)
 
 	display_ok = 1;
 	return;
+
 fail2:
 	for (i = 0; i < term.t_nrow; ++i) {
 		free(pscreen[i]);
 		free(vscreen[i]);
 	}
 	free(pscreen);
+
 fail1:
 	free(vscreen);
 }
@@ -435,12 +437,11 @@ static void update_line(int row, struct video *vp1, struct video *vp2)
 
 	cp1 = &vp1->v_text[0];
 	cp2 = &vp2->v_text[0];
-
 	cp3 = &vp1->v_text[term.t_ncol];
 	cp4 = &vp2->v_text[term.t_ncol];
 
 	/*
-	 * This is why we need 2 flags for `rev`:
+	 * This is why we need 2 flags (rev and req):
 	 *
 	 * If we only have one flag, we can not tell the difference between
 	 * a line becoming normal from reversed (e.g. when a window got killed,
@@ -451,7 +452,6 @@ static void update_line(int row, struct video *vp1, struct video *vp2)
 
 	rev = (vp1->v_flag & VFREV) == VFREV;
 	req = (vp1->v_flag & VFREQ) == VFREQ;
-
 	if (rev != req) {
 		/* Becoming reversed or becoming normal need a full update. */
 		should_send_rev = req;
@@ -477,11 +477,8 @@ full_update:
 		++ttcol;
 		*cp2++ = *cp1++;
 	}
-
 	if (should_send_rev)
 		TTrev(FALSE);
-
-	/* update the needed flags */
 	vp1->v_flag &= ~VFCHG;
 	if (req)
 		vp1->v_flag |= VFREV;
@@ -496,33 +493,28 @@ partial_update:
 		++cp1;
 		++cp2;
 	}
-
 	/* if both lines are the same, no update needs to be done */
 	if (cp1 == cp3) {
 		vp1->v_flag &= ~VFCHG;
 		return;
 	}
-
 	/* Ignore common chars on the right */
 	while (cp3[-1] == cp4[-1]) {
 		--cp3;
 		--cp4;
 	}
-
 	movecursor(row, cp1 - &vp1->v_text[0]);
 	if (should_send_rev)
 		TTrev(TRUE);
-
 	while (cp1 != cp3) {
 		TTputc(*cp1);
 		++ttcol;
 		*cp2++ = *cp1++;
 	}
-
 	if (should_send_rev)
 		TTrev(FALSE);
 
-	vp1->v_flag &= ~VFCHG;	/* flag this line as updated */
+	vp1->v_flag &= ~VFCHG;
 }
 
 /*

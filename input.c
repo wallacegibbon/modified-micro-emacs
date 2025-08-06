@@ -108,6 +108,7 @@ int mlgetstring(char *buf, int nbuf, int eolchar, const char *fmt, ...)
 	/* Init buf so that we can tell whether user have input something. */
 	/* fmt and buf can be the same address, so we do this after mlwrite */
 	buf[0] = '\0';
+
 char_loop:
 	TTflush();
 	c = ectoc(expc = get1key());
@@ -126,6 +127,7 @@ char_loop:
 			ttcol -= unput_c(buf[--cpos]);
 		goto char_loop;
 	}
+
 char_append:
 	buf[cpos++] = c;
 	buf[cpos] = '\0';
@@ -134,6 +136,7 @@ char_append:
 		goto char_loop;
 
 	mlwrite("Input too long");
+
 normal_exit:
 	mlerase();
 	return buf[0] != '\0';

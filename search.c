@@ -123,6 +123,7 @@ replace_loop:
 		goto do_replace;
 
 	mlwrite("Replace (%s) with (%s)? ", pat, rpat);
+
 qprompt:
 	update(TRUE);
 	switch ((c = tgetc())) {
