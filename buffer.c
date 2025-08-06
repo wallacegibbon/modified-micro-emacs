@@ -64,7 +64,7 @@ int killbuffer(int f, int n)
 
 	if ((s = mlreply("Kill buffer: ", bufn, NBUFN)) != TRUE)
 		return s;
-	if ((bp = bfind(bufn, FALSE, 0)) == NULL)
+	if ((bp = bfind(bufn, FALSE)) == NULL)
 		return TRUE;
 
 	return zotbuf(bp);
@@ -128,10 +128,9 @@ int anycb(void)
 }
 
 /*
- * Find a buffer by name.  If the buffer is not found and the "cflag" is TRUE,
- * create it.  The "bflag" is the settings for the flags in in buffer.
+ * Find a buffer by name.  Create it if buffer is not found and cflag is TRUE.
  */
-struct buffer *bfind(char *bname, int cflag, int bflag)
+struct buffer *bfind(char *bname, int cflag)
 {
 	struct buffer *bp;
 	struct line *lp;
@@ -159,7 +158,7 @@ struct buffer *bfind(char *bname, int cflag, int bflag)
 	bp->b_doto = 0;
 	bp->b_markp = NULL;
 	bp->b_marko = 0;
-	bp->b_flag = bflag | BFACTIVE;
+	bp->b_flag = 0;
 	bp->b_nwnd = 0;
 	bp->b_linep = lp;
 	strcpy(bp->b_fname, "");

@@ -31,7 +31,7 @@ int filefind(int f, int n)
 		}
 	}
 	makename(bname, fname);
-	while ((bp = bfind(bname, FALSE, 0)) != NULL) {
+	while ((bp = bfind(bname, FALSE)) != NULL) {
 		/* old buffer name conflict code */
 		s = mlreply("Buffer name: ", bname, NBUFN);
 		if (s == ABORT)
@@ -41,7 +41,7 @@ int filefind(int f, int n)
 			break;
 		}
 	}
-	if (bp == NULL && (bp = bfind(bname, TRUE, 0)) == NULL) {
+	if (bp == NULL && (bp = bfind(bname, TRUE)) == NULL) {
 		mlwrite("Cannot create buffer");
 		return FALSE;
 	}
@@ -169,7 +169,7 @@ void unqname(char *name)
 	char *sp;
 
 	/* check to see if it is in the buffer list */
-	while (bfind(name, FALSE, 0) != NULL) {
+	while (bfind(name, FALSE) != NULL) {
 		/* go to the end of the name */
 		sp = name;
 		while (*sp)

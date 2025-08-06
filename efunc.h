@@ -93,7 +93,7 @@ int bufrdonly(int f, int n);
 void e_ltoa(char *buf, int width, long num);
 int anycb(void);
 int bclear(struct buffer *bp);
-struct buffer *bfind(char *bname, int cflag, int bflag);
+struct buffer *bfind(char *bname, int cflag);
 
 /* window.c */
 int redraw(int f, int n);

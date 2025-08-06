@@ -5,16 +5,6 @@
 static void emergencyexit(int);
 #endif
 
-void usage(const char *program_name, int status)
-{
-	printf("USAGE: %s [OPTIONS] [FILENAMES]\n\n", program_name);
-	fputs("\t+<n>\tGo to line <n>\n", stdout);
-	fputs("\t-v\tOpen read only\n", stdout);
-	fputs("\t--help\tDisplay this help and exit\n", stdout);
-	fputs("\n", stdout);
-	exit(status);
-}
-
 static int get_universal_arg(int *arg);
 static int command_loop(void);
 static int edinit(char *bname);
@@ -23,15 +13,10 @@ static int execute(int c, int f, int n);
 int main(int argc, char **argv)
 {
 	struct buffer *firstbp = NULL, *bp;
+	int firstfile = TRUE, i;
 	char bname[NBUFN];
-	int firstfile = TRUE, rdonlyflag = FALSE, gotoflag = FALSE, gline = 0;
-	int i;
 
-	if (argc == 2) {
-		if (strcmp(argv[1], "--help") == 0)
-			usage(argv[0], EXIT_SUCCESS);
-	}
-
+	/* Initialize the virtual terminal, this have to be successful */
 	vtinit();
 	if (!display_ok)
 		die(1, "Failed initializing virtual terminal\n");
@@ -40,21 +25,14 @@ int main(int argc, char **argv)
 		die(1, "Failed initializing editor\n");
 
 	for (i = 1; i < argc; ++i) {
-		if (argv[i][0] == '-' && (argv[i][1] | DIFCASE) == 'v') {
-			rdonlyflag = TRUE;
-		} else if (argv[i][0] == '+') {
-			gotoflag = TRUE;
-			gline = atoi(&argv[i][1]);
-		} else {
-			makename(bname, argv[i]);
-			unqname(bname);
-			bp = bfind(bname, TRUE, rdonlyflag ? BFRDONLY : 0);
-			strncpy_safe(bp->b_fname, argv[i], NFILEN);
-			bp->b_flag &= ~BFACTIVE;
-			if (firstfile) {
-				firstbp = bp;
-				firstfile = FALSE;
-			}
+		makename(bname, argv[i]);
+		unqname(bname);
+		bp = bfind(bname, TRUE);
+		strncpy_safe(bp->b_fname, argv[i], NFILEN);
+		bp->b_flag &= ~BFACTIVE;
+		if (firstfile) {
+			firstbp = bp;
+			firstfile = FALSE;
 		}
 	}
 
@@ -66,16 +44,8 @@ int main(int argc, char **argv)
 	/* If there are any files to read, read the first one! */
 	if (firstfile == FALSE) {
 		swbuffer(firstbp);
-		if ((bp = bfind("main", FALSE, 0)) != NULL)
+		if ((bp = bfind("main", FALSE)) != NULL)
 			zotbuf(bp);
-	}
-
-	/* Deal with startup gotos */
-	if (gotoflag) {
-		if (gotoline(TRUE, gline) == FALSE) {
-			update(FALSE);
-			mlwrite("Bogus goto argument");
-		}
 	}
 
 	for (;;)
@@ -133,7 +103,7 @@ static int edinit(char *bname)
 	struct buffer *bp;
 	struct window *wp;
 
-	bp = bfind(bname, TRUE, 0); /* First buffer */
+	bp = bfind(bname, TRUE); /* First buffer */
 	wp = malloc(sizeof(struct window)); /* First window */
 	if (bp == NULL || wp == NULL)
 		return 1;
