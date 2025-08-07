@@ -1,11 +1,4 @@
 -------------------------------------------------------------------------------
-A BUFFER is a named area containing a FILE being edited.  Many buffers may
-be active at once.  Many WINDOWS may be active at once on the screen.  All
-windows may show different parts of the same buffer, or each may display a
-different one.
-
-Notations: ^X means holding Ctrl and stroke X.
--------------------------------------------------------------------------------
 =>                      CURSOR MOVEMENT
 Backward character ....      ^B         Forward character .....      ^F
 Previous line .........      ^P         Next line .............      ^N
@@ -15,8 +8,12 @@ Beginning of file .....   ^X  ,         End of file ...........   ^X  .
 -------------------------------------------------------------------------------
 =>                      DELETING AND INSERTING
 Delete previous character    ^H         Delete next character .      ^D
-Kill to end of line ...      ^K         Yank (Paste) ..........      ^Y
+Kill to end of line ...      ^K         Yank ..................      ^Y
 Kill region ...........   ^X  K         Copy region ...........   ^X  J
+-------------------------------------------------------------------------------
+=>                      SEARCHING AND REPLACING
+Incremental search ....      ^S         Reverse incsearch .....      ^R
+Query replace string ..   ^X  R
 -------------------------------------------------------------------------------
 =>                      FILE COMMANDS
 Find file .............   ^X ^F         Write file ............   ^X ^W
@@ -32,11 +29,6 @@ Previous window .......   ^X  P         Next window ...........   ^X  O
 -------------------------------------------------------------------------------
 =>                      BUFFER COMMANDS
 Next buffer ...........   ^X  X         Toggle Read Only ......   ^X ^Q
-Delete buffer .........   ^X ^K
--------------------------------------------------------------------------------
-=>                      SEARCHING AND REPLACING
-Incremental search ....      ^S         Reverse incsearch .....      ^R
-Query replace string ..   ^X  R
 -------------------------------------------------------------------------------
 =>                      ACCESSING THE OPERATING SYSTEM
 Quick exit ............   ^X ^Z         Exit emacs ............   ^X ^C
@@ -48,8 +40,7 @@ Execute macro .........   ^X  E
 -------------------------------------------------------------------------------
 =>                      MISCELLANEOUS
 Abort command .........      ^G         Quote character .......      ^Q
-Newline and indent ....      ^J         Open line .............      ^O
-Universal argument ....      ^U         Goto line .............   ^X  G
+Newline and indent ....      ^J         Goto line .............   ^X  G
+Universal argument ....      ^U         Redraw display ........      ^L
 Set mark ..............   ^X  M         Exchange point and mark   ^X ^X
-Redraw display ........      ^L
 -------------------------------------------------------------------------------
