@@ -22,11 +22,16 @@ void rvstrcpy(char *rvstr, const char *str)
 	*rvstr = '\0';
 }
 
-void die(int code, const char *fmt, ...)
+void die(int code, void (*deinit)(void), const char *fmt, ...)
 {
 	va_list args;
+
+	if (deinit != NULL)
+		deinit();
+
 	va_start(args, fmt);
 	vfprintf(stderr, fmt, args);
 	va_end(args);
+
 	exit(code);
 }

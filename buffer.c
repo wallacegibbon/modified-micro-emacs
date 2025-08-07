@@ -1,29 +1,6 @@
 #include "me.h"
 
-int nextbuffer(int f, int n)
-{
-	struct buffer *bp = NULL, *bbp;
-	if (f == FALSE)
-		n = 1;
-	if (n < 1)
-		return FALSE;
-
-	bbp = curbp;
-	while (n-- > 0) {
-		bp = bbp->b_bufp;
-		while (bp == NULL) {
-			bp = (bp == NULL) ? bheadp : bp->b_bufp;
-			/* don't get caught in an infinite loop! */
-			if (bp == bbp)
-				return FALSE;
-		}
-		bbp = bp;
-	}
-
-	return swbuffer(bp);
-}
-
-/* make buffer BP current. */
+/* Switch to buffer `bp`.  (Make buffer `bp` current) */
 int swbuffer(struct buffer *bp)
 {
 	struct window *wp;
@@ -56,18 +33,19 @@ int swbuffer(struct buffer *bp)
 	return TRUE;
 }
 
-int killbuffer(int f, int n)
+int nextbuffer(int f, int n)
 {
-	struct buffer *bp;
-	char bufn[NBUFN];
-	int s;
+	struct buffer *bp = curbp;
+	if (n < 1)
+		return FALSE;
 
-	if ((s = mlreply("Kill buffer: ", bufn, NBUFN)) != TRUE)
-		return s;
-	if ((bp = bfind(bufn, FALSE)) == NULL)
-		return TRUE;
+	while (n-- > 0) {
+		bp = bp->b_bufp;
+		if (bp == NULL)
+			bp = bheadp;
+	}
 
-	return zotbuf(bp);
+	return swbuffer(bp);
 }
 
 int bufrdonly(int f, int n)
@@ -130,19 +108,21 @@ int anycb(void)
 /*
  * Find a buffer by name.  Create it if buffer is not found and cflag is TRUE.
  */
-struct buffer *bfind(char *bname, int cflag)
+struct buffer *bfind(char *filename, int cflag)
 {
 	struct buffer *bp;
 	struct line *lp;
 
+	if (strlen(filename) > NFILEN - 1) {
+		mlwrite("Filename too long");
+		return NULL;
+	}
 	for_each_buff(bp) {
-		if (strcmp(bname, bp->b_bname) == 0)
+		if (strcmp(filename, bp->b_fname) == 0)
 			return bp;
 	}
-
 	if (cflag == FALSE)
 		return NULL;
-
 	if ((bp = malloc(sizeof(struct buffer))) == NULL)
 		return NULL;
 	if ((lp = lalloc(0)) == NULL) {
@@ -161,8 +141,7 @@ struct buffer *bfind(char *bname, int cflag)
 	bp->b_flag = 0;
 	bp->b_nwnd = 0;
 	bp->b_linep = lp;
-	strcpy(bp->b_fname, "");
-	strcpy(bp->b_bname, bname);
+	strncpy_safe(bp->b_fname, filename, NFILEN);
 	lp->l_fp = lp;
 	lp->l_bp = lp;
 	return bp;

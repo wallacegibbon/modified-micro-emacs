@@ -87,7 +87,6 @@ static inline void wstate_copy(struct window *wp, struct window *wp2)
 /* buffer.c */
 int nextbuffer(int f, int n);
 int swbuffer(struct buffer *bp);
-int killbuffer(int f, int n);
 int zotbuf(struct buffer *bp);
 int bufrdonly(int f, int n);
 void e_ltoa(char *buf, int width, long num);
@@ -216,6 +215,6 @@ void release(void *mp);
 /* util.c */
 char *strncpy_safe(char *dest, const char *src, size_t size);
 void rvstrcpy(char *rvstr, char *str);
-void die(int code, const char *fmt, ...);
+void die(int code, void (*deinit)(void), const char *fmt, ...);
 
 #endif

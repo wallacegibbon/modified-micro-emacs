@@ -10,62 +10,31 @@
 int filefind(int f, int n)
 {
 	struct buffer *bp;
-	struct line *lp;
-	char bname[NBUFN], fname[NFILEN];
-	int i, s;
+	char filename[NFILEN];
+	int s;
 
-	if ((s = mlreply("Find file: ", fname, NFILEN)) != TRUE)
+	if ((s = mlreply("Find file: ", filename, NFILEN)) != TRUE)
 		return s;
 
 	for_each_buff(bp) {
-		if (strcmp(bp->b_fname, fname) == 0) {
-			swbuffer(bp);
-			lp = curwp->w_dotp;
-			i = curwp->w_ntrows / 2;
-			while (i-- && lback(lp) != curbp->b_linep)
-				lp = lback(lp);
-			curwp->w_linep = lp;
-			curwp->w_flag |= WFMODE | WFHARD;
+		if (strcmp(bp->b_fname, filename) == 0) {
 			mlwrite("Old buffer");
-			return TRUE;
+			return swbuffer(bp);
 		}
 	}
-	makename(bname, fname);
-	while ((bp = bfind(bname, FALSE)) != NULL) {
-		/* old buffer name conflict code */
-		s = mlreply("Buffer name: ", bname, NBUFN);
-		if (s == ABORT)
-			return s;
-		if (s == FALSE) {
-			makename(bname, fname);
-			break;
-		}
-	}
-	if (bp == NULL && (bp = bfind(bname, TRUE)) == NULL) {
+
+	if ((bp = bfind(filename, TRUE)) == NULL) {
 		mlwrite("Cannot create buffer");
 		return FALSE;
 	}
-	if (--curbp->b_nwnd == 0) {	/* Undisplay. */
-		curbp->b_dotp = curwp->w_dotp;
-		curbp->b_doto = curwp->w_doto;
-		curbp->b_markp = curwp->w_markp;
-		curbp->b_marko = curwp->w_marko;
-	}
+	if (--curbp->b_nwnd == 0)
+		wstate_save(curwp);
 
-	curwp->w_bufp = bp;
-	curbp = bp;
-	curbp->b_nwnd++;
-
-	return readin(fname);
+	return swbuffer(bp);
 }
 
-/*
- * Read file "fname" into the current buffer, blowing away any existing text.
- * Called by both the read and find commands.  Return the status of the read.
- * Also called by the mainline, to read in a file specified on the command line
- * as an argument.
- */
-int readin(char *fname)
+/* Read file into the current buffer, blowing away any existing text. */
+int readin(char *filename)
 {
 	struct line *lp1, *lp2;
 	struct window *wp;
@@ -76,9 +45,9 @@ int readin(char *fname)
 		return FALSE;
 
 	curbp->b_flag &= ~BFCHG;
-	strncpy_safe(curbp->b_fname, fname, NFILEN);
+	strncpy_safe(curbp->b_fname, filename, NFILEN);
 
-	if ((s = ffropen(fname)) == FIOERR)
+	if ((s = ffropen(filename)) == FIOERR)
 		return FALSE;
 
 	if (s == FIOFNF) {
@@ -140,50 +109,6 @@ out:
 }
 
 /*
- * Take a file name, and from it fabricate a buffer name.
- * This routine knows about the syntax of file names on the target system.
- * I suppose that this information could be put in a better place
- * than a line of code.
- */
-void makename(char *bname, char *fname)
-{
-	char *cp1, *cp2;
-
-	cp1 = fname;
-	while (*cp1 != 0)
-		++cp1;
-
-#if UNIX
-	while (cp1 != fname && cp1[-1] != '/')
-		--cp1;
-#endif
-	cp2 = bname;
-	while (cp2 != &bname[NBUFN - 1] && *cp1 != 0 && *cp1 != ';')
-		*cp2++ = *cp1++;
-	*cp2 = 0;
-}
-
-/* make sure a buffer name is unique */
-void unqname(char *name)
-{
-	char *sp;
-
-	/* check to see if it is in the buffer list */
-	while (bfind(name, FALSE) != NULL) {
-		/* go to the end of the name */
-		sp = name;
-		while (*sp)
-			++sp;
-		if (sp == name || (*(sp - 1) < '0' || *(sp - 1) > '8')) {
-			*sp++ = '0';
-			*sp = 0;
-		} else {
-			*(--sp) += 1;
-		}
-	}
-}
-
-/*
  * Ask for a file name, and write the contents of the current buffer to that
  * file.  Update the remembered file name and clear the buffer changed flag.
  * This handling of file names is different from the earlier versions,
@@ -192,13 +117,13 @@ void unqname(char *name)
 int filewrite(int f, int n)
 {
 	struct window *wp;
-	char fname[NFILEN];
+	char filename[NFILEN];
 	int s;
 
-	if ((s = mlreply("Write file: ", fname, NFILEN)) != TRUE)
+	if ((s = mlreply("Write file: ", filename, NFILEN)) != TRUE)
 		return s;
-	if ((s = writeout(fname)) == TRUE) {
-		strcpy(curbp->b_fname, fname);
+	if ((s = writeout(filename)) == TRUE) {
+		strcpy(curbp->b_fname, filename);
 		curbp->b_flag &= ~BFCHG;
 		for_each_wind(wp) {
 			if (wp->w_bufp == curbp)

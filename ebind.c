@@ -47,7 +47,6 @@ struct key_tab keytab[] = {
 
 	{ CTLX | CTL | 'C', quit },
 	{ CTLX | CTL | 'F', filefind },
-	{ CTLX | CTL | 'K', killbuffer },
 	{ CTLX | CTL | 'Q', bufrdonly },
 	{ CTLX | CTL | 'S', filesave },
 	{ CTLX | CTL | 'W', filewrite },

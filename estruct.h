@@ -11,7 +11,6 @@
 #define CLEAN		0	/* de-alloc memory on exit */
 
 #define NFILEN		256	/* # of bytes, file name */
-#define NBUFN		16	/* # of bytes, buffer name */
 #define NSTRING		128	/* # of bytes, string buffers */
 #define NKBDM		256	/* # of strokes, keyboard macro */
 #define NPAT		64	/* # of bytes, pattern */
@@ -97,7 +96,6 @@ struct buffer {
 	char b_nwnd;		/* Count of windows on buffer */
 	char b_flag;		/* Flags */
 	char b_fname[NFILEN];	/* File name */
-	char b_bname[NBUFN];	/* Buffer name */
 };
 
 #define BFACTIVE	0x01	/* window activated flag */

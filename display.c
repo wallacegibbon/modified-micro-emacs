@@ -535,12 +535,9 @@ static void modeline(struct window *wp)
 	else
 		vtputs(bp->b_flag & BFRDONLY ? "%% " : "   ");
 
-	vtputs(bp->b_bname);
-	vtputc(' ');
 	if (bp->b_flag & BFTRUNC)
-		vtputs(" (TRUNC) ");
-	if (bp->b_fname[0] != 0 && strcmp(bp->b_bname, bp->b_fname) != 0)
-		vtputs(bp->b_fname);
+		vtputs("(TRUNC) ");
+	vtputs(bp->b_fname);
 
 	while (vtcol < term.t_ncol)
 		vtputc(' ');

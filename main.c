@@ -7,47 +7,38 @@ static void emergencyexit(int);
 
 static int get_universal_arg(int *arg);
 static int command_loop(void);
-static int edinit(char *bname);
+static int edinit(struct buffer *bp);
 static int execute(int c, int f, int n);
 
 int main(int argc, char **argv)
 {
 	struct buffer *firstbp = NULL, *bp;
-	int firstfile = TRUE, i;
-	char bname[NBUFN];
+	int i;
+
+	if (argc < 2)
+		die(1, NULL, "Please give me at least one file\n");
 
 	/* Initialize the virtual terminal, this have to be successful */
 	vtinit();
 	if (!display_ok)
-		die(1, "Failed initializing virtual terminal\n");
-
-	if (edinit("main"))
-		die(1, "Failed initializing editor\n");
+		die(1, vtdeinit, "Failed initializing virtual terminal\n");
 
 	for (i = 1; i < argc; ++i) {
-		makename(bname, argv[i]);
-		unqname(bname);
-		bp = bfind(bname, TRUE);
-		strncpy_safe(bp->b_fname, argv[i], NFILEN);
-		bp->b_flag &= ~BFACTIVE;
-		if (firstfile) {
+		if ((bp = bfind(argv[i], TRUE)) == NULL)
+			die(2, vtdeinit, "Failed opening file %s\n", argv[i]);
+		if (firstbp == NULL)
 			firstbp = bp;
-			firstfile = FALSE;
-		}
 	}
+
+	if (edinit(firstbp))
+		die(3, vtdeinit, "Failed initializing editor\n");
+
+	swbuffer(firstbp);
 
 #if UNIX
 	signal(SIGHUP, emergencyexit);
 	signal(SIGTERM, emergencyexit);
 #endif
-
-	/* If there are any files to read, read the first one! */
-	if (firstfile == FALSE) {
-		swbuffer(firstbp);
-		if ((bp = bfind("main", FALSE)) != NULL)
-			zotbuf(bp);
-	}
-
 	for (;;)
 		command_loop();
 }
@@ -78,7 +69,7 @@ static int get_universal_arg(int *arg)
 {
 	int n = 4, first_flag = 1, c;
 	for (;;) {
-		mlwrite("Arg: %d", n);
+		mlwrite("Argument: %d", n);
 		c = getcmd();
 		if (isdigit(c)) {
 			n = first_flag ? (c - '0') : (10 * n + c - '0');
@@ -88,24 +79,16 @@ static int get_universal_arg(int *arg)
 			first_flag = 0;
 		} else {
 			*arg = n;
+			mlerase();
 			return c;
 		}
 	}
 }
 
-/*
- * Initialize all of the buffers and windows.  The buffer name is passed down
- * as an argument, because the main routine may have been told to read in a
- * file by default, and we want the buffer name to be right.
- */
-static int edinit(char *bname)
+static int edinit(struct buffer *bp)
 {
-	struct buffer *bp;
 	struct window *wp;
-
-	bp = bfind(bname, TRUE); /* First buffer */
-	wp = malloc(sizeof(struct window)); /* First window */
-	if (bp == NULL || wp == NULL)
+	if ((wp = malloc(sizeof(struct window))) == NULL) /* First window */
 		return 1;
 
 	wheadp = wp;
