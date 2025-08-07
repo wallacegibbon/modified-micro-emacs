@@ -86,30 +86,6 @@ void lchange(int flag)
 	}
 }
 
-static inline void line_insert(struct line *lp, struct line *lp_new)
-{
-	struct line *tmp = lp->l_bp;
-
-	lp_new->l_bp = tmp;
-	lp_new->l_fp = lp;
-	tmp->l_fp = lp_new;
-	lp->l_bp = lp_new;
-}
-
-static inline void line_replace(struct line *lp, struct line *lp_new)
-{
-	lp->l_bp->l_fp = lp_new;
-	lp->l_fp->l_bp = lp_new;
-	lp_new->l_fp = lp->l_fp;
-	lp_new->l_bp = lp->l_bp;
-}
-
-static inline void line_unlink(struct line *lp)
-{
-	lp->l_bp->l_fp = lp->l_fp;
-	lp->l_fp->l_bp = lp->l_bp;
-}
-
 static int linsert_end(int n, int c)
 {
 	struct line *lp = curwp->w_dotp, *lp_new;

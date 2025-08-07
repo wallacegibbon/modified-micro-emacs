@@ -5,16 +5,16 @@ static int get_col(struct line *lp, int offset)
 {
 	int col = 0, i = 0;
 	while (i < offset)
-		col = next_col(col, lgetc(lp, i++));
+		col = next_col(col, lp->l_text[i++]);
 	return col;
 }
 
 /* Convert terminal column number of this line into character index/offset. */
 static int get_idx(struct line *lp, int col)
 {
-	int c = 0, i = 0, len = llength(lp);
+	int c = 0, i = 0, len = lp->l_used;
 	while (i < len) {
-		if ((c = next_col(c, lgetc(lp, i))) > col)
+		if ((c = next_col(c, lp->l_text[i])) > col)
 			break;
 		else
 			++i;
@@ -25,7 +25,7 @@ static int get_idx(struct line *lp, int col)
 /* Goto the beginning of the buffer */
 int gotobob(int f, int n)
 {
-	curwp->w_dotp = lforw(curbp->b_linep);
+	curwp->w_dotp = curbp->b_linep->l_fp;
 	curwp->w_doto = 0;
 	curwp->w_flag |= WFHARD;
 	return TRUE;
@@ -50,7 +50,7 @@ int gotobol(int f, int n)
 /* Move the cursor to the end of the current line */
 int gotoeol(int f, int n)
 {
-	curwp->w_doto = llength(curwp->w_dotp);
+	curwp->w_doto = curwp->w_dotp->l_used;
 	return TRUE;
 }
 
@@ -62,10 +62,10 @@ int backchar(int f, int n)
 		return forwchar(f, -n);
 	while (n--) {
 		if (curwp->w_doto == 0) {
-			if ((lp = lback(curwp->w_dotp)) == curbp->b_linep)
+			if ((lp = curwp->w_dotp->l_bp) == curbp->b_linep)
 				return FALSE;
 			curwp->w_dotp = lp;
-			curwp->w_doto = llength(lp);
+			curwp->w_doto = lp->l_used;
 			curwp->w_flag |= WFMOVE;
 		} else {
 			--curwp->w_doto;
@@ -79,10 +79,10 @@ int forwchar(int f, int n)
 	if (n < 0)
 		return backchar(f, -n);
 	while (n--) {
-		if (curwp->w_doto == llength(curwp->w_dotp)) {
+		if (curwp->w_doto == curwp->w_dotp->l_used) {
 			if (curwp->w_dotp == curbp->b_linep)
 				return FALSE;
-			curwp->w_dotp = lforw(curwp->w_dotp);
+			curwp->w_dotp = curwp->w_dotp->l_fp;
 			curwp->w_doto = 0;
 			curwp->w_flag |= WFMOVE;
 		} else {
@@ -129,7 +129,7 @@ int forwline(int f, int n)
 	thisflag |= CFCPCN;
 	lp = curwp->w_dotp;
 	while (n-- && lp != curbp->b_linep)
-		lp = lforw(lp);
+		lp = lp->l_fp;
 
 	curwp->w_dotp = lp;
 	curwp->w_doto = get_idx(lp, curgoal);
@@ -144,7 +144,7 @@ int backline(int f, int n)
 	if (n < 0)
 		return forwline(f, -n);
 
-	if (lback(curwp->w_dotp) == curbp->b_linep)
+	if (curwp->w_dotp->l_bp == curbp->b_linep)
 		return FALSE;
 
 	/* If the last command was not a line move, update the goal */
@@ -153,8 +153,8 @@ int backline(int f, int n)
 
 	thisflag |= CFCPCN;
 	lp = curwp->w_dotp;
-	while (n-- && lback(lp) != curbp->b_linep)
-		lp = lback(lp);
+	while (n-- && lp->l_bp != curbp->b_linep)
+		lp = lp->l_bp;
 
 	curwp->w_dotp = lp;
 	curwp->w_doto = get_idx(lp, curgoal);
@@ -178,7 +178,7 @@ int forwpage(int f, int n)
 
 	lp = curwp->w_linep;
 	while (n-- && lp != curbp->b_linep)
-		lp = lforw(lp);
+		lp = lp->l_fp;
 	curwp->w_linep = lp;
 	curwp->w_dotp = lp;
 	curwp->w_doto = 0;
@@ -201,8 +201,8 @@ int backpage(int f, int n)
 	}
 
 	lp = curwp->w_linep;
-	while (n-- && lback(lp) != curbp->b_linep)
-		lp = lback(lp);
+	while (n-- && lp->l_bp != curbp->b_linep)
+		lp = lp->l_bp;
 	curwp->w_linep = lp;
 	curwp->w_dotp = lp;
 	curwp->w_doto = 0;
@@ -243,7 +243,7 @@ int show_misc_info(int f, int n)
 	struct line *lp;
 	int curline = -1, numlines = 0;
 
-	for (lp = lforw(curbp->b_linep); lp != curbp->b_linep; lp = lforw(lp)) {
+	for (lp = curbp->b_linep->l_fp; lp != curbp->b_linep; lp = lp->l_fp) {
 		if (lp == curwp->w_dotp)
 			curline = numlines;
 		++numlines;
@@ -292,8 +292,8 @@ static int newline_and_indent_one(void)
 	int nicol = 0, c, i;
 
 	/* Calculate the leading white space count of current line */
-	for (i = 0; i < llength(curwp->w_dotp); ++i) {
-		c = lgetc(curwp->w_dotp, i);
+	for (i = 0; i < curwp->w_dotp->l_used; ++i) {
+		c = curwp->w_dotp->l_text[i];
 		if (c != ' ' && c != '\t')
 			break;
 		if (c == '\t')
@@ -391,17 +391,17 @@ int killtext(int f, int n)
 	thisflag |= CFKILL;
 
 	if (f == FALSE) {
-		chunk = llength(curwp->w_dotp) - curwp->w_doto;
+		chunk = curwp->w_dotp->l_used - curwp->w_doto;
 		if (chunk == 0)
 			chunk = 1;
 	} else {
-		chunk = llength(curwp->w_dotp) - curwp->w_doto + 1;
-		nextp = lforw(curwp->w_dotp);
+		chunk = curwp->w_dotp->l_used - curwp->w_doto + 1;
+		nextp = curwp->w_dotp->l_fp;
 		while (--n) {
 			if (nextp == curbp->b_linep)
 				break;
-			chunk += llength(nextp) + 1;
-			nextp = lforw(nextp);
+			chunk += nextp->l_used + 1;
+			nextp = nextp->l_fp;
 		}
 	}
 	return ldelete(chunk, TRUE);
@@ -439,21 +439,21 @@ static int getregion(struct region *rp)
 	blp = curwp->w_dotp;
 	bsize = (long)curwp->w_doto;
 	flp = curwp->w_dotp;
-	fsize = (long)(llength(flp) - curwp->w_doto + 1);
-	while (flp != curbp->b_linep || lback(blp) != curbp->b_linep) {
+	fsize = (long)(flp->l_used - curwp->w_doto + 1);
+	while (flp != curbp->b_linep || blp->l_bp != curbp->b_linep) {
 		if (flp != curbp->b_linep) {
-			flp = lforw(flp);
+			flp = flp->l_fp;
 			if (flp == curwp->w_markp) {
 				rp->r_linep = curwp->w_dotp;
 				rp->r_offset = curwp->w_doto;
 				rp->r_size = fsize + curwp->w_marko;
 				return TRUE;
 			}
-			fsize += llength(flp) + 1;
+			fsize += flp->l_used + 1;
 		}
-		if (lback(blp) != curbp->b_linep) {
-			blp = lback(blp);
-			bsize += llength(blp) + 1;
+		if (blp->l_bp != curbp->b_linep) {
+			blp = blp->l_bp;
+			bsize += blp->l_used + 1;
 			if (blp == curwp->w_markp) {
 				rp->r_linep = blp;
 				rp->r_offset = curwp->w_marko;
@@ -509,13 +509,13 @@ int copyregion(int f, int n)
 	linep = region.r_linep;
 	loffs = region.r_offset;
 	while (region.r_size--) {
-		if (loffs == llength(linep)) {
+		if (loffs == linep->l_used) {
 			if ((s = kinsert('\n')) != TRUE)
 				return s;
-			linep = lforw(linep);
+			linep = linep->l_fp;
 			loffs = 0;
 		} else {
-			if ((s = kinsert(lgetc(linep, loffs))) != TRUE)
+			if ((s = kinsert(linep->l_text[loffs])) != TRUE)
 				return s;
 			++loffs;
 		}
@@ -524,8 +524,7 @@ int copyregion(int f, int n)
 	return TRUE;
 }
 
-/* Zap all of the upper case characters in the region to lower case. */
-int lowerregion(int f, int n)
+static int toggle_region_case(int start, int end)
 {
 	struct line *linep;
 	struct region region;
@@ -539,45 +538,29 @@ int lowerregion(int f, int n)
 	linep = region.r_linep;
 	loffs = region.r_offset;
 	while (region.r_size--) {
-		if (loffs == llength(linep)) {
-			linep = lforw(linep);
+		if (loffs == linep->l_used) {
+			linep = linep->l_fp;
 			loffs = 0;
 		} else {
-			c = lgetc(linep, loffs);
-			if (c >= 'A' && c <= 'Z')
-				lputc(linep, loffs, c ^ DIFCASE);
+			c = linep->l_text[loffs];
+			if (c >= start && c <= end)
+				linep->l_text[loffs] = c ^ DIFCASE;
 			++loffs;
 		}
 	}
 	return TRUE;
 }
 
+/* Zap all of the upper case characters in the region to lower case. */
+int lowerregion(int f, int n)
+{
+	return toggle_region_case('A', 'Z');
+}
+
 /* Zap all of the lower case characters in the region to upper case. */
 int upperregion(int f, int n)
 {
-	struct line *linep;
-	struct region region;
-	int loffs, c, s;
-
-	if (curbp->b_flag & BFRDONLY)
-		return rdonly();
-	if ((s = getregion(&region)) != TRUE)
-		return s;
-	lchange(WFHARD);
-	linep = region.r_linep;
-	loffs = region.r_offset;
-	while (region.r_size--) {
-		if (loffs == llength(linep)) {
-			linep = lforw(linep);
-			loffs = 0;
-		} else {
-			c = lgetc(linep, loffs);
-			if (c >= 'a' && c <= 'z')
-				lputc(linep, loffs, c - 'a' + 'A');
-			++loffs;
-		}
-	}
-	return TRUE;
+	return toggle_region_case('a', 'z');
 }
 
 /* Begin a keyboard macro. */

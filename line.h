@@ -9,11 +9,29 @@ struct line {
 	char l_text[];		/* A bunch of characters. */
 };
 
-#define lforw(lp)       ((lp)->l_fp)
-#define lback(lp)       ((lp)->l_bp)
-#define lgetc(lp, n)    ((lp)->l_text[(n)] & 0xFF)
-#define lputc(lp, n, c) ((lp)->l_text[(n)] = (c))
-#define llength(lp)     ((lp)->l_used)
+static inline void line_insert(struct line *lp, struct line *lp_new)
+{
+	struct line *tmp = lp->l_bp;
+
+	lp_new->l_bp = tmp;
+	lp_new->l_fp = lp;
+	tmp->l_fp = lp_new;
+	lp->l_bp = lp_new;
+}
+
+static inline void line_replace(struct line *lp, struct line *lp_new)
+{
+	lp->l_bp->l_fp = lp_new;
+	lp->l_fp->l_bp = lp_new;
+	lp_new->l_fp = lp->l_fp;
+	lp_new->l_bp = lp->l_bp;
+}
+
+static inline void line_unlink(struct line *lp)
+{
+	lp->l_bp->l_fp = lp->l_fp;
+	lp->l_fp->l_bp = lp->l_bp;
+}
 
 struct line *lalloc(int);
 void lfree(struct line *lp);

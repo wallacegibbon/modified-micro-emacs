@@ -86,9 +86,9 @@ int onlywind(int f, int n)
 	}
 	lp = curwp->w_linep;
 	i = curwp->w_toprow;
-	while (i != 0 && lback(lp) != curbp->b_linep) {
+	while (i != 0 && lp->l_bp != curbp->b_linep) {
 		--i;
-		lp = lback(lp);
+		lp = lp->l_bp;
 	}
 	curwp->w_toprow = 0;
 	curwp->w_ntrows = term.t_nrow - 1;
@@ -196,12 +196,12 @@ int splitwind(int f, int n)
 	ntrd = 0;
 	while (lp != curwp->w_dotp) {
 		++ntrd;
-		lp = lforw(lp);
+		lp = lp->l_fp;
 	}
 	lp = curwp->w_linep;
 
 	if (ntrd == ntru)	/* Hit mode line. */
-		lp = lforw(lp);
+		lp = lp->l_fp;
 
 	curwp->w_ntrows = ntru;
 	wp->w_wndp = curwp->w_wndp;

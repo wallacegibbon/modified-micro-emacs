@@ -1,7 +1,5 @@
 #include "me.h"
 
-#define MAXNLINE	10000000	/* Max number of lines from one file. */
-
 /*
  * If the buffer can be found, just switch to the buffer.  Other wise create
  * a new buffer, read in the text, and switch to the new buffer.
@@ -27,9 +25,9 @@ int filefind(int f, int n)
 /* Read file into the current buffer, blowing away any existing text. */
 int readin(char *filename)
 {
-	struct line *lp1, *lp2;
+	struct line *lp;
 	struct window *wp;
-	int s, i, nbytes, nline;
+	int s, nbytes, nline;
 	char mesg[NSTRING];
 
 	if (bclear(curbp) != TRUE)	/* Might be old. */
@@ -50,21 +48,12 @@ int readin(char *filename)
 	mlwrite("Reading file");
 	nline = 0;
 	while ((s = ffgetline(&nbytes)) == FIOSUC) {
-		if ((lp1 = lalloc(nbytes)) == NULL) {
-			s = FIOMEM;	/* Keep message on the display */
-			break;
-		}
-		if (nline > MAXNLINE) {
+		if ((lp = lalloc(nbytes)) == NULL) {
 			s = FIOMEM;
 			break;
 		}
-		lp2 = lback(curbp->b_linep);
-		lp2->l_fp = lp1;
-		lp1->l_fp = curbp->b_linep;
-		lp1->l_bp = lp2;
-		curbp->b_linep->l_bp = lp1;
-		for (i = 0; i < nbytes; ++i)
-			lputc(lp1, i, fline[i]);
+		line_insert(curbp->b_linep, lp);
+		memcpy(lp->l_text, fline, nbytes);
 		++nline;
 	}
 	ffclose();		/* Ignore errors. */
@@ -85,8 +74,8 @@ int readin(char *filename)
 out:
 	for_each_wind(wp) {
 		if (wp->w_bufp == curbp) {
-			wp->w_linep = lforw(curbp->b_linep);
-			wp->w_dotp = lforw(curbp->b_linep);
+			wp->w_linep = curbp->b_linep->l_fp;
+			wp->w_dotp = curbp->b_linep->l_fp;
 			wp->w_doto = 0;
 			wp->w_markp = NULL;
 			wp->w_marko = 0;
@@ -165,8 +154,8 @@ int writeout(char *fn)
 
 	mlwrite("Writing...");
 	nline = 0;
-	for (lp = lforw(curbp->b_linep); lp != curbp->b_linep; lp = lforw(lp)) {
-		if ((s = ffputline(&lp->l_text[0], llength(lp))) != FIOSUC)
+	for (lp = curbp->b_linep->l_fp; lp != curbp->b_linep; lp = lp->l_fp) {
+		if ((s = ffputline(&lp->l_text[0], lp->l_used)) != FIOSUC)
 			break;
 		++nline;
 	}

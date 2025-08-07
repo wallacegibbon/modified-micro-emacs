@@ -167,11 +167,11 @@ finish:
 static int boundry(struct line *curline, int curoff, int dir)
 {
 	if (dir == FORWARD)
-		return (curoff == llength(curline)) &&
-			(lforw(curline) == curbp->b_linep);
+		return (curoff == curline->l_used) &&
+			(curline->l_fp == curbp->b_linep);
 	else
 		return (curoff == 0) &&
-			(lback(curline) == curbp->b_linep);
+			(curline->l_bp == curbp->b_linep);
 }
 
 static int nextch(struct line **pcurline, int *pcuroff, int dir)
@@ -180,20 +180,20 @@ static int nextch(struct line **pcurline, int *pcuroff, int dir)
 	int curoff = *pcuroff, c;
 
 	if (dir == FORWARD) {
-		if (curoff == llength(curline)) {
-			curline = lforw(curline);
+		if (curoff == curline->l_used) {
+			curline = curline->l_fp;
 			curoff = 0;
 			c = '\n';
 		} else {
-			c = lgetc(curline, curoff++);
+			c = curline->l_text[curoff++];
 		}
 	} else {
 		if (curoff == 0) {
-			curline = lback(curline);
-			curoff = llength(curline);
+			curline = curline->l_bp;
+			curoff = curline->l_used;
 			c = '\n';
 		} else {
-			c = lgetc(curline, --curoff);
+			c = curline->l_text[--curoff];
 		}
 
 	}

@@ -251,7 +251,7 @@ static void reframe(struct window *wp)
 		for (i = wp->w_ntrows; i && lp != wp->w_bufp->b_linep; --i) {
 			if (lp == wp->w_dotp)
 				return;
-			lp = lforw(lp);
+			lp = lp->l_fp;
 		}
 		if (i > 0 && lp == wp->w_dotp)	/* w_dotp == b_linep */
 			return;
@@ -263,8 +263,8 @@ static void reframe(struct window *wp)
 		i = wp->w_ntrows / 2;
 
 	lp = wp->w_dotp;
-	while (i-- && lback(lp) != wp->w_bufp->b_linep)
-		lp = lback(lp);
+	while (i-- && lp->l_bp != wp->w_bufp->b_linep)
+		lp = lp->l_bp;
 
 	wp->w_linep = lp;
 	wp->w_flag |= WFHARD;
@@ -274,8 +274,8 @@ static void reframe(struct window *wp)
 static void show_line(struct line *lp)
 {
 	int i, len;
-	for (i = 0, len = llength(lp); i < len; ++i)
-		vtputc(lgetc(lp, i));
+	for (i = 0, len = lp->l_used; i < len; ++i)
+		vtputc(lp->l_text[i]);
 }
 
 /* Update the current line to the virtual screen */
@@ -284,7 +284,7 @@ static void update_one(struct window *wp)
 	struct line *lp = wp->w_linep;
 	int i = wp->w_toprow;
 
-	for (; lp != wp->w_dotp; lp = lforw(lp))
+	for (; lp != wp->w_dotp; lp = lp->l_fp)
 		++i;
 
 	/* and update the virtual line */
@@ -307,7 +307,7 @@ static void update_all(struct window *wp)
 		vtmove(i, 0);
 		if (lp != wp->w_bufp->b_linep) {
 			show_line(lp);
-			lp = lforw(lp);
+			lp = lp->l_fp;
 		}
 		vteeol();
 	}
@@ -323,12 +323,12 @@ static void update_pos(void)
 	int i;
 
 	currow = curwp->w_toprow;
-	for (; lp != curwp->w_dotp; lp = lforw(lp))
+	for (; lp != curwp->w_dotp; lp = lp->l_fp)
 		++currow;
 
 	curcol = 0;
 	for (i = 0; i < curwp->w_doto; ++i)
-		curcol = next_col(curcol, lgetc(lp, i));
+		curcol = next_col(curcol, lp->l_text[i]);
 
 	/* if extended, flag so and update the virtual line image */
 	if (curcol >= term.t_ncol - 1) {
@@ -345,7 +345,7 @@ static void update_de_extend_wind(struct window *wp)
 	int i = wp->w_toprow;
 	int j = i + wp->w_ntrows;
 
-	for (lp = wp->w_linep; i < j; ++i, lp = lforw(lp)) {
+	for (lp = wp->w_linep; i < j; ++i, lp = lp->l_fp) {
 		if (!(vscreen[i]->v_flag & VFEXT))
 			continue;
 		if ((lp == wp->w_dotp) && (curcol >= term.t_ncol - 1))
