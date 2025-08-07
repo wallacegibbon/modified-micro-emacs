@@ -213,6 +213,7 @@ void *allocate(unsigned long nbytes);
 void release(void *mp);
 
 /* util.c */
+char *trim_spaces(char *dest, const char *src, size_t size, int *trunc);
 char *strncpy_safe(char *dest, const char *src, size_t size);
 void rvstrcpy(char *rvstr, char *str);
 void die(int code, void (*deinit)(void), const char *fmt, ...);

@@ -1,7 +1,6 @@
 #include "me.h"
 
-/* Max number of lines from one file. */
-#define MAXNLINE 10000000
+#define MAXNLINE	10000000	/* Max number of lines from one file. */
 
 /*
  * If the buffer can be found, just switch to the buffer.  Other wise create
@@ -16,20 +15,12 @@ int filefind(int f, int n)
 	if ((s = mlreply("Find file: ", filename, NFILEN)) != TRUE)
 		return s;
 
-	for_each_buff(bp) {
-		if (strcmp(bp->b_fname, filename) == 0) {
-			mlwrite("Old buffer");
-			return swbuffer(bp);
-		}
-	}
-
-	if ((bp = bfind(filename, TRUE)) == NULL) {
+	if ((bp = bfind(filename, FALSE)) != NULL) {
+		mlwrite("Old buffer");
+	} else if ((bp = bfind(filename, TRUE)) == NULL) {
 		mlwrite("Cannot create buffer");
 		return FALSE;
 	}
-	if (--curbp->b_nwnd == 0)
-		wstate_save(curwp);
-
 	return swbuffer(bp);
 }
 

@@ -104,16 +104,10 @@ int gotoline(int f, int n)
 		}
 		n = atoi(arg);
 	}
-
-        /* Handle the case where `me` is called like this: me filename + */
-	if (n == 0)
-		return gotoeob(f, n);
-
 	/* If a bogus argument was passed, then returns false. */
 	if (n < 0)
 		return FALSE;
 
-	/* First, we go to the begin of the buffer. */
 	gotobob(f, n);
 	return forwline(f, n - 1);
 }

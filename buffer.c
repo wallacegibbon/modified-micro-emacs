@@ -1,12 +1,16 @@
 #include "me.h"
 
-/* Switch to buffer `bp`.  (Make buffer `bp` current) */
+/* Switch to buffer `bp`.  (Make buffer `bp` curbp) */
 int swbuffer(struct buffer *bp)
 {
 	struct window *wp;
 
-	if (--curbp->b_nwnd == 0)
-		wstate_save(curwp);
+	if (bp == NULL || bp == curbp)
+		return FALSE;
+	if (curbp != NULL) {
+		if (--curbp->b_nwnd == 0)
+			wstate_save(curwp);
+	}
 
 	curbp = bp;
 	if (!(curbp->b_flag & BFACTIVE)) {
@@ -20,6 +24,7 @@ int swbuffer(struct buffer *bp)
 	curwp->w_linep = bp->b_linep;
 	curwp->w_flag |= WFMODE | WFFORCE | WFHARD;
 	curwp->w_force = curwp->w_ntrows / 2;
+
 	if (bp->b_nwnd++ == 0) {
 		wstate_restore(curwp, bp);
 		return TRUE;
@@ -36,12 +41,11 @@ int swbuffer(struct buffer *bp)
 int nextbuffer(int f, int n)
 {
 	struct buffer *bp = curbp;
-	if (n < 1)
-		return FALSE;
 
+	if (n < 1 || bp == NULL)
+		return FALSE;
 	while (n-- > 0) {
-		bp = bp->b_bufp;
-		if (bp == NULL)
+		if ((bp = bp->b_bufp) == NULL)
 			bp = bheadp;
 	}
 
@@ -108,12 +112,15 @@ int anycb(void)
 /*
  * Find a buffer by name.  Create it if buffer is not found and cflag is TRUE.
  */
-struct buffer *bfind(char *filename, int cflag)
+struct buffer *bfind(char *raw_filename, int cflag)
 {
+	char filename[NFILEN];
 	struct buffer *bp;
 	struct line *lp;
+	int trunc;
 
-	if (strlen(filename) > NFILEN - 1) {
+	trim_spaces(filename, raw_filename, NFILEN, &trunc);
+	if (trunc) {
 		mlwrite("Filename too long");
 		return NULL;
 	}
@@ -125,25 +132,22 @@ struct buffer *bfind(char *filename, int cflag)
 		return NULL;
 	if ((bp = malloc(sizeof(struct buffer))) == NULL)
 		return NULL;
+	memset(bp, 0, sizeof(*bp));
+
 	if ((lp = lalloc(0)) == NULL) {
 		free(bp);
 		return NULL;
 	}
+	lp->l_fp = lp;
+	lp->l_bp = lp;
 
 	/* The order of buffers does not matter, so we insert it at head */
 	bp->b_bufp = bheadp;
 	bheadp = bp;
 
-	bp->b_dotp = lp;
-	bp->b_doto = 0;
-	bp->b_markp = NULL;
-	bp->b_marko = 0;
-	bp->b_flag = 0;
-	bp->b_nwnd = 0;
-	bp->b_linep = lp;
 	strncpy_safe(bp->b_fname, filename, NFILEN);
-	lp->l_fp = lp;
-	lp->l_bp = lp;
+	bp->b_linep = lp;
+	bp->b_dotp = lp;
 	return bp;
 }
 

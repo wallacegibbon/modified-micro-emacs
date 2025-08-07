@@ -7,7 +7,7 @@ static void emergencyexit(int);
 
 static int get_universal_arg(int *arg);
 static int command_loop(void);
-static int edinit(struct buffer *bp);
+static int window_init(void);
 static int execute(int c, int f, int n);
 
 int main(int argc, char **argv)
@@ -30,8 +30,8 @@ int main(int argc, char **argv)
 			firstbp = bp;
 	}
 
-	if (edinit(firstbp))
-		die(3, vtdeinit, "Failed initializing editor\n");
+	if (window_init())
+		die(3, vtdeinit, "Failed initializing window\n");
 
 	swbuffer(firstbp);
 
@@ -85,27 +85,17 @@ static int get_universal_arg(int *arg)
 	}
 }
 
-static int edinit(struct buffer *bp)
+static int window_init(void)
 {
 	struct window *wp;
 	if ((wp = malloc(sizeof(struct window))) == NULL) /* First window */
 		return 1;
 
+	memset(wp, 0, sizeof(*wp));
+	wp->w_ntrows = term.t_nrow - 1;	/* "-1" for mode line. */
+
 	wheadp = wp;
 	curwp = wp;
-	curbp = bp;
-	wp->w_wndp = NULL;
-	wp->w_bufp = bp;
-	wp->w_linep = bp->b_linep;
-	wp->w_dotp = bp->b_linep;
-	wp->w_doto = 0;
-	wp->w_markp = NULL;
-	wp->w_marko = 0;
-	wp->w_toprow = 0;
-	wp->w_ntrows = term.t_nrow - 1;	/* "-1" for mode line. */
-	wp->w_force = 0;
-	wp->w_flag = WFMODE | WFHARD;
-	bp->b_nwnd = 1;
 	return 0;
 }
 
