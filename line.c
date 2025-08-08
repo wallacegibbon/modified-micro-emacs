@@ -125,12 +125,11 @@ static int linsert_realloc(int n, int c, struct line **lp_new)
 	while (cp1 != &lp1->l_text[lp1->l_used])
 		*cp2++ = *cp1++;
 
-	free(lp1);
-
 	for (i = 0; i < n; ++i)
 		lp2->l_text[doto + i] = c;
 
 	line_replace(lp1, lp2);
+	free(lp1);
 	*lp_new = lp2;
 	return TRUE;
 }

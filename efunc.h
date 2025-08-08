@@ -95,12 +95,13 @@ int bclear(struct buffer *bp);
 struct buffer *bfind(char *bname, int cflag);
 
 /* window.c */
-int redraw(int f, int n);
-int nextwind(int f, int n);
-int prevwind(int f, int n);
 int onlywind(int f, int n);
 int delwind(int f, int n);
 int splitwind(int f, int n);
+int redraw(int f, int n);
+int nextwind(int f, int n);
+int prevwind(int f, int n);
+void resetwind(struct window *wp);
 
 /* command.c */
 int forwchar(int f, int n);

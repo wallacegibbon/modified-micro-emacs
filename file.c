@@ -22,20 +22,6 @@ int filefind(int f, int n)
 	return swbuffer(bp);
 }
 
-/*
- * Reset the window to the beginning of a buffer.  Usually called when window
- * is pointing to a new buffer.
- */
-static void resetwind(struct window *wp, struct buffer *bp)
-{
-	wp->w_linep = bp->b_linep->l_fp;
-	wp->w_dotp = bp->b_linep->l_fp;
-	wp->w_doto = 0;
-	wp->w_markp = NULL;
-	wp->w_marko = 0;
-	wp->w_flag |= WFMODE | WFHARD;
-}
-
 /* Read file into the current buffer, blowing away any existing text. */
 int readin(char *filename)
 {
@@ -87,7 +73,7 @@ int readin(char *filename)
 out:
 	for_each_wind(wp) {
 		if (wp->w_bufp == curbp)
-			resetwind(wp, curbp);
+			resetwind(wp);
 	}
 	if (s == FIOERR || s == FIOFNF)
 		return FALSE;

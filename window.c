@@ -200,3 +200,13 @@ int prevwind(int f, int n)
 {
 	return nextwind(f, -n);
 }
+
+void resetwind(struct window *wp)
+{
+	wp->w_linep = wp->w_bufp->b_linep->l_fp;
+	wp->w_dotp = wp->w_linep;
+	wp->w_doto = 0;
+	wp->w_markp = NULL;
+	wp->w_marko = 0;
+	wp->w_flag |= WFMODE | WFHARD;
+}
