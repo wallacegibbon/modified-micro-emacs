@@ -62,7 +62,7 @@ int bufrdonly(int f, int n)
 	return TRUE;
 }
 
-/* Kill the buffer pointed to by bp, and update bheadp when necessary */
+/* Kill the buffer pointed to by bp, and update bheadp when necessary. */
 int zotbuf(struct buffer *bp)
 {
 	struct buffer *bp1, *bp2;
@@ -134,10 +134,8 @@ struct buffer *bfind(char *raw_filename, int cflag)
 		return NULL;
 	memset(bp, 0, sizeof(*bp));
 
-	if ((lp = lalloc(0)) == NULL) {
-		free(bp);
+	if ((lp = lalloc(0)) == NULL)
 		return NULL;
-	}
 	lp->l_fp = lp;
 	lp->l_bp = lp;
 
@@ -152,12 +150,9 @@ struct buffer *bfind(char *raw_filename, int cflag)
 }
 
 /*
- * This routine blows away all of the text in a buffer.
- * If the buffer is marked as changed then we ask if it is ok to blow it away;
- * this is to save the user the grief of losing text.
- * The window chain is nearly always wrong if this gets called;
- * the caller must arrange for the updates that are required.
- * Return TRUE if everything looks good.
+ * This routine blows away all of the text in a buffer.  The window chain is
+ * nearly always wrong if this gets called, the caller must arrange for the
+ * updates that are required.
  */
 int bclear(struct buffer *bp)
 {

@@ -95,15 +95,13 @@ static int linsert_end(int n, int c)
 		mlwrite("bug: linsert, w_doto of end is not 0");
 		return FALSE;
 	}
-
 	if ((lp_new = lalloc(n)) == NULL)
 		return FALSE;
-
-	line_insert(lp, lp_new);
 
 	for (i = 0; i < n; ++i)
 		lp_new->l_text[i] = c;
 
+	line_insert(lp, lp_new);
 	curwp->w_dotp = lp_new;
 	curwp->w_doto = n;
 	return TRUE;
@@ -127,12 +125,12 @@ static int linsert_realloc(int n, int c, struct line **lp_new)
 	while (cp1 != &lp1->l_text[lp1->l_used])
 		*cp2++ = *cp1++;
 
-	line_replace(lp1, lp2);
 	free(lp1);
 
 	for (i = 0; i < n; ++i)
 		lp2->l_text[doto + i] = c;
 
+	line_replace(lp1, lp2);
 	*lp_new = lp2;
 	return TRUE;
 }

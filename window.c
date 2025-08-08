@@ -1,74 +1,9 @@
 #include "me.h"
 
-/*
- * With no argument, it just does the refresh.  With an argument "n",
- * reposition dot to line "n" of the screen.  (n == 0 means centering it)
- */
-int redraw(int f, int n)
-{
-	if (f == FALSE) {
-		sgarbf = TRUE;
-	} else {
-		curwp->w_force = n;
-		curwp->w_flag |= WFFORCE;
-	}
-	return TRUE;
-}
-
-static int count_window(void)
-{
-	struct window *wp = wheadp;
-	int n = 1;
-	while ((wp = wp->w_wndp) != NULL)
-		++n;
-	return n;
-}
-
-/* Make the nth next window (or -nth prev window) the current window. */
-int nextwind(int f, int n)
-{
-	struct window *wp = curwp;
-	int wcount;
-
-	if (wheadp->w_wndp == NULL)
-		return FALSE;
-
-	wcount = count_window();
-	n %= wcount;
-	if (n < 0)
-		n += wcount;
-
-	while (n--) {
-		if ((wp = wp->w_wndp) == NULL)
-			wp = wheadp;
-	}
-	if (wp == curwp) {
-		mlwrite("Already in this window");
-		return TRUE;
-	}
-	curwp = wp;
-	curbp = wp->w_bufp;
-	update_modelines();
-	return TRUE;
-}
-
-int prevwind(int f, int n)
-{
-	return nextwind(f, -n);
-}
-
-/*
- * This command makes the current window the only window on the screen.
- * Try to set the framing so that "." does not have to move on the display.
- * Some care has to be taken to keep the values of dot and mark in the buffer
- * structures right if the distruction of a window makes a buffer become
- * undisplayed.
- */
+/* This command makes the current window the only window on the screen. */
 int onlywind(int f, int n)
 {
 	struct window *wp;
-	struct line *lp;
-	int i;
 
 	while (wheadp != curwp) {
 		wp = wheadp;
@@ -84,15 +19,8 @@ int onlywind(int f, int n)
 			wstate_save(wp);
 		free(wp);
 	}
-	lp = curwp->w_linep;
-	i = curwp->w_toprow;
-	while (i != 0 && lp->l_bp != curbp->b_linep) {
-		--i;
-		lp = lp->l_bp;
-	}
 	curwp->w_toprow = 0;
 	curwp->w_ntrows = term.t_nrow - 1;
-	curwp->w_linep = lp;
 	curwp->w_flag |= WFMODE | WFHARD;
 	return TRUE;
 }
@@ -214,4 +142,61 @@ int splitwind(int f, int n)
 	curwp->w_flag |= WFMODE | WFHARD;
 	wp->w_flag |= WFMODE | WFHARD;
 	return TRUE;
+}
+
+/*
+ * With no argument, it just does the refresh.
+ * With an argument "n", reposition dot to line "n" of the screen.
+ */
+int redraw(int f, int n)
+{
+	if (f == FALSE) {
+		sgarbf = TRUE;
+	} else {
+		curwp->w_force = n;
+		curwp->w_flag |= WFFORCE;
+	}
+	return TRUE;
+}
+
+static int count_window(void)
+{
+	struct window *wp = wheadp;
+	int n = 1;
+	while ((wp = wp->w_wndp) != NULL)
+		++n;
+	return n;
+}
+
+/* Make the nth next window (or -nth prev window) the current window. */
+int nextwind(int f, int n)
+{
+	struct window *wp = curwp;
+	int wcount;
+
+	if (wheadp->w_wndp == NULL)
+		return FALSE;
+
+	wcount = count_window();
+	n %= wcount;
+	if (n < 0)
+		n += wcount;
+
+	while (n--) {
+		if ((wp = wp->w_wndp) == NULL)
+			wp = wheadp;
+	}
+	if (wp == curwp) {
+		mlwrite("Already in this window");
+		return TRUE;
+	}
+	curwp = wp;
+	curbp = wp->w_bufp;
+	update_modelines();
+	return TRUE;
+}
+
+int prevwind(int f, int n)
+{
+	return nextwind(f, -n);
 }
