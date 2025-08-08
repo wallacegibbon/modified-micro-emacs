@@ -86,23 +86,22 @@ void lchange(int flag)
 	}
 }
 
-static int linsert_end(int n, int c)
+static int linsert_simple(int n, int c)
 {
-	struct line *lp = curwp->w_dotp, *lp_new;
+	struct line *lp;
 	int i;
 
 	if (curwp->w_doto != 0) {
 		mlwrite("bug: linsert, w_doto of end is not 0");
 		return FALSE;
 	}
-	if ((lp_new = lalloc(n)) == NULL)
+	if ((lp = lalloc(n)) == NULL)
 		return FALSE;
-
 	for (i = 0; i < n; ++i)
-		lp_new->l_text[i] = c;
+		lp->l_text[i] = c;
 
-	line_insert(lp, lp_new);
-	curwp->w_dotp = lp_new;
+	line_insert(curwp->w_dotp, lp);
+	curwp->w_dotp = lp;
 	curwp->w_doto = n;
 	return TRUE;
 }
@@ -110,7 +109,7 @@ static int linsert_end(int n, int c)
 static int linsert_realloc(int n, int c, struct line **lp_new)
 {
 	struct line *lp1 = curwp->w_dotp, *lp2;
-	int doto = curwp->w_doto, i;
+	int doto = curwp->w_doto;
 	char *cp1, *cp2;
 
 	if ((lp2 = lalloc(lp1->l_used + n)) == NULL)
@@ -120,13 +119,10 @@ static int linsert_realloc(int n, int c, struct line **lp_new)
 	cp2 = &lp2->l_text[0];
 	while (cp1 != &lp1->l_text[doto])
 		*cp2++ = *cp1++;
-
-	cp2 += n;
+	while (n--)
+		*cp2++ = c;
 	while (cp1 != &lp1->l_text[lp1->l_used])
 		*cp2++ = *cp1++;
-
-	for (i = 0; i < n; ++i)
-		lp2->l_text[doto + i] = c;
 
 	line_replace(lp1, lp2);
 	free(lp1);
@@ -138,18 +134,16 @@ static int linsert_realloc(int n, int c, struct line **lp_new)
 static int linsert_inplace(int n, int c)
 {
 	struct line *lp = curwp->w_dotp;
-	int doto = curwp->w_doto, i;
+	int doto = curwp->w_doto;
 	char *cp1, *cp2;
 
 	lp->l_used += n;
-
 	cp2 = &lp->l_text[lp->l_used];
 	cp1 = cp2 - n;
 	while (cp1 != &lp->l_text[doto])
 		*--cp2 = *--cp1;
-
-	for (i = 0; i < n; ++i)
-		lp->l_text[doto + i] = c;
+	while (n--)
+		*--cp2 = c;
 
 	return TRUE;
 }
@@ -172,7 +166,7 @@ int lnonnewline(int n, int c)
 
 	/* Inserting at the end of the buffer does not need window updating */
 	if (lp == curbp->b_linep)
-		return linsert_end(n, c);
+		return linsert_simple(n, c);
 
 	/* Set the default value for lp_new forlinsert_inplace */
 	lp_new = lp;
