@@ -122,23 +122,6 @@ void vtdeinit(void)
 }
 
 /*
- * Clean up the virtual terminal system, in anticipation for a return to the
- * operating system.  Move down to the last line and clear it out (the next
- * system prompt will be written in the line).  Shut down the channel to the
- * terminal.
- */
-void vttidy(void)
-{
-	int r;
-	mlerase();
-	movecursor(term.t_nrow, 0);
-	TTflush();
-	TTclose();
-	r = write(1, "\r", 1);
-	(void)r;
-}
-
-/*
  * Write a character to the virtual screen.
  * If the line is too long put a "$" in the last column.
  */

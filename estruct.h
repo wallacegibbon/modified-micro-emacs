@@ -8,7 +8,6 @@
 #endif
 
 #define VISMAC		0	/* update display during keyboard macros */
-#define CLEAN		0	/* de-alloc memory on exit */
 
 #define NFILEN		256	/* # of bytes, file name */
 #define NSTRING		128	/* # of bytes, string buffers */

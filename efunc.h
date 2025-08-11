@@ -33,10 +33,6 @@
 #define malloc		allocate
 #define free		release
 
-#if CLEAN
-#define exit(a)		cexit(a)
-#endif
-
 #define TTopen		(term.t_open)
 #define TTclose		(term.t_close)
 #define TTgetc		(term.t_getchar)
@@ -139,12 +135,10 @@ int nullproc(int f, int n);
 /* main.c */
 int quickexit(int f, int n);
 int quit(int f, int n);
-int cexit(int status);
 
 /* display.c */
 void vtinit(void);
 void vtdeinit(void);
-void vttidy(void);
 void vtmove(int row, int col);
 int update(int force);
 void update_garbage(void);

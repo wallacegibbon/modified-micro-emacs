@@ -9,6 +9,7 @@ static int get_universal_arg(int *arg);
 static int command_loop(void);
 static int window_init(void);
 static int execute(int c, int f, int n);
+static void cleanup(void);
 
 int main(int argc, char **argv)
 {
@@ -25,7 +26,7 @@ int main(int argc, char **argv)
 
 	for (i = 1; i < argc; ++i) {
 		if ((bp = bfind(argv[i], TRUE)) == NULL)
-			die(2, vtdeinit, "Failed opening file %s\n", argv[i]);
+			die(2, cleanup, "Failed opening file %s\n", argv[i]);
 		if (firstbp == NULL)
 			firstbp = bp;
 	}
@@ -181,49 +182,38 @@ static void emergencyexit(int signr)
 }
 
 /*
- * Quit command.  If an argument, always quit.  Otherwise confirm if a buffer
- * has been changed and not written out.
+ * If there is an argument, always quit.  Otherwise confirm if a buffer has
+ * been changed and not written out.
  */
 int quit(int f, int n)
 {
 	if (f != FALSE || anycb() == FALSE ||
 			mlyesno("Modified buffers exist.  Quit") == TRUE) {
-		vttidy();
+		cleanup();
 		exit(f ? n : 0);
 	}
 	mlerase();
 	return TRUE;
 }
 
-/*
- * On some primitave operation systems, and when emacs is used as a subprogram
- * to a larger project, emacs needs to de-alloc its own used memory.
- */
-#if CLEAN
-int cexit(int status)
+static void cleanup(void)
 {
 	struct window *wp, *tp;
 	struct buffer *bp;
 
-	wp = wheadp;
-	while (wp) {
-		tp = wp->w_wndp;
-		free(wp);
-		wp = tp;
-	}
-	wheadp = NULL;
-
-	bp = bheadp;
-	while (bp) {
-		bp->b_nwnd = 0;
+	while ((bp = bheadp)) {
 		/* clear b_flag to make `zotbuf` run without prompt */
 		bp->b_flag = 0;
+		bp->b_nwnd = 0;
 		zotbuf(bp);
-		bp = bheadp;
+	}
+	for (wp = wheadp; wp; wp = tp) {
+		tp = wp->w_wndp;
+		free(wp);
 	}
 	kdelete();
 	vtdeinit();
-#undef exit
-	exit(status);
+	wheadp = NULL;
+	bheadp = NULL;
+	kbufh = NULL;
 }
-#endif
