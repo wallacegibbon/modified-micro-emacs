@@ -251,9 +251,9 @@ int show_misc_info(int f, int n)
 	if (curline == -1)
 		curline = numlines;
 
-	mlwrite("Row: %d/%d, Column: %d, Dynamic RAM: %ld",
+	mlwrite("Row: %d/%d, Column: %d (%d), Malloc: %ld",
 		curline + 1, numlines, get_col(curwp->w_dotp, curwp->w_doto),
-		envram);
+		curwp->w_doto, envram);
 
 	return TRUE;
 }
