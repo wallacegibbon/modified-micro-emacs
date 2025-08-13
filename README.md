@@ -1,13 +1,7 @@
 ## Introduction
 
-This is a tiny emacs-like editor modified from [uEmacs/PK 4.0][uemacs/pk],
+This is a tiny Emacs-like editor modified from [uEmacs/PK 4.0][uemacs/pk],
 I call it **M**dified Micro **E**macs (`me`).
-
-
-## Goals
-
-- Fix all bugs.
-- Be tiny.
 
 The script engine is removed.  Concepts like `paragraph` and `word` are also
 removed.
@@ -18,13 +12,13 @@ ANSI CSI control sequences is used directly.  We don't need extra libraries
 
 ## Build and Install
 
-Build this program:
+Build:
 
 ```sh
 make -j
 ```
 
-Install it:
+Install:
 
 ```sh
 sudo make install
@@ -58,14 +52,16 @@ sudo update-alternatives --set editor /usr/bin/me
 
 ## Debug
 
-There is a program `showkeys` for getting raw input from terminal,
-which is useful for debugging.  Build it:
+There is a program `showkeys` for getting raw input from terminal in the same
+way as `me`.
+
+Build:
 
 ```sh
 make showkeys
 ```
 
-And run it:
+Run:
 ```sh
 ./showkeys
 ```
