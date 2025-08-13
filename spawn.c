@@ -15,15 +15,15 @@ int spawncli(int f, int n)
 	else
 		r = system("exec /bin/sh");
 
-	/* Mark the screen as garbage to do a full repaint. */
 	sgarbf = TRUE;
-
 	TTopen();
 	update(TRUE);
 	if (r == 0)
 		return TRUE;
 
 	mlwrite("Failed running external command");
-	return FALSE;
+#else
+	mlwrite("Only supported in UNIX");
 #endif
+	return FALSE;
 }
