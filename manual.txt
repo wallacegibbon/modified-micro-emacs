@@ -13,7 +13,7 @@ Kill region ...........   ^X  K         Copy region ...........   ^X  J
 -------------------------------------------------------------------------------
 =>                      SEARCHING AND REPLACING
 Incremental search ....      ^S         Reverse incsearch .....      ^R
-Query replace string ..   ^X  R
+Query replace string ..   ^X  R         Clear Replace Buffer ..   ^X  D
 -------------------------------------------------------------------------------
 =>                      FILE COMMANDS
 Find file .............   ^X ^F         Write file ............   ^X ^W

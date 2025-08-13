@@ -33,6 +33,7 @@ struct key_tab keytab[] = {
 	{ CTLX | '2', splitwind },
 	{ CTLX | '?', show_misc_info },
 	{ CTLX | 'C', spawncli },
+	{ CTLX | 'D', clear_rpat },
 	{ CTLX | 'E', ctlxe },
 	{ CTLX | 'G', gotoline },
 	{ CTLX | 'J', copyregion },

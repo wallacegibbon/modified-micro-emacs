@@ -191,6 +191,7 @@ int spawncli(int f, int n);
 
 /* search.c */
 int search_next(const char *pattern, int direct, int beg_or_end);
+int clear_rpat(int f, int n);
 int qreplace(int f, int n);
 
 /* isearch.c */

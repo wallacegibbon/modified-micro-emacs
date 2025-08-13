@@ -80,6 +80,14 @@ static int readpattern(char *prompt, char *apat)
 	return status;
 }
 
+/* Replacement buffer can be empty, which deletes the replacement content */
+int clear_rpat(int f, int n)
+{
+	rpat[0] = '\0';
+	mlwrite("Replacement buffer is cleared");
+	return TRUE;
+}
+
 /*
  * Delete a specified length from the current point then either insert the
  * string directly, or make use of replacement meta-array.
