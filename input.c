@@ -125,6 +125,7 @@ char_loop:
 	if (c == '\b' || c == 0x7F) {
 		if (cpos > 0)
 			ttcol -= unput_c(buf[--cpos]);
+		buf[cpos] = '\0';
 		goto char_loop;
 	}
 
