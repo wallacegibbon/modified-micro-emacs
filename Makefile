@@ -5,12 +5,12 @@ SHOWKEYS = showkeys
 CC = cc
 
 SRC = main.c buffer.c window.c line.c display.c input.c command.c ebind.c \
-	file.c fileio.c search.c isearch.c spawn.c posix.c ansi.c global.c \
-	memory.c util.c
+	file.c fileio.c search.c isearch.c posix.c ansi.c global.c memory.c \
+	util.c
 
 OBJ = main.o buffer.o window.o line.o display.o input.o command.o ebind.o \
-	file.o fileio.o search.o isearch.o spawn.o posix.o ansi.o global.o \
-	memory.o util.o
+	file.o fileio.o search.o isearch.o posix.o ansi.o global.o memory.o \
+	util.o
 
 WARNINGS = -Wall -Wextra -Wstrict-prototypes -Wno-unused-parameter
 
@@ -65,7 +65,6 @@ line.o: line.c estruct.h edef.h line.h
 main.o: main.c estruct.h efunc.h edef.h line.h
 posix.o: posix.c estruct.h
 search.o: search.c estruct.h edef.h line.h
-spawn.o: spawn.c estruct.h edef.h
 window.o: window.c estruct.h edef.h line.h
 global.o: estruct.h edef.h
 memory.o: estruct.h edef.h

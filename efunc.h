@@ -125,6 +125,7 @@ int killregion(int f, int n);
 int copyregion(int f, int n);
 int lowerregion(int f, int n);
 int upperregion(int f, int n);
+int spawncli(int f, int n);
 int ctlxlp(int f, int n);
 int ctlxrp(int f, int n);
 int ctlxe(int f, int n);
@@ -186,9 +187,6 @@ int ffclose(void);
 int ffputline(char *buf, int nbuf);
 int ffgetline(int *count);
 
-/* spawn.c */
-int spawncli(int f, int n);
-
 /* search.c */
 int search_next(const char *pattern, int direct, int beg_or_end);
 int clear_rpat(int f, int n);
@@ -197,12 +195,6 @@ int qreplace(int f, int n);
 /* isearch.c */
 int risearch(int f, int n);
 int fisearch(int f, int n);
-
-/* lock.c */
-int lockchk(char *fname);
-int lockrel(void);
-int lock(char *fname);
-int unlock(char *fname);
 
 /* memory.c */
 void *allocate(unsigned long nbytes);
