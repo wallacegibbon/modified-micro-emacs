@@ -30,11 +30,11 @@ int readin(char *filename)
 	int nline = 0, nbytes, s;
 	char mesg[NSTRING];
 
-	if (bclear(curbp) != TRUE)	/* Might be old. */
+	if (bclear(curwp->w_bufp) != TRUE)	/* Might be old. */
 		return FALSE;
 
-	curbp->b_flag &= ~BFCHG;
-	strncpy_safe(curbp->b_fname, filename, NFILEN);
+	curwp->w_bufp->b_flag &= ~BFCHG;
+	strncpy_safe(curwp->w_bufp->b_fname, filename, NFILEN);
 
 	if ((s = ffropen(filename)) == FIOERR)
 		return FALSE;
@@ -51,7 +51,7 @@ int readin(char *filename)
 			s = FIOMEM;
 			break;
 		}
-		line_insert(curbp->b_linep, lp);
+		line_insert(curwp->w_bufp->b_linep, lp);
 		memcpy(lp->l_text, fline, nbytes);
 		++nline;
 	}
@@ -59,11 +59,11 @@ int readin(char *filename)
 	mesg[0] = '\0';
 	if (s == FIOERR) {
 		strcat(mesg, "I/O ERROR, ");
-		curbp->b_flag |= BFTRUNC;
+		curwp->w_bufp->b_flag |= BFTRUNC;
 	}
 	if (s == FIOMEM) {
 		strcat(mesg, "OUT OF MEMORY, ");
-		curbp->b_flag |= BFTRUNC;
+		curwp->w_bufp->b_flag |= BFTRUNC;
 	}
 	sprintf(&mesg[strlen(mesg)], "Read %d line", nline);
 	if (nline != 1)
@@ -72,7 +72,7 @@ int readin(char *filename)
 
 out:
 	for_each_wind(wp) {
-		if (wp->w_bufp == curbp)
+		if (wp->w_bufp == curwp->w_bufp)
 			resetwind(wp);
 	}
 	if (s == FIOERR || s == FIOFNF)
@@ -96,10 +96,10 @@ int filewrite(int f, int n)
 	if ((s = mlreply("Write file: ", filename, NFILEN)) != TRUE)
 		return s;
 	if ((s = writeout(filename)) == TRUE) {
-		strcpy(curbp->b_fname, filename);
-		curbp->b_flag &= ~BFCHG;
+		strcpy(curwp->w_bufp->b_fname, filename);
+		curwp->w_bufp->b_flag &= ~BFCHG;
 		for_each_wind(wp) {
-			if (wp->w_bufp == curbp)
+			if (wp->w_bufp == curwp->w_bufp)
 				wp->w_flag |= WFMODE;
 		}
 	}
@@ -111,26 +111,26 @@ int filesave(int f, int n)
 	struct window *wp;
 	int s;
 
-	if (curbp->b_flag & BFRDONLY)
+	if (curwp->w_bufp->b_flag & BFRDONLY)
 		return rdonly();
-	if (!(curbp->b_flag & BFCHG))
+	if (!(curwp->w_bufp->b_flag & BFCHG))
 		return TRUE;
-	if (curbp->b_fname[0] == 0) {
+	if (curwp->w_bufp->b_fname[0] == 0) {
 		mlwrite("No file name");
 		return FALSE;
 	}
 
-	if (curbp->b_flag & BFTRUNC) {
+	if (curwp->w_bufp->b_flag & BFTRUNC) {
 		if (mlyesno("Truncated file ... write it out") == FALSE) {
 			mlwrite("Aborted");
 			return FALSE;
 		}
 	}
 
-	if ((s = writeout(curbp->b_fname)) == TRUE) {
-		curbp->b_flag &= ~BFCHG;
+	if ((s = writeout(curwp->w_bufp->b_fname)) == TRUE) {
+		curwp->w_bufp->b_flag &= ~BFCHG;
 		for_each_wind(wp) {
-			if (wp->w_bufp == curbp)
+			if (wp->w_bufp == curwp->w_bufp)
 				wp->w_flag |= WFMODE;
 		}
 	}
@@ -146,10 +146,12 @@ int writeout(char *fn)
 		return FALSE;
 
 	mlwrite("Writing...");
+	lp = curwp->w_bufp->b_linep->l_fp;
 	nline = 0;
-	for (lp = curbp->b_linep->l_fp; lp != curbp->b_linep; lp = lp->l_fp) {
+	while (lp != curwp->w_bufp->b_linep) {
 		if ((s = ffputline(&lp->l_text[0], lp->l_used)) != FIOSUC)
 			break;
+		lp = lp->l_fp;
 		++nline;
 	}
 	if (s == FIOSUC) {

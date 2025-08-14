@@ -42,9 +42,8 @@ extern int flen;		/* current length of fline */
 extern int scrollcount;		/* number of lines to scroll */
 
 extern struct window *curwp;	/* Current window */
-extern struct window *wheadp;	/* Head of list of windows */
 
-extern struct buffer *curbp;	/* Current buffer */
+extern struct window *wheadp;	/* Head of list of windows */
 extern struct buffer *bheadp;	/* Head of list of buffers */
 
 extern int curgoal;		/* Goal for C-P, C-N */

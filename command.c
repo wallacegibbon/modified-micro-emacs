@@ -25,7 +25,7 @@ static int get_idx(struct line *lp, int col)
 /* Goto the beginning of the buffer */
 int gotobob(int f, int n)
 {
-	curwp->w_dotp = curbp->b_linep->l_fp;
+	curwp->w_dotp = curwp->w_bufp->b_linep->l_fp;
 	curwp->w_doto = 0;
 	curwp->w_flag |= WFHARD;
 	return TRUE;
@@ -34,7 +34,7 @@ int gotobob(int f, int n)
 /* Move to the end of the buffer.  Dot is always put at the end of the file */
 int gotoeob(int f, int n)
 {
-	curwp->w_dotp = curbp->b_linep;
+	curwp->w_dotp = curwp->w_bufp->b_linep;
 	curwp->w_doto = 0;
 	curwp->w_flag |= WFHARD;
 	return TRUE;
@@ -62,7 +62,8 @@ int backchar(int f, int n)
 		return forwchar(f, -n);
 	while (n--) {
 		if (curwp->w_doto == 0) {
-			if ((lp = curwp->w_dotp->l_bp) == curbp->b_linep)
+			lp = curwp->w_dotp->l_bp;
+			if (lp == curwp->w_bufp->b_linep)
 				return FALSE;
 			curwp->w_dotp = lp;
 			curwp->w_doto = lp->l_used;
@@ -80,7 +81,7 @@ int forwchar(int f, int n)
 		return backchar(f, -n);
 	while (n--) {
 		if (curwp->w_doto == curwp->w_dotp->l_used) {
-			if (curwp->w_dotp == curbp->b_linep)
+			if (curwp->w_dotp == curwp->w_bufp->b_linep)
 				return FALSE;
 			curwp->w_dotp = curwp->w_dotp->l_fp;
 			curwp->w_doto = 0;
@@ -118,8 +119,7 @@ int forwline(int f, int n)
 
 	if (n < 0)
 		return backline(f, -n);
-
-	if (curwp->w_dotp == curbp->b_linep)
+	if (curwp->w_dotp == curwp->w_bufp->b_linep)
 		return FALSE;
 
 	/* If the last command was not a line move, update the goal */
@@ -128,7 +128,7 @@ int forwline(int f, int n)
 
 	thisflag |= CFCPCN;
 	lp = curwp->w_dotp;
-	while (n-- && lp != curbp->b_linep)
+	while (n-- && lp != curwp->w_bufp->b_linep)
 		lp = lp->l_fp;
 
 	curwp->w_dotp = lp;
@@ -144,7 +144,7 @@ int backline(int f, int n)
 	if (n < 0)
 		return forwline(f, -n);
 
-	if (curwp->w_dotp->l_bp == curbp->b_linep)
+	if (curwp->w_dotp->l_bp == curwp->w_bufp->b_linep)
 		return FALSE;
 
 	/* If the last command was not a line move, update the goal */
@@ -153,7 +153,7 @@ int backline(int f, int n)
 
 	thisflag |= CFCPCN;
 	lp = curwp->w_dotp;
-	while (n-- && lp->l_bp != curbp->b_linep)
+	while (n-- && lp->l_bp != curwp->w_bufp->b_linep)
 		lp = lp->l_bp;
 
 	curwp->w_dotp = lp;
@@ -177,7 +177,7 @@ int forwpage(int f, int n)
 	}
 
 	lp = curwp->w_linep;
-	while (n-- && lp != curbp->b_linep)
+	while (n-- && lp != curwp->w_bufp->b_linep)
 		lp = lp->l_fp;
 	curwp->w_linep = lp;
 	curwp->w_dotp = lp;
@@ -201,7 +201,7 @@ int backpage(int f, int n)
 	}
 
 	lp = curwp->w_linep;
-	while (n-- && lp->l_bp != curbp->b_linep)
+	while (n-- && lp->l_bp != curwp->w_bufp->b_linep)
 		lp = lp->l_bp;
 	curwp->w_linep = lp;
 	curwp->w_dotp = lp;
@@ -243,9 +243,11 @@ int show_misc_info(int f, int n)
 	struct line *lp;
 	int curline = -1, numlines = 0;
 
-	for (lp = curbp->b_linep->l_fp; lp != curbp->b_linep; lp = lp->l_fp) {
+	lp = curwp->w_bufp->b_linep->l_fp;
+	while (lp != curwp->w_bufp->b_linep) {
 		if (lp == curwp->w_dotp)
 			curline = numlines;
+		lp = lp->l_fp;
 		++numlines;
 	}
 	if (curline == -1)
@@ -267,7 +269,7 @@ int show_misc_info(int f, int n)
 int quote(int f, int n)
 {
 	int c;
-	if (curbp->b_flag & BFRDONLY)
+	if (curwp->w_bufp->b_flag & BFRDONLY)
 		return rdonly();
 
 	c = tgetc();
@@ -279,7 +281,7 @@ int quote(int f, int n)
 
 int newline(int f, int n)
 {
-	if (curbp->b_flag & BFRDONLY)
+	if (curwp->w_bufp->b_flag & BFRDONLY)
 		return rdonly();
 	if (n < 0)
 		return FALSE;
@@ -320,7 +322,7 @@ static int newline_and_indent_one(void)
 int newline_and_indent(int f, int n)
 {
 
-	if (curbp->b_flag & BFRDONLY)
+	if (curwp->w_bufp->b_flag & BFRDONLY)
 		return rdonly();
 	if (n < 0)
 		return FALSE;
@@ -335,7 +337,7 @@ int newline_and_indent(int f, int n)
 
 int forwdel(int f, int n)
 {
-	if (curbp->b_flag & BFRDONLY)
+	if (curwp->w_bufp->b_flag & BFRDONLY)
 		return rdonly();
 	if (n < 0)
 		return backdel(f, -n);
@@ -347,7 +349,7 @@ int backdel(int f, int n)
 {
 	long nn = 0;
 
-	if (curbp->b_flag & BFRDONLY)
+	if (curwp->w_bufp->b_flag & BFRDONLY)
 		return rdonly();
 	if (n < 0)
 		return forwdel(f, -n);
@@ -360,7 +362,7 @@ int backdel(int f, int n)
 /* Yank text back from the kill buffer. */
 int yank(int f, int n)
 {
-	if (curbp->b_flag & BFRDONLY)
+	if (curwp->w_bufp->b_flag & BFRDONLY)
 		return rdonly();
 	if (n < 0)
 		return FALSE;
@@ -379,7 +381,7 @@ int killtext(int f, int n)
 	struct line *nextp;
 	long chunk;
 
-	if (curbp->b_flag & BFRDONLY)
+	if (curwp->w_bufp->b_flag & BFRDONLY)
 		return rdonly();
 	if (n <= 0)
 		return FALSE;
@@ -398,7 +400,7 @@ int killtext(int f, int n)
 		chunk = curwp->w_dotp->l_used - curwp->w_doto + 1;
 		nextp = curwp->w_dotp->l_fp;
 		while (--n) {
-			if (nextp == curbp->b_linep)
+			if (nextp == curwp->w_bufp->b_linep)
 				break;
 			chunk += nextp->l_used + 1;
 			nextp = nextp->l_fp;
@@ -418,7 +420,7 @@ int killtext(int f, int n)
  */
 static int getregion(struct region *rp)
 {
-	struct line *flp, *blp;
+	struct line *flp, *blp, *tmplp;
 	long fsize, bsize;
 
 	if (curwp->w_markp == NULL) {
@@ -440,8 +442,9 @@ static int getregion(struct region *rp)
 	bsize = (long)curwp->w_doto;
 	flp = curwp->w_dotp;
 	fsize = (long)(flp->l_used - curwp->w_doto + 1);
-	while (flp != curbp->b_linep || blp->l_bp != curbp->b_linep) {
-		if (flp != curbp->b_linep) {
+	tmplp = curwp->w_bufp->b_linep;
+	while (flp != tmplp || blp->l_bp != tmplp) {
+		if (flp != tmplp) {
 			flp = flp->l_fp;
 			if (flp == curwp->w_markp) {
 				rp->r_linep = curwp->w_dotp;
@@ -451,7 +454,7 @@ static int getregion(struct region *rp)
 			}
 			fsize += flp->l_used + 1;
 		}
-		if (blp->l_bp != curbp->b_linep) {
+		if (blp->l_bp != tmplp) {
 			blp = blp->l_bp;
 			bsize += blp->l_used + 1;
 			if (blp == curwp->w_markp) {
@@ -475,7 +478,7 @@ int killregion(int f, int n)
 	struct region region;
 	int s;
 
-	if (curbp->b_flag & BFRDONLY)
+	if (curwp->w_bufp->b_flag & BFRDONLY)
 		return rdonly();
 	if ((s = getregion(&region)) != TRUE)
 		return s;
@@ -530,7 +533,7 @@ static int toggle_region_case(int start, int end)
 	struct region region;
 	int loffs, c, s;
 
-	if (curbp->b_flag & BFRDONLY)
+	if (curwp->w_bufp->b_flag & BFRDONLY)
 		return rdonly();
 	if ((s = getregion(&region)) != TRUE)
 		return s;

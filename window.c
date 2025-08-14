@@ -87,7 +87,6 @@ int delwind(int f, int n)
 	free(curwp);
 	wp->w_flag |= WFHARD;
 	curwp = wp;
-	curbp = wp->w_bufp;
 	update_modelines();
 	return TRUE;
 }
@@ -113,8 +112,8 @@ int splitwind(int f, int n)
 		return FALSE;
 	}
 
-	++curbp->b_nwnd;	/* Displayed twice. */
-	wp->w_bufp = curbp;
+	++curwp->w_bufp->b_nwnd;	/* Displayed twice. */
+	wp->w_bufp = curwp->w_bufp;
 	wstate_copy(wp, curwp);
 	wp->w_flag = 0;
 	wp->w_force = 0;
@@ -191,7 +190,6 @@ int nextwind(int f, int n)
 		return TRUE;
 	}
 	curwp = wp;
-	curbp = wp->w_bufp;
 	update_modelines();
 	return TRUE;
 }

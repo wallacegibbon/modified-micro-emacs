@@ -36,9 +36,8 @@ int flen;			/* current length of fline */
 int scrollcount = 1;		/* number of lines to scroll */
 
 struct window *curwp;		/* Current window */
-struct window *wheadp;		/* Head of list of windows */
 
-struct buffer *curbp;		/* Current buffer */
+struct window *wheadp;		/* Head of list of windows */
 struct buffer *bheadp;		/* Head of list of buffers */
 
 int curgoal;			/* Goal for C-P, C-N */

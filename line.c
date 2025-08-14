@@ -74,14 +74,14 @@ void lchange(int flag)
 {
 	struct window *wp;
 
-	if (curbp->b_nwnd != 1)	/* Ensure hard. */
+	if (curwp->w_bufp->b_nwnd != 1)	/* Ensure hard. */
 		flag = WFHARD;
-	if (!(curbp->b_flag & BFCHG)) {
+	if (!(curwp->w_bufp->b_flag & BFCHG)) {
 		flag |= WFMODE;
-		curbp->b_flag |= BFCHG;
+		curwp->w_bufp->b_flag |= BFCHG;
 	}
 	for_each_wind(wp) {
-		if (wp->w_bufp == curbp)
+		if (wp->w_bufp == curwp->w_bufp)
 			wp->w_flag |= flag;
 	}
 }
@@ -159,13 +159,13 @@ int lnonnewline(int n, int c)
 	struct line *lp = curwp->w_dotp, *lp_new;
 	int doto = curwp->w_doto;
 
-	if (curbp->b_flag & BFRDONLY)
+	if (curwp->w_bufp->b_flag & BFRDONLY)
 		return rdonly();
 
 	lchange(WFEDIT);
 
 	/* Inserting at the end of the buffer does not need window updating */
-	if (lp == curbp->b_linep)
+	if (lp == curwp->w_bufp->b_linep)
 		return linsert_simple(n, c);
 
 	/* Set the default value for lp_new forlinsert_inplace */
@@ -209,7 +209,7 @@ static int lnewline(void)
 	int doto = curwp->w_doto;
 	char *cp1, *cp2;
 
-	if (curbp->b_flag & BFRDONLY)
+	if (curwp->w_bufp->b_flag & BFRDONLY)
 		return rdonly();
 
 	lchange(WFHARD);
@@ -328,11 +328,11 @@ static int ldelnewline(void)
 	char *cp1, *cp2;
 	int total_used;
 
-	if (curbp->b_flag & BFRDONLY)
+	if (curwp->w_bufp->b_flag & BFRDONLY)
 		return rdonly();
 
 	/* Merging the last line and the magic line is always successful */
-	if (lp2 == curbp->b_linep) {
+	if (lp2 == curwp->w_bufp->b_linep) {
 		if (lp->l_used == 0)
 			lfree(lp);
 		return TRUE;
@@ -389,7 +389,7 @@ static int ldelete_once(int n, int kflag)
 	int doto = curwp->w_doto, chunk;
 	char *cp1, *cp2;
 
-	if (lp == curbp->b_linep)
+	if (lp == curwp->w_bufp->b_linep)
 		return -1;
 
 	chunk = lp->l_used - doto;
@@ -450,7 +450,7 @@ static int ldelete_once(int n, int kflag)
  */
 int ldelete(long n, int kflag)
 {
-	if (curbp->b_flag & BFRDONLY)
+	if (curwp->w_bufp->b_flag & BFRDONLY)
 		return rdonly();
 
 	while (n > 0) {

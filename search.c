@@ -107,7 +107,7 @@ int qreplace(int f, int n)
 {
 	int numsub, nummatch, interactive, status, dlength, c = 0;
 
-	if (curbp->b_flag & BFRDONLY)
+	if (curwp->w_bufp->b_flag & BFRDONLY)
 		return rdonly();
 
 	if ((status = readpattern("Query replace", pat)) != TRUE)
@@ -176,10 +176,10 @@ static int boundry(struct line *curline, int curoff, int dir)
 {
 	if (dir == FORWARD)
 		return (curoff == curline->l_used) &&
-			(curline->l_fp == curbp->b_linep);
+			(curline->l_fp == curwp->w_bufp->b_linep);
 	else
 		return (curoff == 0) &&
-			(curline->l_bp == curbp->b_linep);
+			(curline->l_bp == curwp->w_bufp->b_linep);
 }
 
 static int nextch(struct line **pcurline, int *pcuroff, int dir)

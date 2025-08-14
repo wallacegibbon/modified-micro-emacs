@@ -1,23 +1,23 @@
 #include "me.h"
 
-/* Switch to buffer `bp`.  (Make buffer `bp` curbp) */
+/* Switch to buffer `bp`.  (Make buffer `bp` curwp->w_bufp) */
 int swbuffer(struct buffer *bp)
 {
 	struct window *wp;
 
-	if (bp == NULL || bp == curbp)
+	if (bp == NULL || bp == curwp->w_bufp)
 		return FALSE;
-	if (curbp != NULL) {
-		if (--curbp->b_nwnd == 0)
+	if (curwp->w_bufp != NULL) {
+		if (--curwp->w_bufp->b_nwnd == 0)
 			wstate_save(curwp);
 	}
 
-	curbp = bp;
-	if (!(curbp->b_flag & BFACTIVE)) {
-		readin(curbp->b_fname);
-		curbp->b_dotp = curbp->b_linep->l_fp;
-		curbp->b_doto = 0;
-		curbp->b_flag |= BFACTIVE;
+	curwp->w_bufp = bp;
+	if (!(curwp->w_bufp->b_flag & BFACTIVE)) {
+		readin(curwp->w_bufp->b_fname);
+		curwp->w_bufp->b_dotp = curwp->w_bufp->b_linep->l_fp;
+		curwp->w_bufp->b_doto = 0;
+		curwp->w_bufp->b_flag |= BFACTIVE;
 	}
 
 	curwp->w_bufp = bp;
@@ -40,7 +40,7 @@ int swbuffer(struct buffer *bp)
 
 int nextbuffer(int f, int n)
 {
-	struct buffer *bp = curbp;
+	struct buffer *bp = curwp->w_bufp;
 
 	if (n < 1 || bp == NULL)
 		return FALSE;
@@ -54,10 +54,10 @@ int nextbuffer(int f, int n)
 
 int bufrdonly(int f, int n)
 {
-	if (curbp->b_flag & BFRDONLY)
-		curbp->b_flag &= ~BFRDONLY;
+	if (curwp->w_bufp->b_flag & BFRDONLY)
+		curwp->w_bufp->b_flag &= ~BFRDONLY;
 	else
-		curbp->b_flag |= BFRDONLY;
+		curwp->w_bufp->b_flag |= BFRDONLY;
 	curwp->w_flag |= WFMODE;
 	return TRUE;
 }
