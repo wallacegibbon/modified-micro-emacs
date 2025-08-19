@@ -570,16 +570,17 @@ int upperregion(int f, int n)
 int spawncli(int f, int n)
 {
 #if UNIX
-	char *cp;
+	char *cp, command_buf[16];
 	int r;
 
 	movecursor(term.t_nrow, 0);
 	TTflush();
 	TTclose();
-	if ((cp = getenv("SHELL")) != NULL && *cp != '\0')
-		r = system(cp);
-	else
-		r = system("exec /bin/sh");
+	if ((cp = getenv("SHELL")) == NULL || *cp == '\0')
+		cp = "sh";
+
+	snprintf(command_buf, 16, "exec %s", cp);
+	r = system(command_buf);
 
 	sgarbf = TRUE;
 	TTopen();
@@ -587,7 +588,7 @@ int spawncli(int f, int n)
 	if (r == 0)
 		return TRUE;
 
-	mlwrite("Failed running external command");
+	mlwrite("Failed starting subshell");
 #else
 	mlwrite("Only supported in UNIX");
 #endif
