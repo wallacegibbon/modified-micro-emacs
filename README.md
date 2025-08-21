@@ -9,6 +9,8 @@ removed.
 ANSI CSI control sequences is used directly.  We don't need extra libraries
 (like `libncurses`) to run this program.
 
+UTF-8 support got removed and binary data is supported.
+
 
 ## Build and Install
 
