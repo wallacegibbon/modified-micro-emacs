@@ -1,46 +1,56 @@
 -------------------------------------------------------------------------------
-=>                      CURSOR MOVEMENT
+                        CURSOR MOVEMENT
+-------------------------------------------------------------------------------
 Backward character ....      ^B         Forward character .....      ^F
 Previous line .........      ^P         Next line .............      ^N
 Beginning of line .....      ^A         End of line ...........      ^E
 Previous page .........      ^Z         Next page .............      ^V
 Beginning of file .....   ^X  ,         End of file ...........   ^X  .
+
 -------------------------------------------------------------------------------
-=>                      DELETING AND INSERTING
+                        DELETING AND INSERTING
+-------------------------------------------------------------------------------
 Delete previous character    ^H         Delete next character .      ^D
 Kill to end of line ...      ^K         Yank ..................      ^Y
 Kill region ...........   ^X  K         Copy region ...........   ^X  J
+
 -------------------------------------------------------------------------------
-=>                      SEARCHING AND REPLACING
+                        SEARCHING AND REPLACING
+-------------------------------------------------------------------------------
 Incremental search ....      ^S         Reverse incsearch .....      ^R
 Query replace string ..   ^X  R         Clear Replace Buffer ..   ^X  D
+
 -------------------------------------------------------------------------------
-=>                      FILE COMMANDS
-Find file .............   ^X ^F         Write file ............   ^X ^W
-Save file .............   ^X ^S
+                        WINDOW COMMANDS
 -------------------------------------------------------------------------------
-=>                      FORMATTING
-Case region upper .....   ^X  U         Case region lower .....   ^X  L
--------------------------------------------------------------------------------
-=>                      WINDOW COMMANDS
 Delete window .........   ^X  0         Delete other windows ..   ^X  1
 Split current window ..   ^X  2
 Previous window .......   ^X  P         Next window ...........   ^X  O
+
 -------------------------------------------------------------------------------
-=>                      BUFFER COMMANDS
+                        BUFFER COMMANDS
+-------------------------------------------------------------------------------
 Next buffer ...........   ^X  X         Toggle Read Only ......   ^X ^Q
+
 -------------------------------------------------------------------------------
-=>                      ACCESSING THE OPERATING SYSTEM
-Quick exit ............   ^X ^Z         Exit emacs ............   ^X ^C
-I shell ...............   ^X  C
+                        MACRO COMMANDS
 -------------------------------------------------------------------------------
-=>                      MACRO COMMANDS
 Begin macro ...........   ^X  (         End macro .............   ^X  )
 Execute macro .........   ^X  E
+
 -------------------------------------------------------------------------------
-=>                      MISCELLANEOUS
+                        FILE COMMANDS
+-------------------------------------------------------------------------------
+Save file .............   ^X ^S         Write file ............   ^X ^W
+Find file .............   ^X ^F
+
+-------------------------------------------------------------------------------
+                        MISCELLANEOUS
+-------------------------------------------------------------------------------
+Case region upper .....   ^X  U         Case region lower .....   ^X  L
+Set mark ..............   ^X  M         Exchange point and mark   ^X ^X
 Abort command .........      ^G         Quote character .......      ^Q
 Newline and indent ....      ^J         Goto line .............   ^X  G
 Universal argument ....      ^U         Redraw display ........      ^L
-Set mark ..............   ^X  M         Exchange point and mark   ^X ^X
--------------------------------------------------------------------------------
+Quick exit ............   ^X ^Z         Exit emacs ............   ^X ^C
+I shell ...............   ^X  C
