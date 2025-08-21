@@ -83,7 +83,7 @@ int ffgetline(int *count)
 		if (i >= flen) {
 			if ((tmpline = malloc(flen + NSTRING)) == NULL)
 				return FIOMEM;
-			strncpy(tmpline, fline, flen);
+			memcpy(tmpline, fline, flen);
 			flen += NSTRING;
 			free(fline);
 			fline = tmpline;
