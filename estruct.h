@@ -3,11 +3,7 @@
 
 #if defined(__FreeBSD__) || defined(__OpenBSD__) || defined(__NetBSD__) || \
 		defined(__DragonFly__) || \
-		(defined(__APPLE__) && defined(__MACH__))
-	#define __bsd__	1
-#endif
-
-#if defined(__bsd__) || defined(__linux__)
+		(defined(__APPLE__) && defined(__MACH__)) || defined(__linux__)
 #define UNIX		1	/* Major modern BSDs and Linux */
 #endif
 

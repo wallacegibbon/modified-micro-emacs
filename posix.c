@@ -11,16 +11,7 @@
 /* Have to include this file since TIOCGWINSZ is define in this file */
 #include <sys/ioctl.h>
 
-#if defined(__bsd__) && !defined(OLCUC)
-#define OLCUC	0000002
-#endif
-
-#if defined(__bsd__) && !defined(XCASE)
-#define XCASE	0000004
-#endif
-
-static struct termios otermios;	/* original terminal characteristics */
-static struct termios ntermios;	/* charactoristics to use inside */
+static struct termios otermios, ntermios;
 
 /* This function is called once to set up the terminal device streams. */
 void ttopen(void)
@@ -28,21 +19,19 @@ void ttopen(void)
 	tcgetattr(0, &otermios);
 	ntermios = otermios;
 
-	/* Raw CR/NL etc input handling, but keep ISTRIP on a 7-bit line. */
-	ntermios.c_iflag &= ~(IGNBRK | BRKINT | IGNPAR | PARMRK
-		| INPCK | INLCR | IGNCR | ICRNL);
+	/* Input: disable all processing except keep 7-bit characters */
+	ntermios.c_iflag &= ~(IGNBRK | BRKINT | IGNPAR | PARMRK | INPCK |
+				INLCR | IGNCR | ICRNL);
 
-	/* Raw CR/NR etc output handling */
-	ntermios.c_oflag &=
-		~(OPOST | ONLCR | OLCUC | OCRNL | ONOCR | ONLRET);
+	/* Output: Disables all output processing */
+	ntermios.c_oflag &= ~OPOST;
 
-	/* No signal handling, no echo etc */
-	ntermios.c_lflag &= ~(ISIG | ICANON | XCASE | ECHO | ECHOE | ECHOK |
-		ECHONL | NOFLSH | TOSTOP | ECHOCTL | ECHOPRT | ECHOKE |
-		FLUSHO | PENDIN | IEXTEN);
+	/* Local: Raw mode, no signals, no echo, no canonical mode */
+	ntermios.c_lflag &= ~(ISIG | ICANON | ECHO | IEXTEN);
 
-	/* One character, no timeout */
+	/* Read blocks until at least 1 character is available. */
 	ntermios.c_cc[VMIN] = 1;
+	/* No timeout */
 	ntermios.c_cc[VTIME] = 0;
 
 	tcsetattr(0, TCSADRAIN, &ntermios);
