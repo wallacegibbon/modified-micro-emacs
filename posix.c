@@ -11,9 +11,11 @@
 /* Have to include this file since TIOCGWINSZ is define in this file */
 #include <sys/ioctl.h>
 
-/* Mac OS X's termios.h doesn't have the following 2 macros, define them. */
-#if defined(_DARWIN_C_SOURCE) || defined(_FREEBSD_C_SOURCE)
+#if defined(__bsd__) && !defined(OLCUC)
 #define OLCUC	0000002
+#endif
+
+#if defined(__bsd__) && !defined(XCASE)
 #define XCASE	0000004
 #endif
 
@@ -35,9 +37,9 @@ void ttopen(void)
 		~(OPOST | ONLCR | OLCUC | OCRNL | ONOCR | ONLRET);
 
 	/* No signal handling, no echo etc */
-	ntermios.c_lflag &= ~(ISIG | ICANON | XCASE | ECHO | ECHOE | ECHOK
-		| ECHONL | NOFLSH | TOSTOP | ECHOCTL
-		| ECHOPRT | ECHOKE | FLUSHO | PENDIN | IEXTEN);
+	ntermios.c_lflag &= ~(ISIG | ICANON | XCASE | ECHO | ECHOE | ECHOK |
+		ECHONL | NOFLSH | TOSTOP | ECHOCTL | ECHOPRT | ECHOKE |
+		FLUSHO | PENDIN | IEXTEN);
 
 	/* One character, no timeout */
 	ntermios.c_cc[VMIN] = 1;
