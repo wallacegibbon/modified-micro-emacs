@@ -82,17 +82,14 @@ void getscreensize(int *widthp, int *heightp)
 {
 #ifdef TIOCGWINSZ
 	struct winsize size;
-	*widthp = 0;
-	*heightp = 0;
-	if (ioctl(0, TIOCGWINSZ, &size) < 0) {
-		*widthp = 0;
-		*heightp = 0;
-		return;
+	if (ioctl(0, TIOCGWINSZ, &size) >= 0) {
+		*widthp = size.ws_col;
+		*heightp = size.ws_row;
+	} else {
+#endif
+		*widthp = 80;
+		*heightp = 24;
+#ifdef TIOCGWINSZ
 	}
-	*widthp = size.ws_col;
-	*heightp = size.ws_row;
-#else
-	*widthp = 0;
-	*heightp = 0;
 #endif
 }
