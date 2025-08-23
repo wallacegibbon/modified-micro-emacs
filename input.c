@@ -86,10 +86,14 @@ escape_loop:
 	}
 	if (c == CTLXC && cmask == 0) {
 		cmask |= CTLX;
+		mlwrite("C-x ");
 		c = get1key();
 		if (c == ESCAPEC)
 			goto escape_loop;
 	}
+	/* Ignore the mask when it's Ctrl-g */
+	if (c == ABORTC)
+		return c;
 	if (cmask)
 		return cmask | ensure_upper(c);
 	else
