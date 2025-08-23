@@ -79,7 +79,6 @@ static inline void wstate_copy(struct window *wp, struct window *wp2)
 	wp->w_marko = wp2->w_marko;
 }
 
-
 /* buffer.c */
 int nextbuffer(int f, int n);
 int swbuffer(struct buffer *bp);
@@ -174,8 +173,6 @@ int mlgetchar(const char *fmt, ...);
 /* file.c */
 int readin(char *fname);
 int filefind(int f, int n);
-void makename(char *bname, char *fname);
-void unqname(char *name);
 int filewrite(int f, int n);
 int filesave(int f, int n);
 int writeout(char *fn);
@@ -193,8 +190,8 @@ int clear_rpat(int f, int n);
 int qreplace(int f, int n);
 
 /* isearch.c */
-int risearch(int f, int n);
 int fisearch(int f, int n);
+int risearch(int f, int n);
 
 /* memory.c */
 void *allocate(unsigned long nbytes);
