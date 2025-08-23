@@ -86,7 +86,6 @@ escape_loop:
 	}
 	if (c == CTLXC && cmask == 0) {
 		cmask |= CTLX;
-		mlwrite("C-x ");
 		c = get1key();
 		if (c == ESCAPEC)
 			goto escape_loop;

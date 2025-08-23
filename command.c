@@ -268,10 +268,7 @@ int show_misc_info(int f, int n)
  */
 int quote(int f, int n)
 {
-	int c;
-	mlwrite("Quoted character: ");
-	c = tgetc();
-	mlerase();
+	int c = tgetc();
 	if (n < 0)
 		return FALSE;
 
