@@ -638,7 +638,7 @@ int ctrlg(int f, int n)
 int rdonly(void)
 {
 	TTbeep();
-	mlwrite("Key illegal in read-only mode");
+	mlwrite("Illegal in read-only mode");
 	return FALSE;
 }
 

@@ -95,10 +95,10 @@ int clear_rpat(int f, int n)
 static int delins(int dlength, char *instr, int use_meta)
 {
 	int status;
-	if ((status = ldelete((long)dlength, FALSE)) != TRUE)
-		mlwrite("ERROR while deleting");
-	else
+
+	if ((status = ldelete((long)dlength, FALSE)) == TRUE)
 		status = linstr(instr);
+
 	return status;
 }
 
