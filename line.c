@@ -153,14 +153,11 @@ static int linsert_inplace(int n, int c)
  * In the easy case all that happens is the text is stored in the line.
  * In the hard case, the line has to be reallocated.
  */
-int lnonnewline(int n, int c)
+static int lnonnewline(int n, int c)
 {
 	struct window *wp;
 	struct line *lp = curwp->w_dotp, *lp_new;
 	int doto = curwp->w_doto;
-
-	if (curwp->w_bufp->b_flag & BFRDONLY)
-		return rdonly();
 
 	lchange(WFEDIT);
 
@@ -209,9 +206,6 @@ static int lnewline(void)
 	int doto = curwp->w_doto;
 	char *cp1, *cp2;
 
-	if (curwp->w_bufp->b_flag & BFRDONLY)
-		return rdonly();
-
 	lchange(WFHARD);
 
 	if ((lp_new = lalloc(doto)) == NULL)
@@ -255,6 +249,12 @@ static int lnewline(void)
 int linsert(int n, int c)
 {
 	int s = TRUE;
+
+	if (curwp->w_bufp->b_flag & BFRDONLY)
+		return rdonly();
+	if (n == 0)
+		return TRUE;
+
 	if (c == '\n') {
 		while (s && n--)
 			s = lnewline();
@@ -327,9 +327,6 @@ static int ldelnewline(void)
 	struct line *lp = curwp->w_dotp, *lp2 = lp->l_fp, *lp_new;
 	char *cp1, *cp2;
 	int total_used;
-
-	if (curwp->w_bufp->b_flag & BFRDONLY)
-		return rdonly();
 
 	/* Merging the last line and the magic line is always successful */
 	if (lp2 == curwp->w_bufp->b_linep) {
@@ -452,6 +449,8 @@ int ldelete(long n, int kflag)
 {
 	if (curwp->w_bufp->b_flag & BFRDONLY)
 		return rdonly();
+	if (n == 0)
+		return TRUE;
 
 	while (n > 0) {
 		if ((n = ldelete_once(n, kflag)) < 0)

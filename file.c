@@ -111,8 +111,6 @@ int filesave(int f, int n)
 	struct window *wp;
 	int s;
 
-	if (curwp->w_bufp->b_flag & BFRDONLY)
-		return rdonly();
 	if (!(curwp->w_bufp->b_flag & BFCHG))
 		return TRUE;
 	if (curwp->w_bufp->b_fname[0] == 0) {

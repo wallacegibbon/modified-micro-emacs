@@ -269,10 +269,9 @@ int show_misc_info(int f, int n)
 int quote(int f, int n)
 {
 	int c;
-	if (curwp->w_bufp->b_flag & BFRDONLY)
-		return rdonly();
-
+	mlwrite("Quoted character: ");
 	c = tgetc();
+	mlerase();
 	if (n < 0)
 		return FALSE;
 
@@ -281,8 +280,6 @@ int quote(int f, int n)
 
 int newline(int f, int n)
 {
-	if (curwp->w_bufp->b_flag & BFRDONLY)
-		return rdonly();
 	if (n < 0)
 		return FALSE;
 
@@ -321,9 +318,6 @@ static int newline_and_indent_one(void)
 
 int newline_and_indent(int f, int n)
 {
-
-	if (curwp->w_bufp->b_flag & BFRDONLY)
-		return rdonly();
 	if (n < 0)
 		return FALSE;
 
@@ -337,8 +331,6 @@ int newline_and_indent(int f, int n)
 
 int forwdel(int f, int n)
 {
-	if (curwp->w_bufp->b_flag & BFRDONLY)
-		return rdonly();
 	if (n < 0)
 		return backdel(f, -n);
 
@@ -348,9 +340,6 @@ int forwdel(int f, int n)
 int backdel(int f, int n)
 {
 	long nn = 0;
-
-	if (curwp->w_bufp->b_flag & BFRDONLY)
-		return rdonly();
 	if (n < 0)
 		return forwdel(f, -n);
 	while (n-- && (backchar(f, 1) == TRUE))
@@ -362,11 +351,8 @@ int backdel(int f, int n)
 /* Yank text back from the kill buffer. */
 int yank(int f, int n)
 {
-	if (curwp->w_bufp->b_flag & BFRDONLY)
-		return rdonly();
 	if (n < 0)
 		return FALSE;
-
 	while (n--) {
 		if (linsert_kbuf() == FALSE)
 			return FALSE;
@@ -381,8 +367,6 @@ int killtext(int f, int n)
 	struct line *nextp;
 	long chunk;
 
-	if (curwp->w_bufp->b_flag & BFRDONLY)
-		return rdonly();
 	if (n <= 0)
 		return FALSE;
 
@@ -478,8 +462,6 @@ int killregion(int f, int n)
 	struct region region;
 	int s;
 
-	if (curwp->w_bufp->b_flag & BFRDONLY)
-		return rdonly();
 	if ((s = getregion(&region)) != TRUE)
 		return s;
 
@@ -533,8 +515,10 @@ static int toggle_region_case(int start, int end)
 	struct region region;
 	int loffs, c, s;
 
+	/* linsert or ldelete is not invoked, rdonly check is necessary here */
 	if (curwp->w_bufp->b_flag & BFRDONLY)
 		return rdonly();
+
 	if ((s = getregion(&region)) != TRUE)
 		return s;
 	lchange(WFHARD);

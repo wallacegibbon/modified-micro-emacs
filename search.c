@@ -107,9 +107,6 @@ int qreplace(int f, int n)
 {
 	int numsub, nummatch, interactive, status, dlength, c = 0;
 
-	if (curwp->w_bufp->b_flag & BFRDONLY)
-		return rdonly();
-
 	if ((status = readpattern("Query replace", pat)) != TRUE)
 		return status;
 	if ((status = readpattern("with", rpat)) == ABORT)
