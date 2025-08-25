@@ -4,7 +4,10 @@
 int onlywind(int f, int n)
 {
 	struct window *wp;
+	struct line *lp1, *lp2;
+	int i;
 
+	/* Delete all other windows except the current one */
 	while (wheadp != curwp) {
 		wp = wheadp;
 		wheadp = wp->w_wndp;
@@ -19,6 +22,14 @@ int onlywind(int f, int n)
 			wstate_save(wp);
 		free(wp);
 	}
+
+	/* Adjust w_linep to keep the cursor unmoving when it is possible. */
+	lp1 = curwp->w_linep;
+	lp2 = curwp->w_bufp->b_linep;
+	for (i = curwp->w_toprow; i > 0 && lp1->l_bp != lp2; --i)
+		lp1 = lp1->l_bp;
+
+	curwp->w_linep = lp1;
 	curwp->w_toprow = 0;
 	curwp->w_ntrows = term.t_nrow - 1;
 	curwp->w_flag |= WFMODE | WFHARD;
