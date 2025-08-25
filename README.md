@@ -9,7 +9,12 @@ removed.
 ANSI CSI control sequences is used directly.  We don't need extra libraries
 (like `libncurses`) to run this program.
 
+Meta prefixed key bindings are removed.  Ctrl is enough for this program.
+
 UTF-8 support got removed and binary data is supported.
+
+It is recommended to use a keyboard remapper like [this one][key remapper] to
+map `White Space` to `Ctrl` when holding it.
 
 
 ## Build and Install
@@ -69,3 +74,4 @@ Run:
 ```
 
 [uemacs/pk]: https://github.com/torvalds/uemacs
+[key remapper]: https://github.com/wallacegibbon/simple-keyboard-remapper
