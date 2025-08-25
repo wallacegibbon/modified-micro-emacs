@@ -28,7 +28,6 @@ struct key_bind bindings[] = {
 	{ CTLX | ')', ctlxrp },
 	{ CTLX | ',', gotobob },
 	{ CTLX | '.', gotoeob },
-	{ CTLX | '0', delwind },
 	{ CTLX | '1', onlywind },
 	{ CTLX | '2', splitwind },
 	{ CTLX | '?', show_misc_info },
