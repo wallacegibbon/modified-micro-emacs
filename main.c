@@ -103,12 +103,12 @@ static int window_init(void)
 /* This function looks a key binding up in the binding table. */
 static int (*getbind(int c))(int, int)
 {
-	struct key_tab *ktp = keytab;
+	struct key_bind *p = bindings;
 
-	while (ktp->fn != NULL) {
-		if (ktp->k_code == c)
-			return ktp->fn;
-		++ktp;
+	while (p->fn != NULL) {
+		if (p->k_code == c)
+			return p->fn;
+		++p;
 	}
 	return NULL;
 }

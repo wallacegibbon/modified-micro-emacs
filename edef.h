@@ -3,7 +3,7 @@
 
 #include "estruct.h"
 
-extern struct key_tab keytab[];	/* key to function table */
+extern struct key_bind bindings[];	/* key to function table */
 
 extern int kbdm[];		/* Holds keyboard macro data */
 

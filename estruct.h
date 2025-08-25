@@ -125,13 +125,8 @@ struct terminal {
 	void (*t_rev)(int);	/* set reverse video state */
 };
 
-struct key_tab {
+struct key_bind {
 	int k_code;
-	int (*fn)(int, int);
-};
-
-struct name_bind {
-	const char *f_name;
 	int (*fn)(int, int);
 };
 
@@ -154,6 +149,6 @@ struct kill {
 
 #define TABMASK		0x07
 
-#define NULLPROC_KEY	1
+#define NULLPROC_KEY	1	/* should be less than 0x20 */
 
 #endif
