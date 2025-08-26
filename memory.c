@@ -6,11 +6,6 @@
 #include "edef.h"
 #include <stdlib.h>
 
-/*
- * Please make sure malloc and free in this file are not shadowed by macros,
- * Use `undef` on them when necessary.
- */
-
 void *malloc(unsigned long);
 void free(void *);
 
@@ -31,6 +26,7 @@ static inline size_t allocated_size(void *p)
 
 void *allocate(unsigned long nbytes)
 {
+#undef malloc
 	char *mp = malloc(nbytes);
 	envram += allocated_size(mp);
 	return mp;
@@ -38,6 +34,7 @@ void *allocate(unsigned long nbytes)
 
 void release(void *mp)
 {
+#undef free
 	envram -= allocated_size(mp);
 	free(mp);
 }

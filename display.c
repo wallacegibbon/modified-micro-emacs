@@ -226,17 +226,17 @@ int update(int force)
 /* Check to see if the cursor is in the window and re-frame it if needed. */
 static void reframe(struct window *wp)
 {
-	struct line *lp;
+	struct line *lp1, *lp2;
 	int i;
 
 	if (!(wp->w_flag & WFFORCE)) {
-		lp = wp->w_linep;
-		for (i = wp->w_ntrows; i && lp != wp->w_bufp->b_linep; --i) {
-			if (lp == wp->w_dotp)
+		lp1 = wp->w_linep;
+		for (i = wp->w_ntrows; i && lp1 != wp->w_bufp->b_linep; --i) {
+			if (lp1 == wp->w_dotp)
 				return;
-			lp = lp->l_fp;
+			lp1 = lp1->l_fp;
 		}
-		if (i > 0 && lp == wp->w_dotp)	/* w_dotp == b_linep */
+		if (i > 0 && lp1 == wp->w_dotp)	/* w_dotp == b_linep */
 			return;
 	}
 
@@ -245,11 +245,12 @@ static void reframe(struct window *wp)
 	else
 		i = wp->w_ntrows / 2;
 
-	lp = wp->w_dotp;
-	while (i-- && lp->l_bp != wp->w_bufp->b_linep)
-		lp = lp->l_bp;
+	lp1 = wp->w_dotp;
+	lp2 = wp->w_bufp->b_linep;
+	while (i-- && lp1->l_bp != lp2)
+		lp1 = lp1->l_bp;
 
-	wp->w_linep = lp;
+	wp->w_linep = lp1;
 	wp->w_flag |= WFHARD;
 	wp->w_flag &= ~WFFORCE;
 }

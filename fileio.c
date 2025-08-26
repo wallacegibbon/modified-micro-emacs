@@ -1,7 +1,7 @@
 #include "me.h"
 
-static FILE *ffp;			/* File pointer, all functions. */
-static int eofflag;			/* end-of-file flag */
+static FILE *ffp;		/* File pointer, all functions. */
+static int eofflag;		/* end-of-file flag */
 
 int ffropen(char *fn)
 {
@@ -31,16 +31,11 @@ int ffclose(void)
 	}
 	eofflag = FALSE;
 
-#if UNIX
 	if (fclose(ffp) != 0) {
 		mlwrite("Error closing file");
 		return FIOERR;
 	}
 	return FIOSUC;
-#else
-	fclose(ffp);
-	return FIOSUC;
-#endif
 }
 
 int ffputline(char *buf, int nbuf)

@@ -39,14 +39,12 @@ void ttopen(void)
 
 /*
  * This function gets called just before we go back to the command interpreter.
- * Return 0 on success.
  */
 void ttclose(void)
 {
 	tcsetattr(0, TCSADRAIN, &otermios);
 }
 
-/* Return 0 on success */
 void ttputc(int c)
 {
 	fputc(c, stdout);

@@ -77,7 +77,8 @@ int onlywind(int f, int n)
 	/* Adjust w_linep to keep the cursor unmoving when it is possible. */
 	lp1 = curwp->w_linep;
 	lp2 = curwp->w_bufp->b_linep;
-	for (i = curwp->w_toprow; i > 0 && lp1->l_bp != lp2; --i)
+	i = curwp->w_toprow;
+	while ( i-- && lp1->l_bp != lp2)
 		lp1 = lp1->l_bp;
 
 	curwp->w_linep = lp1;

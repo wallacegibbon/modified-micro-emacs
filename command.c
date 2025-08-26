@@ -395,9 +395,6 @@ int killtext(int f, int n)
  * and fills in the fields of the "struct region" structure pointed to by "rp".
  * Because the dot and mark are usually very close together,
  * we scan outward from dot looking for mark.
- * This should save time.  Return a standard code.
- * Callers of this routine should be prepared to get an "ABORT" status;
- * we might make this have the conform thing later.
  */
 static int getregion(struct region *rp)
 {

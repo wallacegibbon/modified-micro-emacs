@@ -1,11 +1,6 @@
 /*
- * Note that this code only updates the dot and mark values in the window list.
- * Since all the code acts on the current window, the buffer that we are
- * editing must be being displayed, which means that "b_nwnd" is non zero,
- * which means that the dot and mark values in the buffer headers are nonsense.
- *
- * There are routines in this file that handle the kill buffer too.
- * It isn't here for any good reason.
+ * There are routines in this file that handle the kill buffer, which is not
+ * here for any good reason.
  */
 
 #include "me.h"
@@ -67,8 +62,8 @@ void lfree(struct line *lp)
 }
 
 /*
- * This routine gets called when a character is changed in place in the current
- * buffer.  It updates required flags in the buffer and window system.
+ * Gets called when a character is changed in place in the current buffer.
+ * It updates required flags in the buffer and window system.
  */
 void lchange(int flag)
 {
