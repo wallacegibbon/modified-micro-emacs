@@ -26,7 +26,8 @@ clean:
 install: $(PROGRAM)
 	@echo "	$(BIN_PATH)/$(PROGRAM)"
 	@cp me $(BIN_PATH)
-	@strip $(BIN_PATH)/$(PROGRAM)
+	@strip --remove-section=.eh_frame --remove-section=.eh_frame_hdr \
+		$(BIN_PATH)/$(PROGRAM)
 	@chmod 755 $(BIN_PATH)/$(PROGRAM)
 	@echo
 
