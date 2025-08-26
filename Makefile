@@ -1,6 +1,7 @@
-BIN_PATH = /usr/bin
 PROGRAM = me
+BIN_PATH = /usr/bin
 CC = cc
+STRIP = strip --remove-section=.eh_frame --remove-section=.eh_frame_hdr
 
 SRC = main.c buffer.c window.c line.c display.c input.c command.c ebind.c \
 	file.c fileio.c search.c isearch.c global.c memory.c util.c ansi.c \
@@ -24,12 +25,9 @@ clean:
 	@rm -f $(PROGRAM) showkeys core *.o
 
 install: $(PROGRAM)
-	@echo "	$(BIN_PATH)/$(PROGRAM)"
-	@cp me $(BIN_PATH)
-	@strip --remove-section=.eh_frame --remove-section=.eh_frame_hdr \
-		$(BIN_PATH)/$(PROGRAM)
+	@cp $(PROGRAM) $(BIN_PATH)
+	@$(STRIP) $(BIN_PATH)/$(PROGRAM)
 	@chmod 755 $(BIN_PATH)/$(PROGRAM)
-	@echo
 
 .c.o:
 	@echo "	CC	$@"
