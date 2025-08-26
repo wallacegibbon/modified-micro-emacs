@@ -29,13 +29,18 @@ int swbuffer(struct buffer *bp)
 		wstate_restore(curwp, bp);
 		return TRUE;
 	}
+
+	/* If bp->b_nwnd was not 0, there must be window(s) displaying bp. */
 	for_each_wind(wp) {
 		if (wp != curwp && wp->w_bufp == bp) {
 			wstate_copy(curwp, wp);
-			break;
+			return TRUE;
 		}
 	}
-	return TRUE;
+
+	/* Code should not reach here */
+	mlwrite("Internal Error");
+	return FALSE;
 }
 
 int nextbuffer(int f, int n)
