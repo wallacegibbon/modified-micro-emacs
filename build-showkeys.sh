@@ -5,7 +5,7 @@ CC=cc
 
 CFLAGS="-O2 -g -Wall -Wextra -Wstrict-prototypes -Wno-unused-parameter"
 
-SRCS=$(echo showkeys.c posix.c global.c ansi.c | tr ' ' '\n')
+SRCS=$(echo showkeys.c global.c ansi.c posix.c unix.c | tr ' ' '\n')
 
 OBJS=$(echo $SRCS | sed 's/\.c/.o/g')
 
