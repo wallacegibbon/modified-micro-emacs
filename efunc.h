@@ -156,6 +156,7 @@ void ttclose(void);
 void ttflush(void);
 void ttputc(int c);
 int ttgetc(void);
+void bind_exithandler(void (*fn)(int));
 
 /* unix.c */
 void getscreensize(int *widthp, int *heightp);

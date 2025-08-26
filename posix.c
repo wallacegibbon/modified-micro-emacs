@@ -4,9 +4,10 @@
  */
 
 #include "me.h"
-#include <termios.h>
-#include <unistd.h>
 #include <errno.h>
+#include <termios.h>
+#include <signal.h>
+#include <unistd.h>
 
 static struct termios otermios, ntermios;
 
@@ -71,4 +72,10 @@ void ttflush(void)
 		sleep(1);
 		status = fflush(stdout);
 	}
+}
+
+void bind_exithandler(void (*fn)(int))
+{
+	signal(SIGHUP, fn);
+	signal(SIGTERM, fn);
 }

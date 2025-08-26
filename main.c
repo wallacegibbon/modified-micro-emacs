@@ -1,5 +1,4 @@
 #include "me.h"
-#include <signal.h>
 
 static int get_universal_arg(int *arg);
 static int command_loop(void);
@@ -21,6 +20,8 @@ int main(int argc, char **argv)
 	if (!display_ok)
 		die(1, vtdeinit, "Failed initializing virtual terminal\n");
 
+	bind_exithandler(emergencyexit);
+
 	for (i = 1; i < argc; ++i) {
 		if ((bp = bfind(argv[i], TRUE)) == NULL)
 			die(2, cleanup, "Failed opening file %s\n", argv[i]);
@@ -29,12 +30,9 @@ int main(int argc, char **argv)
 	}
 
 	if (window_init())
-		die(3, vtdeinit, "Failed initializing window\n");
+		die(3, cleanup, "Failed initializing window\n");
 
 	swbuffer(firstbp);
-
-	signal(SIGHUP, emergencyexit);
-	signal(SIGTERM, emergencyexit);
 
 	for (;;)
 		command_loop();
@@ -171,7 +169,7 @@ int quickexit(int f, int n)
 	return quit(f, n);
 }
 
-static void emergencyexit(int signr)
+static void emergencyexit(int unused)
 {
 	save_buffers();
 	quit(TRUE, 0);
@@ -188,6 +186,7 @@ int quit(int f, int n)
 		cleanup();
 		exit(f ? n : 0);
 	}
+	/* Do not quit (user say no) */
 	mlerase();
 	return TRUE;
 }
