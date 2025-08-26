@@ -3,12 +3,12 @@ PROGRAM = me
 CC = cc
 
 SRC = main.c buffer.c window.c line.c display.c input.c command.c ebind.c \
-	file.c fileio.c search.c isearch.c posix.c ansi.c global.c memory.c \
-	util.c
+	file.c fileio.c search.c isearch.c global.c memory.c util.c ansi.c \
+	posix.c unix.c
 
 OBJ = main.o buffer.o window.o line.o display.o input.o command.o ebind.o \
-	file.o fileio.o search.o isearch.o posix.o ansi.o global.o memory.o \
-	util.o
+	file.o fileio.o search.o isearch.o global.o memory.o util.o ansi.o \
+	posix.o unix.o
 
 CFLAGS = -O2 -g -Wall -Wextra -Wstrict-prototypes -Wno-unused-parameter
 
@@ -16,7 +16,7 @@ $(PROGRAM): $(OBJ)
 	@echo "	LINK	$@"
 	@$(CC) -o $@ $^
 
-showkeys: showkeys.o posix.o global.o ansi.o
+showkeys: showkeys.o global.o ansi.o posix.o unix.o
 	@echo "	LINK	$@"
 	@$(CC) -o $@ $^
 
@@ -47,8 +47,9 @@ file.o: file.c estruct.h edef.h line.h
 fileio.o: fileio.c estruct.h edef.h
 search.o: search.c estruct.h edef.h line.h
 isearch.o: isearch.c estruct.h edef.h line.h
-posix.o: posix.c estruct.h
-ansi.o: ansi.c estruct.h edef.h
 global.o: estruct.h edef.h
 memory.o: estruct.h edef.h
 util.o: util.c
+ansi.o: ansi.c estruct.h edef.h
+posix.o: posix.c estruct.h
+unix.o: unix.c

@@ -1,15 +1,12 @@
 #include "me.h"
-
-#if UNIX
 #include <signal.h>
-static void emergencyexit(int);
-#endif
 
 static int get_universal_arg(int *arg);
 static int command_loop(void);
 static int window_init(void);
 static int execute(int c, int f, int n);
 static void cleanup(void);
+static void emergencyexit(int);
 
 int main(int argc, char **argv)
 {
@@ -36,10 +33,9 @@ int main(int argc, char **argv)
 
 	swbuffer(firstbp);
 
-#if UNIX
 	signal(SIGHUP, emergencyexit);
 	signal(SIGTERM, emergencyexit);
-#endif
+
 	for (;;)
 		command_loop();
 }

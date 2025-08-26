@@ -1,12 +1,6 @@
 #ifndef __ESTRUCT_H
 #define __ESTRUCT_H
 
-#if defined(__FreeBSD__) || defined(__OpenBSD__) || defined(__NetBSD__) || \
-		defined(__DragonFly__) || \
-		(defined(__APPLE__) && defined(__MACH__)) || defined(__linux__)
-#define UNIX		1	/* Major modern BSDs and Linux */
-#endif
-
 #define VISMAC		0	/* update display during keyboard macros */
 
 #define NFILEN		256	/* # of bytes, file name */

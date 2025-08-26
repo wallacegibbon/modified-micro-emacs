@@ -151,12 +151,14 @@ int put_c(unsigned char c, void (*p)(int));
 int next_col(int col, unsigned char c);
 
 /* posix.c */
-void getscreensize(int *widthp, int *heightp);
 void ttopen(void);
 void ttclose(void);
 void ttflush(void);
 void ttputc(int c);
 int ttgetc(void);
+
+/* unix.c */
+void getscreensize(int *widthp, int *heightp);
 
 /* input.c */
 int mlyesno(char *prompt);

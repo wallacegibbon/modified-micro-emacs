@@ -8,9 +8,6 @@
 #include <unistd.h>
 #include <errno.h>
 
-/* Have to include this file since TIOCGWINSZ is define in this file */
-#include <sys/ioctl.h>
-
 static struct termios otermios, ntermios;
 
 /* This function is called once to set up the terminal device streams. */
@@ -74,20 +71,4 @@ void ttflush(void)
 		sleep(1);
 		status = fflush(stdout);
 	}
-}
-
-void getscreensize(int *widthp, int *heightp)
-{
-#ifdef TIOCGWINSZ
-	struct winsize size;
-	if (ioctl(0, TIOCGWINSZ, &size) >= 0) {
-		*widthp = size.ws_col;
-		*heightp = size.ws_row;
-	} else {
-#endif
-		*widthp = 80;
-		*heightp = 24;
-#ifdef TIOCGWINSZ
-	}
-#endif
 }
