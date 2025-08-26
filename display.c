@@ -7,7 +7,6 @@
 #include "me.h"
 #include <errno.h>
 #include <stdarg.h>
-#include <unistd.h>
 
 struct video {
 	int v_flag;		/* Flags */

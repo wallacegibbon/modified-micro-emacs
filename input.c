@@ -71,7 +71,6 @@ escape_loop:
 		c = get1key();
 		if (c == ESCAPEC)
 			goto escape_loop;
-#if UNIX
 		if (c == '[' || c == 'O') {
 			switch (csi_drop_args()) {
 			case 'A':
@@ -82,7 +81,6 @@ escape_loop:
 				return NULLPROC_KEY;
 			}
 		}
-#endif
 	}
 	if (c == CTLXC && cmask == 0) {
 		cmask |= CTLX;

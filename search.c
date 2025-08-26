@@ -1,5 +1,4 @@
 #include "me.h"
-#include <unistd.h>
 
 static int readpattern(char *prompt, char *apat);
 static int nextch(struct line **pcurline, int *pcuroff, int dir);

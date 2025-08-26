@@ -547,7 +547,6 @@ int upperregion(int f, int n)
 /* Create a subjob with a copy of the command intrepreter in it. */
 int spawncli(int f, int n)
 {
-#if UNIX
 	char *cp, command_buf[16];
 	int r;
 
@@ -567,9 +566,6 @@ int spawncli(int f, int n)
 		return TRUE;
 
 	mlwrite("Failed starting subshell");
-#else
-	mlwrite("Only supported in UNIX");
-#endif
 	return FALSE;
 }
 
