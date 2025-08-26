@@ -3,13 +3,9 @@ BIN_PATH = /usr/bin
 CC = cc
 STRIP = strip --remove-section=.eh_frame --remove-section=.eh_frame_hdr
 
-SRC = main.c buffer.c window.c line.c display.c input.c command.c ebind.c \
-	file.c fileio.c search.c isearch.c global.c memory.c util.c ansi.c \
-	posix.c unix.c
-
 OBJ = main.o buffer.o window.o line.o display.o input.o command.o ebind.o \
-	file.o fileio.o search.o isearch.o global.o memory.o util.o ansi.o \
-	posix.o unix.o
+	file.o fileio.o search.o isearch.o global.o memory.o util.o \
+	ansi.o posix.o unix.o
 
 CFLAGS = -O2 -g -Wall -Wextra -Wstrict-prototypes -Wno-unused-parameter
 
