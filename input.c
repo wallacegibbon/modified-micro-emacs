@@ -1,9 +1,10 @@
 #include "me.h"
 
 /*
- * CAUTION: Prefixed chars (e.g. `CTL | 'A'`) may be stored in this variable,
- * which should be okay since functions like `ctoec` will keep it unchanged.
- */
+CAUTION: Prefixed chars (e.g. `CTL | 'A'`) may be stored in this variable,
+which should be okay since functions like `ctoec` will keep it unchanged.
+*/
+
 int reeat_char = -1;
 
 /* Get a key from the terminal driver, resolve any keyboard macro action */
@@ -48,11 +49,10 @@ int get1key(void)
 }
 
 /*
- * Drop CSI arguments and return the CSI command char.
- * Escape sequences are messes of `CSI`(\033[), `SS3`(\033O), ... etc.
- * We only handle a tiny subset of them to support mouse/touchpad scrolling.
- */
-
+Drop CSI arguments and return the CSI command char.
+Escape sequences are messes of `CSI`(\033[), `SS3`(\033O), ... etc.
+We only handle a tiny subset of them to support mouse/touchpad scrolling.
+*/
 static int csi_drop_args(void)
 {
 	int c;

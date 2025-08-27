@@ -108,11 +108,11 @@ static int (*getbind(int c))(int, int)
 }
 
 /*
- * This is the general command execution routine.  It handles the fake binding
- * of all the keys to "self-insert".  It also clears out the "thisflag" word,
- * and arranges to move it to the "lastflag", so that the next command can
- * look at it.  Return the status of command.
- */
+This is the general command execution routine.  It handles the fake binding of
+all the keys to "self-insert".  It also clears out the "thisflag" word, and
+arranges to move it to the "lastflag", so that the next command can look at it.
+Return the status of command.
+*/
 static int execute(int c, int f, int n)
 {
 	int status;
@@ -176,9 +176,9 @@ static void emergencyexit(int unused)
 }
 
 /*
- * If there is an argument, always quit.  Otherwise confirm if a buffer has
- * been changed and not written out.
- */
+If there is an argument, always quit.  Otherwise confirm if a buffer has been
+changed and not written out.
+*/
 int quit(int f, int n)
 {
 	if (f != FALSE || anycb() == FALSE ||

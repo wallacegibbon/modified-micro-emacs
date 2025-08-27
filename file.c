@@ -1,9 +1,9 @@
 #include "me.h"
 
 /*
- * If the buffer can be found, just switch to the buffer.  Other wise create
- * a new buffer, read in the text, and switch to the new buffer.
- */
+If the buffer can be found, just switch to the buffer.  Other wise create a new
+buffer, read in the text, and switch to the new buffer.
+*/
 int filefind(int f, int n)
 {
 	struct buffer *bp;
@@ -82,9 +82,9 @@ out:
 }
 
 /*
- * Ask for a file name, and write the contents of the current buffer to that
- * file.  Update the remembered file name and clear the buffer changed flag.
- */
+Ask for a file name, and write the contents of the current buffer to that file.
+Update the remembered file name and clear the buffer changed flag.
+*/
 int filewrite(int f, int n)
 {
 	struct window *wp;

@@ -100,10 +100,10 @@ int zotbuf(struct buffer *bp)
 }
 
 /*
- * Look through the list of buffers, return TRUE if there are any changed
- * buffers.  Return FALSE if no buffers have been changed.
- * Buffers that hold magic internal stuff are not considered.
- */
+Look through the list of buffers, return TRUE if there are any changed buffers.
+Return FALSE if no buffers have been changed.
+Buffers that hold magic internal stuff are not considered.
+*/
 int anycb(void)
 {
 	struct buffer *bp;
@@ -115,8 +115,8 @@ int anycb(void)
 }
 
 /*
- * Find a buffer by name.  Create it if buffer is not found and cflag is TRUE.
- */
+Find a buffer by name.  Create it if buffer is not found and cflag is TRUE.
+*/
 struct buffer *bfind(char *raw_filename, int cflag)
 {
 	char filename[NFILEN];
@@ -155,10 +155,10 @@ struct buffer *bfind(char *raw_filename, int cflag)
 }
 
 /*
- * This routine blows away all of the text in a buffer.  The window chain is
- * nearly always wrong if this gets called, the caller must arrange for the
- * updates that are required.
- */
+This routine blows away all of the text in a buffer.  The window chain is
+nearly always wrong if this gets called, the caller must arrange for the
+updates that are required.
+*/
 int bclear(struct buffer *bp)
 {
 	struct line *lp;

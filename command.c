@@ -261,11 +261,11 @@ int show_misc_info(int f, int n)
 }
 
 /*
- * Quote the next character, and insert it into the buffer.  All the characters
- * are taken literally, with the exception of the newline, which always has
- * its line splitting meaning.  The character is always read, even if it is
- * inserted 0 times, for regularity.
- */
+Quote the next character, and insert it into the buffer.  All the characters
+are taken literally, with the exception of the newline, which always has its
+line splitting meaning.  The character is always read, even if it is inserted 0
+times, for regularity.
+*/
 int quote(int f, int n)
 {
 	int c = tgetc();
@@ -391,11 +391,11 @@ int killtext(int f, int n)
 }
 
 /*
- * This routine figures out the bounds of the region in the current window,
- * and fills in the fields of the "struct region" structure pointed to by "rp".
- * Because the dot and mark are usually very close together,
- * we scan outward from dot looking for mark.
- */
+This routine figures out the bounds of the region in the current window, and
+fills in the fields of the "struct region" structure pointed to by "rp".
+Because the dot and mark are usually very close together, we scan outward from
+dot looking for mark.
+*/
 static int getregion(struct region *rp)
 {
 	struct line *flp, *blp, *tmplp;
@@ -448,9 +448,9 @@ static int getregion(struct region *rp)
 }
 
 /*
- * Kill the region.  Ask "getregion" to figure out the bounds of the region.
- * Move "." to the start, and kill the characters.
- */
+Kill the region.  Ask "getregion" to figure out the bounds of the region.
+Move "." to the start, and kill the characters.
+*/
 int killregion(int f, int n)
 {
 	struct region region;
@@ -469,9 +469,9 @@ int killregion(int f, int n)
 }
 
 /*
- * Copy all of the characters in the region to the kill buffer.
- * Don't move dot at all.  This is a bit like a kill region followed by a yank.
- */
+Copy all of the characters in the region to the kill buffer.
+Don't move dot at all.  This is a bit like a kill region followed by a yank.
+*/
 int copyregion(int f, int n)
 {
 	struct line *linep;
@@ -613,9 +613,9 @@ int ctlxe(int f, int n)
 }
 
 /*
- * Abort.  Kill off any keyboard macro, etc., that is in progress.
- * Sometimes called as a routine, to do general aborting of stuff.
- */
+Abort.  Kill off any keyboard macro, etc., that is in progress.  Sometimes
+called as a routine, to do general aborting of stuff.
+*/
 int ctrlg(int f, int n)
 {
 	TTbeep();

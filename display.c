@@ -1,8 +1,8 @@
 /*
- * The functions in this file handle redisplay.  There are two halves, the
- * ones that update the virtual display screen, and the ones that make the
- * physical display screen the same as the virtual display screen.
- */
+The functions in this file handle redisplay.  There are two halves, the ones
+that update the virtual display screen, and the ones that make the physical
+display screen the same as the virtual display screen.
+*/
 
 #include "me.h"
 #include <errno.h>
@@ -121,9 +121,9 @@ void vtdeinit(void)
 }
 
 /*
- * Write a character to the virtual screen.
- * If the line is too long put a "$" in the last column.
- */
+Write a character to the virtual screen.
+If the line is too long put a "$" in the last column.
+*/
 static void vtputc(int c)
 {
 	struct video *vp = vscreen[vtrow];
@@ -155,9 +155,9 @@ static void vtputs(const char *s)
 }
 
 /*
- * Erase from the end of the software cursor to the end of the line on which
- * the software cursor is located.
- */
+Erase from the end of the software cursor to the end of the line on which the
+software cursor is located.
+*/
 static void vteeol(void)
 {
 	char *vcp = vscreen[vtrow]->v_text;
@@ -179,10 +179,7 @@ int update(int force)
 		return TRUE;
 #endif
 
-	/*
-	 * first, propagate mode line changes to all instances of a buffer
-	 * displayed in more than one window.
-	 */
+	/* propgate buffer attributes (like modeline) to all related windows */
 	for_each_wind(wp) {
 		if (wp->w_flag & WFMODE) {
 			if (wp->w_bufp->b_nwnd > 1) {
@@ -297,9 +294,9 @@ static void update_all(struct window *wp)
 }
 
 /*
- * Update the position of the hardware cursor and handle extended lines.
- * This is the only update for simple moves.
- */
+Update the position of the hardware cursor and handle extended lines.
+This is the only update for simple moves.
+*/
 static void update_pos(void)
 {
 	struct line *lp = curwp->w_linep;
@@ -352,9 +349,9 @@ static void update_de_extend(void)
 }
 
 /*
- * If the screen is garbage, clear the physical screen and the virtual screen
- * and force a full update.
- */
+If the screen is garbage, clear the physical screen and the virtual screen and
+force a full update.
+*/
 void update_garbage(void)
 {
 	char *txt;
@@ -386,10 +383,10 @@ static void flush_to_physcr(void)
 }
 
 /*
- * Update the extended line which the cursor is currently on at a column
- * greater than the terminal width.  The line will be scrolled right or left
- * to let the user see where the cursor is.
- */
+Update the extended line which the cursor is currently on at a column greater
+than the terminal width.  The line will be scrolled right or left to let the
+user see where the cursor is.
+*/
 static void update_extended(void)
 {
 	struct line *lp = curwp->w_dotp;
@@ -424,14 +421,13 @@ static void update_line(int row, struct video *vp1, struct video *vp2)
 	cp4 = &vp2->v_text[term.t_ncol];
 
 	/*
-	 * This is why we need 2 flags (rev and req):
-	 *
-	 * If we only have one flag, we can not tell the difference between
-	 * a line becoming normal from reversed (e.g. when a window got killed,
-	 * its modeline will be replaced by a normal line of another window)
-	 * and a line who has always been normal, the former one need a full
-	 * redraw to cleanup color.
-	 */
+	This is why we need 2 flags (rev and req):
+	If we only have one flag, we can not tell the difference between a line
+	becoming normal from reversed (e.g. when a window got killed,
+	its modeline will be replaced by a normal line of another window) and
+	a line who has always been normal, the former one need a full redraw to
+	cleanup color.
+	*/
 
 	rev = (vp1->v_flag & VFREV) == VFREV;
 	req = (vp1->v_flag & VFREQ) == VFREQ;
@@ -501,9 +497,9 @@ partial_update:
 }
 
 /*
- * Redisplay the mode line for the window pointed to by the "wp".  This is the
- * only routine that has any idea of how the modeline is formatted.
- */
+Redisplay the mode line for the window pointed to by the "wp".  This is the
+only routine that has any idea of how the modeline is formatted.
+*/
 static void modeline(struct window *wp)
 {
 	struct buffer *bp = wp->w_bufp;
@@ -540,9 +536,9 @@ void vtmove(int row, int col)
 }
 
 /*
- * Send a command to the terminal to move the hardware cursor to row "row"
- * and column "col".  The row and column arguments are origin 0.
- */
+Send a command to the terminal to move the hardware cursor to row "row" and
+column "col".  The row and column arguments are origin 0.
+*/
 void movecursor(int row, int col)
 {
 	if (row != ttrow || col != ttcol) {

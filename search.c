@@ -13,9 +13,9 @@ static inline int eq(unsigned char bc, unsigned char pc)
 }
 
 /*
- * Search for a pattern in either direction.  If found, reset the "." to be at
- * the start or just after the match string, and (perhaps) repaint the display.
- */
+Search for a pattern in either direction.  If found, reset the "." to be at
+the start or just after the match string, and (perhaps) repaint the display.
+*/
 int search_next(const char *pattern, int direct, int beg_or_end)
 {
 	struct line *curline = curwp->w_dotp, *scanline, *matchline;
@@ -23,12 +23,7 @@ int search_next(const char *pattern, int direct, int beg_or_end)
 	const char *patptr;
 	int c;
 
-	/*
-	 * If we are going in reverse, then the 'end' is actually the
-	 * beginning of the pattern.  Toggle it.
-	 */
 	beg_or_end ^= direct;
-
 loop:
 	if (boundry(curline, curoff, direct))
 		return FALSE;
@@ -88,9 +83,9 @@ int clear_rpat(int f, int n)
 }
 
 /*
- * Delete a specified length from the current point then either insert the
- * string directly, or make use of replacement meta-array.
- */
+Delete a specified length from the current point then either insert the string
+directly, or make use of replacement meta-array.
+*/
 static int delins(int dlength, char *instr, int use_meta)
 {
 	int status;
@@ -165,9 +160,9 @@ finish:
 }
 
 /*
- * Return information depending on whether we may search no further.
- * Beginning of file and end of file are the obvious cases.
- */
+Return information depending on whether we may search no further.
+Beginning of file and end of file are the obvious cases.
+*/
 static int boundry(struct line *curline, int curoff, int dir)
 {
 	if (dir == FORWARD)

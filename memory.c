@@ -1,7 +1,7 @@
 /*
- * If the size is not stored in the hidden header, or it's stored in unexpected
- * address, it go wrong.  So this is a dirty HACK.
- */
+If the size is not stored in the hidden header, or it's stored in unexpected
+address, it go wrong.  So this is a dirty HACK.
+*/
 
 #include "edef.h"
 #include <stdlib.h>

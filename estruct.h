@@ -51,10 +51,10 @@
 #define DIFCASE		0x20	/* 'a' - 'A' */
 
 /*
- * The windows are kept in a big list, in top to bottom screen order, with the
- * listhead at "wheadp".
- * The flag field contains bits that are set by commands to guide redisplay.
- */
+The windows are kept in a big list, in top to bottom screen order, with the
+listhead at "wheadp".
+The flag field contains bits that are set by commands to guide redisplay.
+*/
 struct window {
 	struct window *w_wndp;	/* Next window */
 	struct buffer *w_bufp;	/* Buffer displayed in window */
@@ -76,11 +76,11 @@ struct window {
 #define WFMODE		0x10	/* Update mode line. */
 
 /*
- * Buffers may be "Inactive" which means the files associated with them
- * have not been read in yet.  These get read in at "use buffer" time.
- */
+Buffers may be "Inactive" which means the files associated with them have not
+been read in yet.  These get read in at "use buffer" time.
+*/
 struct buffer {
-        struct buffer *b_bufp;	/* Link to next struct buffer */
+	struct buffer *b_bufp;	/* Link to next struct buffer */
 	struct line *b_linep;	/* Link to the header struct line */
 	struct line *b_dotp;	/* Link to "." struct line structure */
 	struct line *b_markp;	/* The same as the above two, */
@@ -125,9 +125,9 @@ struct key_bind {
 };
 
 /*
- * The kill buffer is logically a stream of ascii characters.
- * `d_` prefix is for "deleted" text, as `k_` was taken up by the keycode.
- */
+The kill buffer is logically a stream of ascii characters.  `d_` prefix is for
+"deleted" text, as `k_` was taken up by the keycode.
+*/
 struct kill {
 	struct kill *d_next;   /* Link to next chunk, NULL if last. */
 	char d_chunk[KBLOCK];  /* Text. */

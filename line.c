@@ -1,7 +1,7 @@
 /*
- * There are routines in this file that handle the kill buffer, which is not
- * here for any good reason.
- */
+There are routines in this file that handle the kill buffer, which is not here
+for any good reason.
+*/
 
 #include "me.h"
 
@@ -62,9 +62,9 @@ void lfree(struct line *lp)
 }
 
 /*
- * Gets called when a character is changed in place in the current buffer.
- * It updates required flags in the buffer and window system.
- */
+Gets called when a character is changed in place in the current buffer.
+It updates required flags in the buffer and window system.
+*/
 void lchange(int flag)
 {
 	struct window *wp;
@@ -144,10 +144,10 @@ static int linsert_inplace(int n, int c)
 }
 
 /*
- * Insert "n" copies of the character "c" at the current location of dot.
- * In the easy case all that happens is the text is stored in the line.
- * In the hard case, the line has to be reallocated.
- */
+Insert "n" copies of the character "c" at the current location of dot.
+In the easy case all that happens is the text is stored in the line.
+In the hard case, the line has to be reallocated.
+*/
 static int lnonnewline(int n, int c)
 {
 	struct window *wp;
@@ -191,9 +191,8 @@ static int lnonnewline(int n, int c)
 }
 
 /*
- * Insert a newline into the buffer at the current location of dot in the
- * current window.
- */
+Insert a newline into the buffer at the current location in current window.
+*/
 static int lnewline(void)
 {
 	struct window *wp;
@@ -312,10 +311,10 @@ static int ljoin_nextline_try(struct line *lp)
 }
 
 /*
- * Delete a newline.  Join the current line with the next line.
- * If the next line is the magic header line always return TRUE.
- * even if nothing is done, and this makes the kill buffer work "right".
- */
+Delete a newline.  Join the current line with the next line.
+If the next line is the magic header line always return TRUE.
+even if nothing is done, and this makes the kill buffer work "right".
+*/
 static int ldelnewline(void)
 {
 	struct window *wp;
@@ -386,10 +385,7 @@ static int ldelete_once(int n, int kflag)
 
 	chunk = lp->l_used - doto;
 
-	/*
-	 * Line end means a newline in the buffer/file.  For simplicity,
-	 * We call `ldelnewline`, and leave the rest work to the next loop.
-	 */
+	/* Handle the newline deleting in a lazy way for simplicity */
 	if (chunk == 0) {
 		lchange(WFHARD);
 		if (ldelnewline() == FALSE)
@@ -437,9 +433,9 @@ static int ldelete_once(int n, int kflag)
 }
 
 /*
- * This function deletes "n" bytes, starting at dot.
- * The "kflag" is TRUE if the text should be put in the kill buffer.
- */
+This function deletes "n" bytes, starting at dot.
+The "kflag" is TRUE if the text should be put in the kill buffer.
+*/
 int ldelete(long n, int kflag)
 {
 	if (curwp->w_bufp->b_flag & BFRDONLY)
@@ -495,10 +491,10 @@ int kinsert(int c)
 }
 
 /*
- * Delete all of the text saved in the kill buffer.  Called by commands when a
- * new kill context is being created.  The kill buffer array is released, just
- * in case the buffer has grown to immense size.
- */
+Delete all of the text saved in the kill buffer.  Called by commands when a new
+kill context is being created.  The kill buffer array is released, just in case
+the buffer has grown to immense size.
+*/
 void kdelete(void)
 {
 	struct kill *kp;

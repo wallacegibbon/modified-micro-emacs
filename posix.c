@@ -1,7 +1,7 @@
 /*
- * The functions in this file negotiate with the operating system for
- * characters, and write characters in a barely buffered fashion on the display.
- */
+Functions in this file negotiate with the operating system for characters,
+and write characters in a barely buffered fashion on the display.
+*/
 
 #include "me.h"
 #include <errno.h>
@@ -36,8 +36,8 @@ void ttopen(void)
 }
 
 /*
- * This function gets called just before we go back to the command interpreter.
- */
+This function gets called just before we go back to the command interpreter.
+*/
 void ttclose(void)
 {
 	tcsetattr(0, TCSADRAIN, &otermios);

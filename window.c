@@ -1,8 +1,6 @@
 #include "me.h"
 
-/*
- * Split the current window.  A window smaller than 3 lines cannot be splited.
- */
+/* Split the current window.  Window smaller than 3 lines cannot be splited. */
 int splitwind(int f, int n)
 {
 	struct window *wp;
@@ -89,9 +87,9 @@ int onlywind(int f, int n)
 }
 
 /*
- * With no argument, it just does the refresh.
- * With an argument "n", reposition dot to line "n" of the screen.
- */
+With no argument, it just does the refresh.
+With an argument "n", reposition dot to line "n" of the screen.
+*/
 int redraw(int f, int n)
 {
 	if (f == FALSE) {

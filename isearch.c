@@ -110,14 +110,12 @@ pat_append:
 
 	/* Still matching so far, keep going */
 
-	/*
-	 * The searching during a changing pattern is tricky.
-	 * A solution is to restore the "." position before the next search.
-	 */
+	/* restore the "." position before the next search. */
 	tmpline = curwp->w_dotp;
 	tmpoff = curwp->w_doto;
 	curwp->w_dotp = curline;
 	curwp->w_doto = curoff;
+
 	status = search_next_dispatch(pat, n);
 	if (status == FALSE) {
 		/* When search failed, stay on previous success position */
