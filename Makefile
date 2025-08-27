@@ -1,33 +1,32 @@
 PROGRAM = me
-BIN_PATH = /usr/bin
+BIN = /usr/bin
 CC = cc
 STRIP = strip --remove-section=.eh_frame --remove-section=.eh_frame_hdr
 
-OBJ = main.o buffer.o window.o line.o display.o input.o command.o ebind.o \
+CFLAGS = -O2 -g -Wall -Wextra -Wstrict-prototypes -Wno-unused-parameter
+
+OBJS = main.o buffer.o window.o line.o display.o input.o command.o ebind.o \
 	file.o fileio.o search.o isearch.o global.o memory.o util.o \
 	ansi.o posix.o unix.o
 
-CFLAGS = -O2 -g -Wall -Wextra -Wstrict-prototypes -Wno-unused-parameter
+$(PROGRAM): $(OBJS)
+	$(CC) -o $@ $(OBJS)
 
-$(PROGRAM): $(OBJ)
-	@echo "	LINK	$@"
-	@$(CC) -o $@ $^
+SHOWKEYS_OBJS = showkeys.o global.o ansi.o posix.o unix.o
 
-showkeys: showkeys.o global.o ansi.o posix.o unix.o
-	@echo "	LINK	$@"
-	@$(CC) -o $@ $^
-
-clean:
-	@rm -f $(PROGRAM) showkeys core *.o
-
-install: $(PROGRAM)
-	@cp $(PROGRAM) $(BIN_PATH)
-	@$(STRIP) $(BIN_PATH)/$(PROGRAM)
-	@chmod 755 $(BIN_PATH)/$(PROGRAM)
+showkeys: $(SHOWKEYS_OBJS)
+	$(CC) -o $@ $(SHOWKEYS_OBJS)
 
 .c.o:
-	@echo "	CC	$@"
-	@$(CC) $(CFLAGS) -c $*.c
+	$(CC) $(CFLAGS) -c $<
+
+clean:
+	rm -f $(PROGRAM) showkeys core *.o
+
+install: $(PROGRAM)
+	cp $(PROGRAM) $(BIN)
+	$(STRIP) $(BIN)/$(PROGRAM)
+	chmod 755 $(BIN)/$(PROGRAM)
 
 main.o: main.c estruct.h efunc.h edef.h line.h
 buffer.o: buffer.c estruct.h edef.h line.h
