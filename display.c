@@ -179,7 +179,7 @@ int update(int force)
 		return TRUE;
 #endif
 
-	/* propgate buffer attributes (like modeline) to all related windows */
+	/* Modeline changes should be propagated to all related windows. */
 	for_each_wind(wp) {
 		if (wp->w_flag & WFMODE) {
 			if (wp->w_bufp->b_nwnd > 1) {
@@ -191,7 +191,7 @@ int update(int force)
 		}
 	}
 
-	/* update any windows that need refreshing */
+	/* Update any windows that need refreshing */
 	for_each_wind(wp) {
 		if (wp->w_flag) {
 			reframe(wp);
