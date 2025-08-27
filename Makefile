@@ -12,16 +12,16 @@ OBJS = main.o buffer.o window.o line.o display.o input.o command.o ebind.o \
 $(PROGRAM): $(OBJS)
 	$(CC) -o $@ $(OBJS)
 
-SHOWKEYS_OBJS = showkeys.o global.o ansi.o posix.o unix.o
+SHOWKEY_OBJS = showkey.o global.o ansi.o posix.o unix.o
 
-showkeys: $(SHOWKEYS_OBJS)
-	$(CC) -o $@ $(SHOWKEYS_OBJS)
+showkey: $(SHOWKEY_OBJS)
+	$(CC) -o $@ $(SHOWKEY_OBJS)
 
 .c.o:
 	$(CC) $(CFLAGS) -c $<
 
 clean:
-	rm -f $(PROGRAM) showkeys core *.o
+	rm -f $(PROGRAM) showkey core *.o
 
 install: $(PROGRAM)
 	cp $(PROGRAM) $(BIN)

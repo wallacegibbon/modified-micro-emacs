@@ -5,11 +5,9 @@ int main(void)
 	int c;
 	TTopen();
 	for (;;) {
-		c = TTgetc();
-		if (c == 3 /* Ctrl + C */)
+		if ((c = TTgetc()) == 3 /* Ctrl + C */)
 			break;
-		printf("<%02X>", c);
-		fflush(stdout);
+		printf("%02X\r\n", c);
 	}
 	TTclose();
 	printf("\r\n");

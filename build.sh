@@ -12,9 +12,9 @@ SRCS=$(echo main.c buffer.c window.c line.c display.c input.c command.c \
 OBJS=$(echo $SRCS | sed 's/\.c/.o/g')
 
 for f in $SRCS; do
-	echo "	CC	$f..."
+	echo $CC $CFLAGS -c $f
 	$CC $CFLAGS -c $f
 done
 
-echo "	Link	$PROGRAM"
+echo $CC -o $PROGRAM $OBJS
 $CC -o $PROGRAM $OBJS
