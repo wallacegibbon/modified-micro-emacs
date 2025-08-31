@@ -25,6 +25,12 @@ Build:
 make -j
 ```
 
+To build on non-POSIX systems: (not supported yet)
+
+```sh
+make -j PLATFORM_OBJS=unimplemented-non-posix.o
+```
+
 Install:
 
 ```sh

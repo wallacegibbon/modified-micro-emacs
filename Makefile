@@ -5,14 +5,17 @@ STRIP = strip --remove-section=.eh_frame --remove-section=.eh_frame_hdr
 
 CFLAGS = -O2 -g -Wall -Wextra -Wstrict-prototypes -Wno-unused-parameter
 
-OBJS = main.o buffer.o window.o line.o display.o input.o command.o ebind.o \
-	file.o fileio.o search.o isearch.o global.o memory.o util.o \
-	ansi.o posix.o unix.o
+OBJS = main.o display.o window.o line.o buffer.o input.o command.o ebind.o \
+	file.o fileio.o search.o isearch.o global.o memory.o util.o ansi.o
 
-$(PROGRAM): $(OBJS)
-	$(CC) -o $@ $(OBJS)
+PLATFORM_OBJS = posix.o unix.o
 
-SHOWKEY_OBJS = showkey.o global.o ansi.o posix.o unix.o
+PROGRAM_OBJS = $(OBJS) $(PLATFORM_OBJS)
+
+$(PROGRAM): $(PROGRAM_OBJS)
+	$(CC) -o $@ $(PROGRAM_OBJS)
+
+SHOWKEY_OBJS = showkey.o global.o ansi.o $(PLATFORM_OBJS)
 
 showkey: $(SHOWKEY_OBJS)
 	$(CC) -o $@ $(SHOWKEY_OBJS)
@@ -29,10 +32,10 @@ install: $(PROGRAM)
 	chmod 755 $(BIN)/$(PROGRAM)
 
 main.o: main.c estruct.h efunc.h edef.h line.h
-buffer.o: buffer.c estruct.h edef.h line.h
+display.o: display.c estruct.h edef.h line.h
 window.o: window.c estruct.h edef.h line.h
 line.o: line.c estruct.h edef.h line.h
-display.o: display.c estruct.h edef.h line.h
+buffer.o: buffer.c estruct.h edef.h line.h
 input.o: input.c estruct.h edef.h
 command.o: command.c estruct.h edef.h line.h
 ebind.o: edef.h efunc.h estruct.h line.h
