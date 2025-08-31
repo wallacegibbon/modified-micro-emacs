@@ -20,6 +20,7 @@ static int fline_extend(void)
 	return 0;
 }
 
+/* The full reset contains 2 parts: Free and memory; Reset fline and flen */
 static inline void fline_reset(void)
 {
 	free(fline);
@@ -29,7 +30,7 @@ static inline void fline_reset(void)
 
 int ffropen(char *fn)
 {
-	if ((ffp = fopen(fn, "r")) == NULL) {
+	if ((ffp = fopen(fn, "rb")) == NULL) {
 		mlwrite("Cannot open file for reading");
 		return FIOFNF;
 	}
@@ -39,7 +40,7 @@ int ffropen(char *fn)
 
 int ffwopen(char *fn)
 {
-	if ((ffp = fopen(fn, "w")) == NULL) {
+	if ((ffp = fopen(fn, "wb")) == NULL) {
 		mlwrite("Cannot open file for writing");
 		return FIOERR;
 	}

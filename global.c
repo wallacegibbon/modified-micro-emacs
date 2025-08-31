@@ -1,4 +1,5 @@
 #include "estruct.h"
+#include <stddef.h>
 
 char hex[] = "0123456789ABCDEF";
 
@@ -28,10 +29,10 @@ struct kill *kbufp;		/* current kill buffer chunk pointer */
 struct kill *kbufh;		/* kill buffer header pointer */
 int kused = KBLOCK;		/* # of bytes used in kill buffer */
 
-long envram;			/* # of bytes current in use by malloc */
+long envram = 0;		/* # of bytes current in use by malloc */
 
-char *fline;			/* dynamic return line */
-int flen;			/* current length of fline */
+char *fline = NULL;		/* dynamic return line */
+int flen = 0;			/* current length of fline */
 
 int scrollcount = 1;		/* number of lines to scroll */
 
