@@ -3,6 +3,30 @@
 static FILE *ffp;		/* File pointer, all functions. */
 static int eofflag;		/* end-of-file flag */
 
+/* Increase the buffer (fline) by NSTRING bytes. (realloc and copy) */
+static int fline_extend(void)
+{
+	char *tmpline;
+	if ((tmpline = malloc(flen + NSTRING)) == NULL)
+		return FIOMEM;
+	if (flen > 0)
+		memcpy(tmpline, fline, flen);
+
+	if (fline != NULL)
+		free(fline);
+
+	fline = tmpline;
+	flen += NSTRING;
+	return 0;
+}
+
+static inline void fline_reset(void)
+{
+	free(fline);
+	fline = NULL;
+	flen = 0;
+}
+
 int ffropen(char *fn)
 {
 	if ((ffp = fopen(fn, "r")) == NULL) {
@@ -24,17 +48,17 @@ int ffwopen(char *fn)
 
 int ffclose(void)
 {
-	/* free this since we do not need it anymore */
-	if (fline) {
-		free(fline);
-		fline = NULL;
-	}
+	/* free the buffer (fline) since we do not need it anymore */
+	if (fline)
+		fline_reset();
+
 	eofflag = FALSE;
 
 	if (fclose(ffp) != 0) {
 		mlwrite("Error closing file");
 		return FIOERR;
 	}
+
 	return FIOSUC;
 }
 
@@ -56,32 +80,21 @@ int ffputline(char *buf, int nbuf)
 
 int ffgetline(int *count)
 {
-	char *tmpline;
-	int c, i;
+	int c, i, s;
 
 	if (eofflag)
 		return FIOEOF;
-
-	if (flen > NSTRING) {
-		/* dump fline in case it ended up too big */
-		free(fline);
-		fline = NULL;
-	}
 	if (fline == NULL) {
-		if ((fline = malloc(flen = NSTRING)) == NULL)
-			return FIOMEM;
+		if ((s = fline_extend()))
+			return s;
 	}
 
 	i = 0;
 	while ((c = fgetc(ffp)) != EOF && c != '\n') {
 		fline[i++] = c;
-		if (i >= flen) {
-			if ((tmpline = malloc(flen + NSTRING)) == NULL)
-				return FIOMEM;
-			memcpy(tmpline, fline, flen);
-			flen += NSTRING;
-			free(fline);
-			fline = tmpline;
+		if (i == flen) {
+			if ((s = fline_extend()))
+				return s;
 		}
 	}
 
@@ -90,10 +103,9 @@ int ffgetline(int *count)
 			mlwrite("File read error");
 			return FIOERR;
 		}
-		if (i != 0)
-			eofflag = TRUE;
-		else
+		if (i == 0)
 			return FIOEOF;
+		eofflag = TRUE;
 	}
 
 	*count = i;
