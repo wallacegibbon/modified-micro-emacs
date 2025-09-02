@@ -74,8 +74,14 @@ void ttflush(void)
 	}
 }
 
+static char is_suspended = 0;
+
+/* CONT signal is catchable, but we can not call `TTopen` twice. */
 static void continue_handler(int signum)
 {
+	if (!is_suspended)
+		return;
+	is_suspended = 0;
 	TTopen();
 	sgarbf = TRUE;
 	update(TRUE);
@@ -83,6 +89,7 @@ static void continue_handler(int signum)
 
 static void suspend_handler(int signum)
 {
+	is_suspended = 1;
 	mlerase();
 	TTflush();
 	TTclose();
