@@ -77,6 +77,7 @@ static void ansiopen(void)
 
 static void ansiclose(void)
 {
+	/* Move cursor to bottom in case that ascr is not supported. */
 	ansimove(term.t_nrow, 0);
 	ascr_end();
 	ttflush();

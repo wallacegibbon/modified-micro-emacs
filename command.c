@@ -550,7 +550,6 @@ int spawncli(int f, int n)
 	char *cp, command_buf[16];
 	int r;
 
-	movecursor(term.t_nrow, 0);
 	TTflush();
 	TTclose();
 	if ((cp = getenv("SHELL")) == NULL || *cp == '\0')

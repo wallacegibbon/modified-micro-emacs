@@ -74,8 +74,25 @@ void ttflush(void)
 	}
 }
 
+static void continue_handler(int signum)
+{
+	TTopen();
+	sgarbf = TRUE;
+	update(TRUE);
+}
+
+static void suspend_handler(int signum)
+{
+	mlerase();
+	TTflush();
+	TTclose();
+	kill(0, SIGSTOP);
+}
+
 void bind_exithandler(void (*fn)(int))
 {
 	signal(SIGHUP, fn);
 	signal(SIGTERM, fn);
+	signal(SIGTSTP, suspend_handler);
+	signal(SIGCONT, continue_handler);
 }
