@@ -70,7 +70,7 @@ int bufrdonly(int f, int n)
 /* Kill the buffer pointed to by bp, and update bheadp when necessary. */
 int zotbuf(struct buffer *bp)
 {
-	struct buffer *bp1, *bp2;
+	struct buffer **bpp = &bheadp;
 
 	if (bp->b_nwnd != 0) {
 		mlwrite("Buffer is being displayed");
@@ -81,19 +81,11 @@ int zotbuf(struct buffer *bp)
 
 	free(bp->b_linep);
 
-	/* Iterate through the buffer list until we found bp. */
-	bp1 = NULL;
-	bp2 = bheadp;
-	while (bp2 != bp) {
-		bp1 = bp2;
-		bp2 = bp2->b_bufp;
-	}
-	bp2 = bp2->b_bufp;
+	/* Unlink bp from the buffer chain */
+	while (*bpp != bp)
+		bpp = &(*bpp)->b_bufp;
 
-	if (bp1 == NULL)
-		bheadp = bp2;
-	else
-		bp1->b_bufp = bp2;
+	*bpp = bp->b_bufp;
 
 	free(bp);
 	return TRUE;

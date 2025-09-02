@@ -1,5 +1,21 @@
 #include "me.h"
 
+static void insert_window_before(struct window *wp, struct window *newwp)
+{
+	struct window **wpp = &wheadp;
+	while (*wpp != wp)
+		wpp = &(*wpp)->w_wndp;
+
+	*wpp = newwp;
+	newwp->w_wndp = wp;
+}
+
+static void insert_window_after(struct window *wp, struct window *newwp)
+{
+	newwp->w_wndp = wp->w_wndp;
+	wp->w_wndp = newwp;
+}
+
 /* Split the current window.  Window smaller than 3 lines cannot be splited. */
 int splitwind(int f, int n)
 {
@@ -33,14 +49,24 @@ int splitwind(int f, int n)
 	}
 	lp = curwp->w_linep;
 
-	if (ntrd == ntru)	/* Hit mode line. */
-		lp = lp->l_fp;
+	/* Keep the cursor unmoving when it is possible. */
 
-	curwp->w_ntrows = ntru;
-	wp->w_wndp = curwp->w_wndp;
-	curwp->w_wndp = wp;
-	wp->w_toprow = curwp->w_toprow + ntru + 1;
-	wp->w_ntrows = ntrl;
+	if (ntrd > ntru) {
+		insert_window_before(curwp, wp);
+		wp->w_ntrows = ntru;
+		wp->w_toprow = curwp->w_toprow;
+		curwp->w_toprow += ++ntru;
+		curwp->w_ntrows = ntrl;
+		while (ntru--)
+			lp = lp->l_fp;
+	} else {
+		if (ntrd == ntru)	/* Hit modeline */
+			lp = lp->l_fp;
+		insert_window_after(curwp, wp);
+		curwp->w_ntrows = ntru;
+		wp->w_ntrows = ntrl;
+		wp->w_toprow = curwp->w_toprow + ntru + 1;
+	}
 
 	curwp->w_linep = lp;
 	wp->w_linep = lp;
@@ -72,7 +98,8 @@ int onlywind(int f, int n)
 		free(wp);
 	}
 
-	/* Adjust w_linep to keep the cursor unmoving when it is possible. */
+	/* Keep the cursor unmoving when it is possible. */
+
 	lp1 = curwp->w_linep;
 	lp2 = curwp->w_bufp->b_linep;
 	i = curwp->w_toprow;
