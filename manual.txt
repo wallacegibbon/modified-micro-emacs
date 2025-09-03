@@ -6,13 +6,14 @@ Previous line .........      ^P         Next line .............      ^N
 Beginning of line .....      ^A         End of line ...........      ^E
 Previous page .........      ^Z         Next page .............      ^V
 Beginning of file .....   ^X  ,         End of file ...........   ^X  .
+Goto line .............   ^X  G
 
 -------------------------------------------------------------------------------
                         DELETING AND INSERTING
 -------------------------------------------------------------------------------
 Delete previous character    ^H         Delete next character .      ^D
-Kill to end of line ...      ^K         Yank ..................      ^Y
-Kill region ...........   ^X  K         Copy region ...........   ^X  J
+Kill to end of line ...      ^K         Kill region ...........   ^X  K
+Yank ..................      ^Y         Copy region ...........   ^X  J
 
 -------------------------------------------------------------------------------
                         SEARCHING AND REPLACING
@@ -23,8 +24,7 @@ Query replace string ..   ^X  R         Clear Replace Buffer ..   ^X  D
 -------------------------------------------------------------------------------
                         WINDOW COMMANDS
 -------------------------------------------------------------------------------
-Delete window .........   ^X  0         Delete other windows ..   ^X  1
-Split current window ..   ^X  2
+Split current window ..   ^X  2         Delete other windows ..   ^X  1
 Previous window .......   ^X  P         Next window ...........   ^X  O
 
 -------------------------------------------------------------------------------
@@ -49,8 +49,12 @@ Find file .............   ^X ^F
 -------------------------------------------------------------------------------
 Case region upper .....   ^X  U         Case region lower .....   ^X  L
 Set mark ..............   ^X  M         Exchange point and mark   ^X ^X
-Abort command .........      ^G         Quote character .......      ^Q
-Newline and indent ....      ^J         Goto line .............   ^X  G
-Universal argument ....      ^U         Redraw display ........      ^L
+Newline and indent ....      ^J         Quote character .......      ^Q
+Show line pos, etc. ...   ^X  ?         Abort command .........      ^G
+Redraw display ........      ^L         Sub shell .............   ^X  C
 Quick exit ............   ^X ^Z         Exit emacs ............   ^X ^C
-I shell ...............   ^X  C
+
+-------------------------------------------------------------------------------
+                        FIXED KEYS
+-------------------------------------------------------------------------------
+Universal argument ....      ^U
