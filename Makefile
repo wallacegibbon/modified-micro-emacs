@@ -1,3 +1,4 @@
+## Keep this Makefile ANSI-compliant.
 PROGRAM = me
 BIN = /usr/bin
 CC = cc
@@ -5,20 +6,17 @@ STRIP = strip --remove-section=.eh_frame --remove-section=.eh_frame_hdr
 
 CFLAGS = -O2 -g -Wall -Wextra -Wstrict-prototypes -Wno-unused-parameter
 
-OBJS = main.o display.o window.o line.o buffer.o input.o command.o ebind.o \
-	file.o fileio.o search.o isearch.o global.o memory.o util.o ansi.o
-
 PLATFORM_OBJS = posix.o unix.o
 
-PROGRAM_OBJS = $(OBJS) $(PLATFORM_OBJS)
+OBJS = display.o window.o line.o buffer.o input.o command.o ebind.o global.o \
+	file.o fileio.o search.o isearch.o memory.o util.o ansi.o \
+	$(PLATFORM_OBJS)
 
-$(PROGRAM): $(PROGRAM_OBJS)
-	$(CC) -o $@ $(PROGRAM_OBJS)
+$(PROGRAM): main.o $(OBJS)
+	$(CC) -o $@ main.o $(OBJS)
 
-SHOWKEY_OBJS = showkey.o global.o ansi.o $(PLATFORM_OBJS)
-
-showkey: $(SHOWKEY_OBJS)
-	$(CC) -o $@ $(SHOWKEY_OBJS)
+showkey: showkey.o $(OBJS)
+	$(CC) -o $@ showkey.o $(OBJS)
 
 .c.o:
 	$(CC) $(CFLAGS) -c $<

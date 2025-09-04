@@ -97,8 +97,6 @@ static void continue_handler(int signum)
 static void suspend_handler(int signum)
 {
 	is_suspended = 1;
-	mlerase();
-	ttflush();
 	ansiclose();
 	kill(0, SIGSTOP);
 }

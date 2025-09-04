@@ -13,3 +13,7 @@ int main(void)
 	printf("\r\n");
 	return 0;
 }
+
+/* for simpler Makefile */
+int quit(int f, int n) { return TRUE; }
+int quickexit(int f, int n) { return TRUE; }
