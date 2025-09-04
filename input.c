@@ -1,5 +1,3 @@
-/* ANSI terminal is expected for Ctrl keys.  (e.g ^A is expected to be 1) */
-
 #include "me.h"
 
 /*
