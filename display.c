@@ -53,22 +53,22 @@ static void screen_init(void)
 
 	display_ok = 0;
 
-	if ((vscreen = malloc(term.t_nrow * sizeof(struct video *))) == NULL)
+	if ((vscreen = malloc(term_nrow * sizeof(struct video *))) == NULL)
 		return;
-	if ((pscreen = malloc(term.t_nrow * sizeof(struct video *))) == NULL)
+	if ((pscreen = malloc(term_nrow * sizeof(struct video *))) == NULL)
 		goto fail1;
 
-	for (i = 0; i < term.t_nrow; ++i) {
-		if ((vscreen[i] = video_new(term.t_ncol)) == NULL)
+	for (i = 0; i < term_nrow; ++i) {
+		if ((vscreen[i] = video_new(term_ncol)) == NULL)
 			failflag = 1;
-		if ((pscreen[i] = video_new(term.t_ncol)) == NULL)
+		if ((pscreen[i] = video_new(term_ncol)) == NULL)
 			failflag = 1;
 	}
 	if (failflag)
 		goto fail2;
 
 	mlbuf_old = mlbuf;
-	mlbuf_size = term.t_ncol + 1;
+	mlbuf_size = term_ncol + 1;
 	if ((mlbuf = malloc(mlbuf_size)) == NULL)
 		goto fail2;
 
@@ -83,7 +83,7 @@ static void screen_init(void)
 	return;
 
 fail2:
-	for (i = 0; i < term.t_nrow; ++i) {
+	for (i = 0; i < term_nrow; ++i) {
 		free(pscreen[i]);
 		free(vscreen[i]);
 	}
@@ -97,7 +97,7 @@ static void screen_deinit(void)
 {
 	int i;
 	display_ok = 0;
-	for (i = 0; i < term.t_nrow; ++i) {
+	for (i = 0; i < term_nrow; ++i) {
 		free(pscreen[i]);
 		free(vscreen[i]);
 	}
@@ -107,8 +107,8 @@ static void screen_deinit(void)
 
 void vtinit(void)
 {
-	TTopen();
-	TTrev(FALSE);
+	ansiopen();
+	ansirev(FALSE);
 	screen_init();
 }
 
@@ -117,7 +117,7 @@ void vtdeinit(void)
 	screen_deinit();
 	/* mlbuf is not like screen lines, it keeps contents on resizing */
 	free(mlbuf);
-	TTclose();
+	ansiclose();
 }
 
 /*
@@ -127,8 +127,8 @@ If the line is too long put a "$" in the last column.
 static void vtputc(int c)
 {
 	struct video *vp = vscreen[vtrow];
-	if (vtcol >= term.t_ncol) {
-		vp->v_text[term.t_ncol - 1] = '$';
+	if (vtcol >= term_ncol) {
+		vp->v_text[term_ncol - 1] = '$';
 		++vtcol;
 		return;
 	}
@@ -161,7 +161,7 @@ software cursor is located.
 static void vteeol(void)
 {
 	char *vcp = vscreen[vtrow]->v_text;
-	while (vtcol < term.t_ncol)
+	while (vtcol < term_ncol)
 		vcp[vtcol++] = ' ';
 }
 
@@ -215,7 +215,7 @@ int update(int force)
 	flush_to_physcr();
 	movecursor(currow, curcol - lbound);
 
-	TTflush();
+	ttflush();
 	return TRUE;
 }
 
@@ -311,7 +311,7 @@ static void update_pos(void)
 		curcol = next_col(curcol, lp->l_text[i]);
 
 	/* if extended, flag so and update the virtual line image */
-	if (curcol >= term.t_ncol - 1) {
+	if (curcol >= term_ncol - 1) {
 		vscreen[currow]->v_flag |= (VFEXT | VFCHG);
 		update_extended();
 	} else {
@@ -328,7 +328,7 @@ static void update_de_extend_wind(struct window *wp)
 	for (lp = wp->w_linep; i < j; ++i, lp = lp->l_fp) {
 		if (!(vscreen[i]->v_flag & VFEXT))
 			continue;
-		if ((lp == wp->w_dotp) && (curcol >= term.t_ncol - 1))
+		if ((lp == wp->w_dotp) && (curcol >= term_ncol - 1))
 			continue;
 
 		/* Have VFEXT flag, and curcol is small, de-extend */
@@ -357,16 +357,16 @@ void update_garbage(void)
 	char *txt;
 	int i, j;
 
-	for (i = 0; i < term.t_nrow; ++i) {
+	for (i = 0; i < term_nrow; ++i) {
 		vscreen[i]->v_flag |= VFCHG;
 		vscreen[i]->v_flag &= ~VFREV;
 		txt = pscreen[i]->v_text;
-		for (j = 0; j < term.t_ncol; ++j)
+		for (j = 0; j < term_ncol; ++j)
 			txt[j] = ' ';
 	}
 
 	movecursor(0, 0);
-	TTeeop();
+	ansieeop();
 	mlflush();
 	sgarbf = FALSE;
 }
@@ -375,7 +375,7 @@ static void flush_to_physcr(void)
 {
 	struct video *vp1;
 	int i;
-	for (i = 0; i < term.t_nrow; ++i) {
+	for (i = 0; i < term_nrow; ++i) {
 		vp1 = vscreen[i];
 		if (vp1->v_flag & VFCHG)
 			update_line(i, vp1, pscreen[i]);
@@ -393,7 +393,7 @@ static void update_extended(void)
 	int rcursor;
 
 	/* calculate what column the real cursor will end up in */
-	rcursor = ((curcol - term.t_ncol) % term.t_scrsiz) + term.t_margin;
+	rcursor = ((curcol - term_ncol) % term_scrsiz) + term_margin;
 	taboff = lbound = curcol - rcursor + 1;
 
 	/* scan through the line outputing characters to the virtual screen */
@@ -417,8 +417,8 @@ static void update_line(int row, struct video *vp1, struct video *vp2)
 
 	cp1 = &vp1->v_text[0];
 	cp2 = &vp2->v_text[0];
-	cp3 = &vp1->v_text[term.t_ncol];
-	cp4 = &vp2->v_text[term.t_ncol];
+	cp3 = &vp1->v_text[term_ncol];
+	cp4 = &vp2->v_text[term_ncol];
 
 	/*
 	This is why we need 2 flags (rev and req):
@@ -448,16 +448,16 @@ static void update_line(int row, struct video *vp1, struct video *vp2)
 full_update:
 	movecursor(row, 0);
 	if (should_send_rev)
-		TTrev(TRUE);
+		ansirev(TRUE);
 
 	/* Dump virtual line to both physical line and the terminal */
 	while (cp1 < cp3) {
-		TTputc(*cp1);
+		ttputc(*cp1);
 		++ttcol;
 		*cp2++ = *cp1++;
 	}
 	if (should_send_rev)
-		TTrev(FALSE);
+		ansirev(FALSE);
 	vp1->v_flag &= ~VFCHG;
 	if (req)
 		vp1->v_flag |= VFREV;
@@ -484,14 +484,14 @@ partial_update:
 	}
 	movecursor(row, cp1 - &vp1->v_text[0]);
 	if (should_send_rev)
-		TTrev(TRUE);
+		ansirev(TRUE);
 	while (cp1 != cp3) {
-		TTputc(*cp1);
+		ttputc(*cp1);
 		++ttcol;
 		*cp2++ = *cp1++;
 	}
 	if (should_send_rev)
-		TTrev(FALSE);
+		ansirev(FALSE);
 
 	vp1->v_flag &= ~VFCHG;
 }
@@ -518,7 +518,7 @@ static void modeline(struct window *wp)
 		vtputs("(TRUNC) ");
 	vtputs(bp->b_fname);
 
-	while (vtcol < term.t_ncol)
+	while (vtcol < term_ncol)
 		vtputc(' ');
 }
 
@@ -544,7 +544,7 @@ void movecursor(int row, int col)
 	if (row != ttrow || col != ttcol) {
 		ttrow = row;
 		ttcol = col;
-		TTmove(row, col);
+		ansimove(row, col);
 	}
 }
 
@@ -555,9 +555,9 @@ void mlerase(void)
 	if (mlbuf != NULL)
 		mlbuf[0] = '\0';
 
-	movecursor(term.t_nrow, 0);
-	TTeeol();
-	TTflush();
+	movecursor(term_nrow, 0);
+	ansieeol();
+	ttflush();
 	mpresf = FALSE;
 }
 
@@ -582,7 +582,7 @@ int mlvwrite(const char *fmt, va_list ap)
 	vsnprintf(mlbuf, mlbuf_size, fmt, ap);
 	n = mlflush();
 
-	TTflush();
+	ttflush();
 	return n;
 }
 
@@ -590,20 +590,13 @@ static int mlflush(void)
 {
 	char *s = mlbuf, c;
 
-	movecursor(term.t_nrow, 0);
+	movecursor(term_nrow, 0);
 	while ((c = *s++))
-		ttcol += put_c(c, TTputc);
+		ttcol += put_c(c, ttputc);
 
-	TTeeol();
+	ansieeol();
 	mpresf = TRUE;
 	return ttcol;
-}
-
-static inline void ttputs(char *s)
-{
-	int c;
-	while ((c = *s++))
-		TTputc(c);
 }
 
 int unput_c(unsigned char c)

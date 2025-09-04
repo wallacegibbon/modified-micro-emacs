@@ -87,7 +87,7 @@ static int window_init(void)
 		return 1;
 
 	memset(wp, 0, sizeof(*wp));
-	wp->w_ntrows = term.t_nrow - 1;	/* "-1" for mode line. */
+	wp->w_ntrows = term_nrow - 1;	/* "-1" for mode line. */
 
 	wheadp = wp;
 	curwp = wp;
@@ -134,7 +134,7 @@ static int execute(int c, int f, int n)
 		c = '\t';
 
 	if (c > 0xFF) {
-		TTbeep();
+		ansibeep();
 		mlwrite("Key not bound");
 		lastflag = 0;	/* Fake last flags. */
 		return FALSE;

@@ -102,23 +102,6 @@ struct region {
 	long r_size;		/* Length in characters. */
 };
 
-struct terminal {
-	short t_nrow;		/* current number of rows used */
-	short t_ncol;		/* current Number of columns. */
-	short t_margin;		/* min margin for extended lines */
-	short t_scrsiz;		/* size of scroll region " */
-	void (*t_open)(void);	/* Open terminal at the start. */
-	void (*t_close)(void);	/* Close terminal at end. */
-	int (*t_getchar)(void);	/* Get character from keyboard. */
-	void (*t_putchar)(int);	/* Put character to display. */
-	void (*t_flush)(void);	/* Flush output buffers. */
-	void (*t_move)(int, int);/* Move the cursor, origin 0. */
-	void (*t_eeol)(void);	/* Erase to end of line. */
-	void (*t_eeop)(void);	/* Erase to end of page. */
-	void (*t_beep)(void);	/* Beep. */
-	void (*t_rev)(int);	/* set reverse video state */
-};
-
 struct key_bind {
 	int k_code;
 	int (*fn)(int, int);

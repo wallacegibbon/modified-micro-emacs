@@ -17,6 +17,11 @@ extern char hex[];
 extern int sgarbf;		/* State of screen unknown */
 extern int mpresf;		/* Stuff in message line */
 
+extern short term_nrow;		/* Terminal rows, update on startup */
+extern short term_ncol;		/* Terminal columns, update on startup */
+extern short term_margin;	/* min margin for extended lines */
+extern short term_scrsiz;	/* size of scroll region */
+
 extern int ttrow;		/* Row location of HW cursor */
 extern int ttcol;		/* Column location of HW cursor */
 extern int vtrow;		/* Row location of SW cursor */

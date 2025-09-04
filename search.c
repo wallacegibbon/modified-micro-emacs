@@ -137,7 +137,7 @@ qprompt:
 	case 0x07: /* ASCII code of ^G is 0x07 ('\a') */
 		goto finish;
 	default:
-		TTbeep();
+		ansibeep();
 		mlwrite("(SPACE)Ok, (N)ext, (!)All, (^G)Done");
 		goto qprompt;
 	}

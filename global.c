@@ -12,6 +12,11 @@ int kbdrep;			/* number of repetitions */
 int sgarbf = TRUE;		/* TRUE if screen is garbage */
 int mpresf = FALSE;		/* TRUE if message in last line */
 
+short term_nrow = 24;		/* Terminal rows, update on startup */
+short term_ncol = 80;		/* Terminal columns, update on startup */
+short term_margin = 8;		/* min margin for extended lines */
+short term_scrsiz = 64;		/* size of scroll region */
+
 int ttrow = HUGE;		/* Row location of HW cursor */
 int ttcol = HUGE;		/* Column location of HW cursor */
 int vtrow;			/* Row location of SW cursor */

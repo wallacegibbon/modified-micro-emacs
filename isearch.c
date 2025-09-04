@@ -37,10 +37,10 @@ start_over:
 	/* When ^S or ^R again, load the pattern and do a search */
 	if (pat[0] != '\0' && (c == IS_FORWARD || c == IS_REVERSE)) {
 		for (cpos = 0; pat[cpos] != '\0'; ++cpos) {
-			movecursor(term.t_nrow, col);
-			col += put_c(pat[cpos], TTputc);
+			movecursor(term_nrow, col);
+			col += put_c(pat[cpos], ttputc);
 		}
-		TTflush();
+		ttflush();
 		n = (c == IS_REVERSE) ? -1 : 1;
 		status = search_next_dispatch(pat, n);
 		c = ectoc(expc = get_char());
@@ -93,17 +93,17 @@ char_loop:
 pat_append:
 	pat[cpos++] = c;
 	pat[cpos] = '\0';
-	movecursor(term.t_nrow, col);
-	col += put_c(c, TTputc);
-	TTflush();
+	movecursor(term_nrow, col);
+	col += put_c(c, ttputc);
+	ttflush();
 	if (cpos >= NPAT - 1) {
 		mlwrite("Search string too long");
 		return TRUE;
 	}
 	/* If we lost on last char, no more check is needed */
 	if (!status) {
-		TTputc(BELL);
-		TTflush();
+		ttputc(BELL);
+		ttflush();
 		c = ectoc(expc = get_char());
 		goto char_loop;
 	}
@@ -144,8 +144,8 @@ static int search_next_dispatch(char *pattern, int dir)
 		status = search_next(pattern, FORWARD, PTEND);
 	}
 	if (!status) {
-		TTputc(BELL);
-		TTflush();
+		ttputc(BELL);
+		ttflush();
 	}
 	return status;
 }

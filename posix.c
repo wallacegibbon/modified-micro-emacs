@@ -48,6 +48,13 @@ void ttputc(int c)
 	fputc(c, stdout);
 }
 
+void ttputs(char *str)
+{
+	int c;
+	while ((c = *str++))
+		ttputc(c);
+}
+
 int ttgetc(void)
 {
 	static unsigned char buf[32];
@@ -76,13 +83,13 @@ void ttflush(void)
 
 static char is_suspended = 0;
 
-/* CONT signal is catchable, but we can not call `TTopen` twice. */
+/* CONT signal is catchable, but we can not call `ansiopen` twice. */
 static void continue_handler(int signum)
 {
 	if (!is_suspended)
 		return;
 	is_suspended = 0;
-	TTopen();
+	ansiopen();
 	sgarbf = TRUE;
 	update(TRUE);
 }
@@ -91,8 +98,8 @@ static void suspend_handler(int signum)
 {
 	is_suspended = 1;
 	mlerase();
-	TTflush();
-	TTclose();
+	ttflush();
+	ansiclose();
 	kill(0, SIGSTOP);
 }
 

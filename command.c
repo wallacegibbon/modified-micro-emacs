@@ -550,8 +550,8 @@ int spawncli(int f, int n)
 	char *cp, command_buf[16];
 	int r;
 
-	TTflush();
-	TTclose();
+	ttflush();
+	ansiclose();
 	if ((cp = getenv("SHELL")) == NULL || *cp == '\0')
 		cp = "sh";
 
@@ -559,7 +559,7 @@ int spawncli(int f, int n)
 	r = system(command_buf);
 
 	sgarbf = TRUE;
-	TTopen();
+	ansiopen();
 	update(TRUE);
 	if (r == 0)
 		return TRUE;
@@ -617,7 +617,7 @@ called as a routine, to do general aborting of stuff.
 */
 int ctrlg(int f, int n)
 {
-	TTbeep();
+	ansibeep();
 	kbdmode = STOP;
 	mlwrite("Aborted");
 	return ABORT;
@@ -626,7 +626,7 @@ int ctrlg(int f, int n)
 /* Tell the user that this command is illegal in read-only mode. */
 int rdonly(void)
 {
-	TTbeep();
+	ansibeep();
 	mlwrite("Illegal in read-only mode");
 	return FALSE;
 }

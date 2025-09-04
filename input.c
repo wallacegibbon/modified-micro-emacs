@@ -1,3 +1,5 @@
+/* ANSI terminal is expected for Ctrl keys.  (e.g ^A is expected to be 1) */
+
 #include "me.h"
 
 /*
@@ -30,13 +32,13 @@ int tgetc(void)
 			return (int)*kbdptr++;
 		}
 	}
-	c = TTgetc();
+	c = ttgetc();
 	if (kbdmode == RECORD) {
 		*kbdptr++ = c;
 		kbdend = kbdptr;
 		if (kbdptr == &kbdm[NKBDM - 1]) {
 			kbdmode = STOP;
-			TTbeep();
+			ansibeep();
 		}
 	}
 	return c;
@@ -111,7 +113,7 @@ int mlgetstring(char *buf, int nbuf, int eolchar, const char *fmt, ...)
 	buf[0] = '\0';
 
 char_loop:
-	TTflush();
+	ttflush();
 	c = ectoc(expc = get1key());
 	if (expc == eolchar)
 		goto normal_exit;
@@ -133,7 +135,7 @@ char_loop:
 char_append:
 	buf[cpos++] = c;
 	buf[cpos] = '\0';
-	ttcol += put_c(c, TTputc);
+	ttcol += put_c(c, ttputc);
 	if (cpos < nbuf - 1)
 		goto char_loop;
 

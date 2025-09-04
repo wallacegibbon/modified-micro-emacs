@@ -108,7 +108,7 @@ int onlywind(int f, int n)
 
 	curwp->w_linep = lp1;
 	curwp->w_toprow = 0;
-	curwp->w_ntrows = term.t_nrow - 1;
+	curwp->w_ntrows = term_nrow - 1;
 	curwp->w_flag |= WFMODE | WFHARD;
 	return TRUE;
 }

@@ -33,17 +33,6 @@
 #define malloc		allocate
 #define free		release
 
-#define TTopen		(term.t_open)
-#define TTclose		(term.t_close)
-#define TTgetc		(term.t_getchar)
-#define TTputc		(term.t_putchar)
-#define TTflush		(term.t_flush)
-#define TTmove		(term.t_move)
-#define TTeeol		(term.t_eeol)
-#define TTeeop		(term.t_eeop)
-#define TTbeep		(term.t_beep)
-#define TTrev		(term.t_rev)
-
 static inline int ensure_lower(int c)
 {
 	return isupper(c) ? c ^ DIFCASE : c;
@@ -154,12 +143,22 @@ int next_col(int col, unsigned char c);
 void ttopen(void);
 void ttclose(void);
 void ttflush(void);
-void ttputc(int c);
 int ttgetc(void);
+void ttputc(int c);
+void ttputs(char *str);
 void bind_exithandler(void (*fn)(int));
 
 /* unix.c */
 void getscreensize(int *widthp, int *heightp);
+
+/* ansi.c */
+void ansiopen(void);
+void ansiclose(void);
+void ansimove(int, int);
+void ansieeol(void);
+void ansieeop(void);
+void ansibeep(void);
+void ansirev(int);
 
 /* input.c */
 int mlyesno(char *prompt);
