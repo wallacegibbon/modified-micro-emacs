@@ -48,38 +48,22 @@ int get1key(void)
 	return ctoec(tgetc());
 }
 
-/*
-Drop CSI arguments and return the CSI command char.
-Escape sequences are messes of `CSI`(\033[), `SS3`(\033O), ... etc.
-We only handle a tiny subset of them to support mouse/touchpad scrolling.
-*/
-static int csi_drop_args(void)
-{
-	int c;
-	do { c = get1key(); }
-	while (isdigit(c) || c == ';');
-	return c;
-}
-
 /* Get a command from the keyboard.  Escape key is ignored (except for CSI) */
 int getcmd(void)
 {
 	int cmask = 0, c;
 	c = get1key();
+
+	/* What we want to do with ESCAPE (and CSI, SS3) is ignoring it. */
 	if (c == ESCAPEC) {
 escape_loop:
 		c = get1key();
 		if (c == ESCAPEC)
 			goto escape_loop;
 		if (c == '[' || c == 'O') {
-			switch (csi_drop_args()) {
-			case 'A':
-				return CTL | 'P';
-			case 'B':
-				return CTL | 'N';
-			default:
-				return NULLPROC_KEY;
-			}
+			do { c = get1key(); }
+			while (isdigit(c) || c == ';');
+			return NULLPROC_KEY;
 		}
 	}
 	if (c == CTLXC && cmask == 0) {
