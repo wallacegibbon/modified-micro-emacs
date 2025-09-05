@@ -5,7 +5,7 @@ Backward character ....      ^B         Forward character .....      ^F
 Previous line .........      ^P         Next line .............      ^N
 Beginning of line .....      ^A         End of line ...........      ^E
 Previous page .........      ^Z         Next page .............      ^V
-Beginning of file .....   ^X  ,         End of file ...........   ^X  .
+Beginning of buffer ...   ^X  ,         End of buffer .........   ^X  .
 Goto line .............   ^X  G
 
 -------------------------------------------------------------------------------
@@ -19,7 +19,8 @@ Yank ..................      ^Y         Copy region ...........   ^X  J
                         SEARCHING AND REPLACING
 -------------------------------------------------------------------------------
 Incremental search ....      ^S         Reverse incsearch .....      ^R
-Query replace string ..   ^X  R         Clear Replace Buffer ..   ^X  D
+Query replace string ..   ^X  R
+Toggle Exact Search ...   ^X ^A         Clear Replace Buffer ..   ^X ^D
 
 -------------------------------------------------------------------------------
                         WINDOW COMMANDS
@@ -55,6 +56,6 @@ Redraw display ........      ^L         Sub shell .............   ^X  C
 Quick exit ............   ^X ^Z         Exit emacs ............   ^X ^C
 
 -------------------------------------------------------------------------------
-                        FIXED KEYS
+                        SPECIAL KEYS
 -------------------------------------------------------------------------------
 Universal argument ....      ^U

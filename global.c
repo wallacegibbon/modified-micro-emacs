@@ -53,3 +53,5 @@ int lastflag;			/* Flags, last command */
 
 char pat[NPAT];			/* Search pattern */
 char rpat[NPAT];		/* Replacement pattern */
+
+char exact_search = 0;		/* Do case sensitive search */

@@ -509,6 +509,8 @@ static void modeline(struct window *wp)
 	vtmove(n, 0);
 
 	vtputs(wp == curwp ? "@" : " ");
+	vtputs(exact_search ? "E " : "  ");
+
 	if (bp->b_flag & BFCHG)
 		vtputs(bp->b_flag & BFRDONLY ? "%* " : "** ");
 	else

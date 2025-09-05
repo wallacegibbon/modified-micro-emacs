@@ -59,7 +59,7 @@ extern int lastflag;		/* Flags, last command */
 extern char pat[];		/* Search pattern. */
 extern char rpat[];		/* Replacement pattern. */
 
-extern struct terminal term;
+extern char exact_search;	/* Do case sensitive search */
 
 extern int reeat_char;
 

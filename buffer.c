@@ -57,7 +57,7 @@ int nextbuffer(int f, int n)
 	return swbuffer(bp);
 }
 
-int bufrdonly(int f, int n)
+int toggle_rdonly(int f, int n)
 {
 	if (curwp->w_bufp->b_flag & BFRDONLY)
 		curwp->w_bufp->b_flag &= ~BFRDONLY;

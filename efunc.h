@@ -72,7 +72,7 @@ static inline void wstate_copy(struct window *wp, struct window *wp2)
 int nextbuffer(int f, int n);
 int swbuffer(struct buffer *bp);
 int zotbuf(struct buffer *bp);
-int bufrdonly(int f, int n);
+int toggle_rdonly(int f, int n);
 void e_ltoa(char *buf, int width, long num);
 int anycb(void);
 int bclear(struct buffer *bp);
@@ -186,6 +186,7 @@ int ffputline(char *buf, int nbuf);
 int ffgetline(int *count);
 
 /* search.c */
+int toggle_exact_search(int f, int n);
 int search_next(const char *pattern, int direct, int beg_or_end);
 int clear_rpat(int f, int n);
 int qreplace(int f, int n);

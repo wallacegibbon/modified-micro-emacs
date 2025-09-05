@@ -8,8 +8,22 @@ static int delins(int dlength, char *instr, int use_meta);
 /* "bc" comes from the buffer, "pc" from the pattern. */
 static inline int eq(unsigned char bc, unsigned char pc)
 {
-	/* return bc == pc; */
-	return ensure_upper(bc) == ensure_upper(pc);
+	if (!exact_search)
+		return ensure_upper(bc) == ensure_upper(pc);
+	else
+		return bc == pc;
+}
+
+/* Switch between case-sensitive and case-insensitive. */
+int toggle_exact_search(int f, int n)
+{
+	struct window *wp;
+
+	exact_search = !exact_search;
+	for_each_wind(wp)
+		curwp->w_flag |= WFMODE;
+
+	return TRUE;
 }
 
 /*
