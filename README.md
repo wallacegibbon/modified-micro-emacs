@@ -1,6 +1,6 @@
 ## Introduction
 
-This is a tiny Emacs-like editor modified from [uEmacs/PK 4.0][uemacs/pk],
+This is a tiny terminal editor modified from [uEmacs/PK 4.0][uemacs/pk],
 I call it **M**dified Micro **E**macs (`me`).
 
 The script engine is removed.  Concepts like `paragraph` and `word` are also
@@ -9,12 +9,12 @@ removed.
 ANSI CSI control sequences is used directly.  We don't need extra libraries
 (like `libncurses`) to run this program.
 
-Meta prefixed key bindings are removed.  Ctrl is enough for this program.
+Meta prefixed key bindings are removed.  Ctrl is enough for everything.
 
 UTF-8 support got removed and binary data is supported.
 
-It is recommended to use a keyboard remapper like [this one][key remapper] to
-map `White Space` to `Ctrl` when holding it.
+A keyboard remapper like [this one][key remapper] is recommended to map `Space`
+to `Ctrl` when holding it.
 
 
 ## Build and Install
@@ -28,7 +28,7 @@ make -j
 To build on non-POSIX systems: (not supported yet)
 
 ```sh
-make -j PLATFORM_OBJS=unimplemented-non-posix.o
+make -j PLATFORM_OBJS=nonposix.o
 ```
 
 Install:
@@ -40,7 +40,7 @@ sudo make install
 To change the installation path:
 
 ```sh
-sudo make install BIN_PATH=/usr/local/bin
+sudo make install BIN=/usr/local/bin
 ```
 
 
@@ -65,18 +65,18 @@ sudo update-alternatives --set editor /usr/bin/me
 
 ## Debug
 
-There is a program `showkeys` for getting raw input from terminal in the same
+There is a program `showkey` for getting raw input from terminal in the same
 way as `me`.
 
 Build:
 
 ```sh
-make showkeys
+make showkey
 ```
 
 Run:
 ```sh
-./showkeys
+./showkey
 ```
 
 [uemacs/pk]: https://github.com/torvalds/uemacs
