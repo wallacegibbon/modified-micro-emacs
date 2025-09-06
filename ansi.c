@@ -10,26 +10,9 @@ static inline void ascr_end(void) /* Not ANSI, but widely supported */
 	ttputs("\033[?1049l");
 }
 
-static inline int ansi_compatible(const char *name)
-{
-	return !strncmp(name, "vt100", 5) ||
-		!strncmp(name, "xterm", 5) ||
-		!strncmp(name, "linux", 5);
-}
-
 void ansiopen(void)
 {
 	int cols, rows;
-	char *cp;
-
-	if ((cp = getenv("TERM")) == NULL) {
-		fputs("Shell variable TERM not defined!", stderr);
-		return;
-	}
-	if (!ansi_compatible(cp)) {
-		fputs("Terminal type not ANSI-compatible!", stderr);
-		return;
-	}
 
 	getscreensize(&cols, &rows);
 	term_nrow = atleast(rows - 1, SCR_MIN_ROWS - 1);
