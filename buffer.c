@@ -70,7 +70,7 @@ int toggle_rdonly(int f, int n)
 /* Kill the buffer pointed to by bp, and update bheadp when necessary. */
 int zotbuf(struct buffer *bp)
 {
-	struct buffer **bpp = &bheadp;
+	struct buffer **bpp = &bheadp, *b;
 
 	if (bp->b_nwnd != 0) {
 		mlwrite("Buffer is being displayed");
@@ -82,8 +82,8 @@ int zotbuf(struct buffer *bp)
 	free(bp->b_linep);
 
 	/* Unlink bp from the buffer chain */
-	while (*bpp != bp)
-		bpp = &(*bpp)->b_bufp;
+	while ((b = *bpp) != bp)
+		bpp = &b->b_bufp;
 
 	*bpp = bp->b_bufp;
 

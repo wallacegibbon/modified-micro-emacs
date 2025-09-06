@@ -2,9 +2,9 @@
 
 static void insert_window_before(struct window *wp, struct window *newwp)
 {
-	struct window **wpp = &wheadp;
-	while (*wpp != wp)
-		wpp = &(*wpp)->w_wndp;
+	struct window **wpp = &wheadp, *w;
+	while ((w = *wpp) != wp)
+		wpp = &w->w_wndp;
 
 	*wpp = newwp;
 	newwp->w_wndp = wp;
