@@ -90,7 +90,6 @@ static void continue_handler(int signum)
 		return;
 	is_suspended = 0;
 	ansiopen();
-	sgarbf = TRUE;
 	update(TRUE);
 }
 

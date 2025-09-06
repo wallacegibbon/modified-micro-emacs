@@ -209,7 +209,7 @@ int update(int force)
 	update_pos();
 	update_de_extend();
 
-	if (sgarbf != FALSE)
+	if (sgarbf)
 		update_garbage();
 
 	flush_to_physcr();
