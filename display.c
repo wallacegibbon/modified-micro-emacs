@@ -48,8 +48,8 @@ static struct video *video_new(size_t text_size)
 
 static void screen_init(void)
 {
-	int i, failflag = 0;
 	char *mlbuf_old;
+	int i;
 
 	display_ok = 0;
 
@@ -60,12 +60,10 @@ static void screen_init(void)
 
 	for (i = 0; i < term_nrow; ++i) {
 		if ((vscreen[i] = video_new(term_ncol)) == NULL)
-			failflag = 1;
+			goto fail2;
 		if ((pscreen[i] = video_new(term_ncol)) == NULL)
-			failflag = 1;
+			goto fail2;
 	}
-	if (failflag)
-		goto fail2;
 
 	mlbuf_old = mlbuf;
 	mlbuf_size = term_ncol + 1;
