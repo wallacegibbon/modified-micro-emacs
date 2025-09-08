@@ -34,7 +34,6 @@ static int mlflush(void);
 static struct video **vscreen;	/* Virtual screen. */
 static struct video **pscreen;	/* Physical screen. */
 static char *mlbuf = NULL;	/* Message line buffer */
-static size_t mlbuf_size = 0;
 
 static struct video *video_new(size_t text_size)
 {
@@ -46,10 +45,16 @@ static struct video *video_new(size_t text_size)
 	return vp;
 }
 
-static void screen_init(void)
+void vtinit(void)
 {
-	char *mlbuf_old;
 	int i;
+
+	/*
+	ansiopen is not related to this file directly. it is called here simply
+	because vtinit handles all terminal initialization related stuff.
+	*/
+	ansiopen();
+	ansirev(FALSE);
 
 	display_ok = 0;
 
@@ -65,18 +70,10 @@ static void screen_init(void)
 			goto fail2;
 	}
 
-	mlbuf_old = mlbuf;
-	mlbuf_size = term_ncol + 1;
-	if ((mlbuf = malloc(mlbuf_size)) == NULL)
+	if ((mlbuf = malloc(term_ncol + 1)) == NULL)
 		goto fail2;
 
-	if (mlbuf_old != NULL) {
-		strncpy_safe(mlbuf, mlbuf_old, mlbuf_size);
-		free(mlbuf_old);
-	} else {
-		mlbuf[0] = '\0';
-	}
-
+	mlbuf[0] = '\0';
 	display_ok = 1;
 	return;
 
@@ -91,29 +88,20 @@ fail1:
 	free(vscreen);
 }
 
-static void screen_deinit(void)
+void vtdeinit(void)
 {
 	int i;
+	if (!display_ok)
+		return;
+
 	display_ok = 0;
 	for (i = 0; i < term_nrow; ++i) {
 		free(pscreen[i]);
 		free(vscreen[i]);
 	}
+
 	free(pscreen);
 	free(vscreen);
-}
-
-void vtinit(void)
-{
-	ansiopen();
-	ansirev(FALSE);
-	screen_init();
-}
-
-void vtdeinit(void)
-{
-	screen_deinit();
-	/* mlbuf is not like screen lines, it keeps contents on resizing */
 	free(mlbuf);
 	ansiclose();
 }
@@ -579,7 +567,7 @@ int mlvwrite(const char *fmt, va_list ap)
 	if (mlbuf == NULL)
 		return 0;
 
-	vsnprintf(mlbuf, mlbuf_size, fmt, ap);
+	vsnprintf(mlbuf, term_ncol + 1, fmt, ap);
 	n = mlflush();
 
 	ttflush();
