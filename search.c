@@ -2,7 +2,6 @@
 
 static int readpattern(char *prompt, char *apat);
 static int nextch(struct line **pcurline, int *pcuroff, int dir);
-static int boundry(struct line *curline, int curoff, int dir);
 static int delins(int dlength, char *instr, int use_meta);
 
 /* "bc" comes from the buffer, "pc" from the pattern. */
@@ -39,13 +38,11 @@ int search_next(const char *pattern, int direct, int beg_or_end)
 
 	beg_or_end ^= direct;
 loop:
-	if (boundry(curline, curoff, direct))
-		return FALSE;
-
 	matchline = curline;
 	matchoff = curoff;
 
-	c = nextch(&curline, &curoff, direct);
+	if ((c = nextch(&curline, &curoff, direct)) == -1)
+		return FALSE;
 	if (!eq(c, pattern[0]))
 		goto loop;
 
@@ -54,7 +51,8 @@ loop:
 	patptr = pattern;
 
 	while (*++patptr != '\0') {
-		c = nextch(&scanline, &scanoff, direct);
+		if ((c = nextch(&scanline, &scanoff, direct)) == -1)
+			return FALSE;
 		if (!eq(c, *patptr))
 			goto loop;
 	}
@@ -173,26 +171,16 @@ finish:
 	return TRUE;
 }
 
-/*
-Return information depending on whether we may search no further.
-Beginning of file and end of file are the obvious cases.
-*/
-static int boundry(struct line *curline, int curoff, int dir)
-{
-	if (dir == FORWARD)
-		return (curoff == curline->l_used) &&
-			(curline->l_fp == curwp->w_bufp->b_linep);
-	else
-		return (curoff == 0) &&
-			(curline->l_bp == curwp->w_bufp->b_linep);
-}
-
+/* Return -1 when it hits the boundry (start of buffer or end of buffer) */
 static int nextch(struct line **pcurline, int *pcuroff, int dir)
 {
+	struct line *b_linep = curwp->w_bufp->b_linep;
 	struct line *curline = *pcurline;
 	int curoff = *pcuroff, c;
 
 	if (dir == FORWARD) {
+		if (curline == b_linep)
+			return -1;
 		if (curoff == curline->l_used) {
 			curline = curline->l_fp;
 			curoff = 0;
@@ -202,13 +190,14 @@ static int nextch(struct line **pcurline, int *pcuroff, int dir)
 		}
 	} else {
 		if (curoff == 0) {
+			if (curline->l_bp == b_linep)
+				return -1;
 			curline = curline->l_bp;
 			curoff = curline->l_used;
 			c = '\n';
 		} else {
 			c = curline->l_text[--curoff];
 		}
-
 	}
 	*pcurline = curline;
 	*pcuroff = curoff;
