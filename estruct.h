@@ -1,14 +1,14 @@
 #ifndef __ESTRUCT_H
 #define __ESTRUCT_H
 
-#define VISMAC		0	/* update display during keyboard macros */
+#define VISMAC		0	/* Update display during keyboard macros */
 
 #define NFILEN		256	/* # of bytes, file name */
 #define NSTRING		128	/* # of bytes, string buffers */
 #define NKBDM		256	/* # of strokes, keyboard macro */
 #define NPAT		64	/* # of bytes, pattern */
 
-#define KBLOCK		256	/* sizeof kill buffer chunks */
+#define KBLOCK		256	/* Size of kill buffer chunks */
 
 #define HUGE		1000	/* Huge number */
 
@@ -26,16 +26,16 @@
 #define TRUE		1	/* True, yes, good, etc. */
 
 #define ABORT		2	/* Death, ^G, abort, etc. */
-#define FAILED		3	/* not-quite fatal false return */
+#define FAILED		3	/* Not quite fatal false return */
 
-#define STOP		0	/* keyboard macro not in use */
-#define PLAY		1	/* playing */
-#define RECORD		2	/* recording */
+#define STOP		0	/* Keyboard macro not in use */
+#define PLAY		1	/* Playing */
+#define RECORD		2	/* Recording */
 
 #define PTBEG		0	/* Leave the point at the beginning */
 #define PTEND		1	/* Leave the point at the end */
-#define FORWARD		0	/* forward direction */
-#define REVERSE		1	/* backwards direction */
+#define FORWARD		0	/* Forward direction */
+#define REVERSE		1	/* Backwards direction */
 
 #define FIOSUC		0	/* File I/O, success. */
 #define FIOFNF		1	/* File I/O, file not found. */
@@ -65,16 +65,16 @@ typedef struct e_Buffer e_Buffer;
 struct e_Buffer {
 	e_Buffer *b_bufp;	/* Link to the next buffer */
 	e_Line *b_linep;	/* Link to the header line */
-	e_Line *b_dotp;		/* Link to "." line */
-	e_Line *b_markp;	/* The same as the above two, */
-	int b_doto;		/* Offset of "." in above e_Line */
-	int b_marko;		/* but for the "mark" */
+	e_Line *b_dotp;		/* Line containing "." */
+	e_Line *b_markp;	/* Line containing "mark" */
+	int b_doto;		/* Offset of "." */
+	int b_marko;		/* Offset of "mark" */
 	char b_nwnd;		/* Count of windows on buffer */
 	char b_flag;		/* Flags */
 	char b_fname[NFILEN];	/* File name */
 };
 
-#define BFACTIVE	0x01	/* window activated flag */
+#define BFACTIVE	0x01	/* Window activated flag */
 #define BFCHG   	0x02	/* Changed since last write */
 #define BFTRUNC		0x04	/* Buffer was truncated when read */
 #define BFRDONLY	0x08	/* Buffer is readonly */
@@ -87,9 +87,9 @@ struct e_Window {
 	e_Line *w_linep;	/* Link to the top line in the window */
 	e_Line *w_dotp;		/* Line containing "." */
 	e_Line *w_markp;	/* Line containing "mark" */
-	int w_doto;		/* Byte offset for "." */
-	int w_marko;		/* Byte offset for "mark" */
-	int w_toprow;		/* row of window (physical screen) */
+	int w_doto;		/* Offset of "." */
+	int w_marko;		/* Offset of "mark" */
+	int w_toprow;		/* Row of window (physical screen) */
 	int w_ntrows;		/* # of rows of text in window */
 	char w_force;		/* If NZ, forcing row. */
 	char w_flag;		/* Flags. */
@@ -109,23 +109,18 @@ struct e_Region {
 	long r_size;		/* Length in characters. */
 };
 
-typedef struct e_KeyBind e_KeyBind;
-
-struct e_KeyBind {
-	int k_code;
-	int (*fn)(int, int);
-};
-
-/*
-The kill buffer is logically a stream of ascii characters.  `d_` prefix is for
-"deleted" text, as `k_` was taken up by the keycode.
-*/
-
 typedef struct e_Kill e_Kill;
 
 struct e_Kill {
-	e_Kill *d_next;		/* Link to next chunk, NULL if last. */
-	char d_chunk[KBLOCK];	/* Text. */
+	e_Kill *k_next;		/* Link to next chunk, NULL if last. */
+	char k_chunk[KBLOCK];	/* Text. */
+};
+
+typedef struct e_KeyBind e_KeyBind;
+
+struct e_KeyBind {
+	int code;
+	int (*fn)(int, int);
 };
 
 #define CMDBUFLEN	256	/* Length of our command buffer */
@@ -138,6 +133,6 @@ struct e_Kill {
 
 #define TABMASK		0x07
 
-#define NULLPROC_KEY	1	/* should be less than 0x20 */
+#define NULLPROC_KEY	1	/* Should be less than 0x20 */
 
 #endif

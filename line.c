@@ -459,8 +459,8 @@ int linsert_kbuf(void)
 	int n;
 
 	for_each_kbuf(kp) {
-		n = kp->d_next == NULL ? kused : KBLOCK;
-		sp = kp->d_chunk;
+		n = kp->k_next == NULL ? kused : KBLOCK;
+		sp = kp->k_chunk;
 		while (n--) {
 			if (linsert(1, *sp++) == FALSE)
 				return FALSE;
@@ -478,15 +478,15 @@ int kinsert(int c)
 	if (kused >= KBLOCK) {
 		if ((nchunk = malloc(sizeof(e_Kill))) == NULL)
 			return FALSE;
-		if (kbufh == NULL)
-			kbufh = nchunk;
+		if (kheadp == NULL)
+			kheadp = nchunk;
 		if (kbufp != NULL)
-			kbufp->d_next = nchunk;
+			kbufp->k_next = nchunk;
 		kbufp = nchunk;
-		kbufp->d_next = NULL;
+		kbufp->k_next = NULL;
 		kused = 0;
 	}
-	kbufp->d_chunk[kused++] = c;
+	kbufp->k_chunk[kused++] = c;
 	return TRUE;
 }
 
@@ -499,16 +499,16 @@ void kdelete(void)
 {
 	e_Kill *kp;
 
-	if (kbufh == NULL)
+	if (kheadp == NULL)
 		return;
 
-	for (kbufp = kbufh; kbufp != NULL; kbufp = kp) {
-		kp = kbufp->d_next;
+	for (kbufp = kheadp; kbufp != NULL; kbufp = kp) {
+		kp = kbufp->k_next;
 		free(kbufp);
 	}
 
 	/* Reset all the kill buffer pointers */
-	kbufh = NULL;
+	kheadp = NULL;
 	kbufp = NULL;
 	kused = KBLOCK;
 }

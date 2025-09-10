@@ -3,14 +3,14 @@
 
 #include "estruct.h"
 
-extern e_KeyBind bindings[];	/* key to function table */
+extern e_KeyBind bindings[];	/* Key to function table */
 
 extern int kbdm[];		/* Holds keyboard macro data */
 
-extern int *kbdptr;		/* current position in keyboard buf */
-extern int *kbdend;		/* ptr to end of the keyboard */
-extern int kbdmode;		/* current keyboard macro mode */
-extern int kbdrep;		/* number of repetitions */
+extern int *kbdptr;		/* Current position in keyboard buf */
+extern int *kbdend;		/* Ptr to end of the keyboard */
+extern int kbdmode;		/* Current keyboard macro mode */
+extern int kbdrep;		/* Number of repetitions */
 
 extern char hex[];
 
@@ -19,8 +19,8 @@ extern int mpresf;		/* Stuff in message line */
 
 extern short term_nrow;		/* Terminal rows, update on startup */
 extern short term_ncol;		/* Terminal columns, update on startup */
-extern short term_margin;	/* min margin for extended lines */
-extern short term_scrsiz;	/* size of scroll region */
+extern short term_margin;	/* Min margin for extended lines */
+extern short term_scrsiz;	/* Size of scroll region */
 
 extern int ttrow;		/* Row location of HW cursor */
 extern int ttcol;		/* Column location of HW cursor */
@@ -32,21 +32,21 @@ extern int display_ok;		/* Display resources is ready or not */
 extern int currow;		/* Cursor row */
 extern int curcol;		/* Cursor column */
 
-extern int lbound;		/* leftmost column of current line displayed */
-extern int taboff;		/* tab offset for display */
+extern int lbound;		/* Leftmost column of current line displayed */
+extern int taboff;		/* Tab offset for display */
 
-extern e_Kill *kbufp;	/* current kill buffer chunk pointer */
-extern e_Kill *kbufh;	/* kill buffer header pointer */
+extern e_Kill *kbufp;		/* Current kill buffer chunk pointer */
+extern e_Kill *kheadp;		/* Head of kill buffer chunks */
 extern int kused;		/* # of bytes used in KB */
 
 extern long envram;		/* # of bytes current in use by malloc */
 
-extern char *fline;		/* dynamic return line */
-extern int flen;		/* current length of fline */
+extern char *fline;		/* Dynamic return line */
+extern int flen;		/* Current length of fline */
 
-extern int scrollcount;		/* number of lines to scroll */
+extern int scrollcount;		/* Number of lines to scroll */
 
-extern e_Window *curwp;	/* Current window */
+extern e_Window *curwp;		/* Current window */
 
 extern e_Window *wheadp;	/* Head of list of windows */
 extern e_Buffer *bheadp;	/* Head of list of buffers */

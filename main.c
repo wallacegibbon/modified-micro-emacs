@@ -100,7 +100,7 @@ static int (*getbind(int c))(int, int)
 	e_KeyBind *p = bindings;
 
 	while (p->fn != NULL) {
-		if (p->k_code == c)
+		if (p->code == c)
 			return p->fn;
 		++p;
 	}
@@ -210,5 +210,5 @@ static void cleanup(void)
 	vtdeinit();
 	wheadp = NULL;
 	bheadp = NULL;
-	kbufh = NULL;
+	kheadp = NULL;
 }

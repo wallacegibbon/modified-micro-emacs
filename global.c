@@ -4,18 +4,18 @@
 char hex[] = "0123456789ABCDEF";
 
 int kbdm[NKBDM];		/* Keyboard Macro */
-int *kbdptr;			/* current position in keyboard buf */
-int *kbdend = kbdm;		/* ptr to end of the keyboard */
-int kbdmode = STOP;		/* current keyboard macro mode */
-int kbdrep;			/* number of repetitions */
+int *kbdptr;			/* Current position in keyboard buf */
+int *kbdend = kbdm;		/* Ptr to end of the keyboard */
+int kbdmode = STOP;		/* Current keyboard macro mode */
+int kbdrep;			/* Number of repetitions */
 
 int sgarbf = TRUE;		/* TRUE if screen is garbage */
 int mpresf = FALSE;		/* TRUE if message in last line */
 
 short term_nrow = 24;		/* Terminal rows, update on startup */
 short term_ncol = 80;		/* Terminal columns, update on startup */
-short term_margin = 8;		/* min margin for extended lines */
-short term_scrsiz = 64;		/* size of scroll region */
+short term_margin = 8;		/* Min margin for extended lines */
+short term_scrsiz = 64;		/* Size of scroll region */
 
 int ttrow = HUGE;		/* Row location of HW cursor */
 int ttcol = HUGE;		/* Column location of HW cursor */
@@ -27,19 +27,19 @@ int display_ok = 0;		/* Display resources is ready or not */
 int currow;			/* Cursor row */
 int curcol;			/* Cursor column */
 
-int lbound;			/* leftmost column of current line being displayed */
-int taboff;			/* tab offset for display */
+int lbound;			/* Leftmost column of current line being displayed */
+int taboff;			/* Tab offset for display */
 
-e_Kill *kbufp;		/* current kill buffer chunk pointer */
-e_Kill *kbufh;		/* kill buffer header pointer */
+e_Kill *kbufp;			/* Current kill buffer chunk pointer */
+e_Kill *kheadp;			/* Head of kill buffer chunks */
 int kused = KBLOCK;		/* # of bytes used in kill buffer */
 
 long envram = 0;		/* # of bytes current in use by malloc */
 
-char *fline = NULL;		/* dynamic return line */
-int flen = 0;			/* current length of fline */
+char *fline = NULL;		/* Dynamic return line */
+int flen = 0;			/* Current length of fline */
 
-int scrollcount = 1;		/* number of lines to scroll */
+int scrollcount = 1;		/* Number of lines to scroll */
 
 e_Window *curwp;		/* Current window */
 

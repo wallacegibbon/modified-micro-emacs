@@ -13,7 +13,7 @@
 	for ((bp) = bheadp; (bp) != NULL; (bp) = (bp)->b_bufp)
 
 #define for_each_kbuf(kp) \
-	for ((kp) = kbufh; (kp) != NULL; (kp) = (kp)->d_next)
+	for ((kp) = kheadp; (kp) != NULL; (kp) = (kp)->k_next)
 
 #define atleast(n, limit) \
 	((n) > (limit) ? (n) : (limit))
