@@ -154,11 +154,11 @@ int ctlxlp(int f, int n);
 int ctlxrp(int f, int n);
 int ctlxe(int f, int n);
 int ctrlg(int f, int n);
-int rdonly(void);
+int suspend(int f, int n);
 int nullproc(int f, int n);
+int rdonly(void);
 
 /* main.c */
-int quickexit(int f, int n);
 int quit(int f, int n);
 
 /* display.c */
@@ -183,6 +183,7 @@ void ttflush(void);
 int ttgetc(void);
 void ttputc(int c);
 void ttputs(const char *str);
+void suspend_self(void);
 void bind_exithandler(void (*fn)(int));
 
 /* unix.c */

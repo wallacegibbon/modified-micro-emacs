@@ -544,30 +544,6 @@ int upperregion(int f, int n)
 	return toggle_region_case('a', 'z');
 }
 
-/* Create a subjob with a copy of the command intrepreter in it. */
-int spawncli(int f, int n)
-{
-	char *cp, command_buf[16];
-	int r;
-
-	ttflush();
-	ansiclose();
-	if ((cp = getenv("SHELL")) == NULL || *cp == '\0')
-		cp = "sh";
-
-	snprintf(command_buf, 16, "exec %s", cp);
-	r = system(command_buf);
-
-	sgarbf = TRUE;
-	ansiopen();
-	update(TRUE);
-	if (r == 0)
-		return TRUE;
-
-	mlwrite("Failed starting subshell");
-	return FALSE;
-}
-
 /* Begin a keyboard macro. */
 int ctlxlp(int f, int n)
 {
@@ -623,15 +599,22 @@ int ctrlg(int f, int n)
 	return ABORT;
 }
 
-/* Tell the user that this command is illegal in read-only mode. */
-int rdonly(void)
+int suspend(int f, int n)
 {
-	ansibeep();
-	mlwrite("Illegal in read-only mode");
-	return FALSE;
+	suspend_self();
+	return TRUE;
 }
 
 int nullproc(int f, int n)
 {
 	return TRUE;
+}
+
+/* Non command helper functions */
+
+int rdonly(void)
+{
+	ansibeep();
+	mlwrite("Illegal in read-only mode");
+	return FALSE;
 }

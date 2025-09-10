@@ -100,6 +100,11 @@ static void suspend_handler(int signum)
 	kill(0, SIGSTOP);
 }
 
+void suspend_self(void)
+{
+	kill(0, SIGTSTP);
+}
+
 void bind_exithandler(void (*fn)(int))
 {
 	signal(SIGHUP, fn);

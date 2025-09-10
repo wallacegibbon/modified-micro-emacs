@@ -16,4 +16,3 @@ int main(void)
 
 /* for simpler Makefile */
 int quit(int f, int n) { return TRUE; }
-int quickexit(int f, int n) { return TRUE; }

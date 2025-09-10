@@ -52,8 +52,8 @@ Case region upper .....   ^X  U         Case region lower .....   ^X  L
 Set mark ..............   ^X  M         Exchange point and mark   ^X ^X
 Newline and indent ....      ^J         Quote character .......      ^Q
 Show line pos, etc. ...   ^X  ?         Abort command .........      ^G
-Redraw display ........      ^L         Sub shell .............   ^X  C
-Quick exit ............   ^X ^Z         Exit emacs ............   ^X ^C
+Redraw display ........      ^L
+Suspend ...............   ^X ^Z         Exit ..................   ^X ^C
 
 -------------------------------------------------------------------------------
                         SPECIAL KEYS

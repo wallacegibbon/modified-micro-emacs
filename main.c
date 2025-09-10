@@ -163,12 +163,6 @@ static void save_buffers(void)
 	}
 }
 
-int quickexit(int f, int n)
-{
-	save_buffers();
-	return quit(f, n);
-}
-
 static void emergencyexit(int unused)
 {
 	save_buffers();

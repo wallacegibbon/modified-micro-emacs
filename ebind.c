@@ -31,7 +31,6 @@ e_KeyBind bindings[] = {
 	{ CTLX | '1', onlywind },
 	{ CTLX | '2', splitwind },
 	{ CTLX | '?', show_misc_info },
-	{ CTLX | 'C', spawncli },
 	{ CTLX | 'E', ctlxe },
 	{ CTLX | 'G', gotoline },
 	{ CTLX | 'J', copyregion },
@@ -52,7 +51,7 @@ e_KeyBind bindings[] = {
 	{ CTLX | CTL | 'S', filesave },
 	{ CTLX | CTL | 'W', filewrite },
 	{ CTLX | CTL | 'X', swapmark },
-	{ CTLX | CTL | 'Z', quickexit },
+	{ CTLX | CTL | 'Z', suspend },
 
 	{ 0, NULL }
 };
