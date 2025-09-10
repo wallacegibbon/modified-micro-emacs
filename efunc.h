@@ -145,7 +145,7 @@ void ttclose(void);
 void ttflush(void);
 int ttgetc(void);
 void ttputc(int c);
-void ttputs(char *str);
+void ttputs(const char *str);
 void bind_exithandler(void (*fn)(int));
 
 /* unix.c */

@@ -133,10 +133,10 @@ static void vtputc(int c)
 	++vtcol;
 }
 
-static void vtputs(const char *s)
+static void vtputs(const char *str)
 {
 	int c;
-	while ((c = *s++) != '\0')
+	while ((c = *str++) != '\0')
 		vtputc(c);
 }
 

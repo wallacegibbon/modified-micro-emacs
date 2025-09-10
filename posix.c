@@ -48,10 +48,10 @@ void ttputc(int c)
 	fputc(c, stdout);
 }
 
-void ttputs(char *str)
+void ttputs(const char *str)
 {
 	int c;
-	while ((c = *str++))
+	while ((c = *str++) != '\0')
 		ttputc(c);
 }
 
