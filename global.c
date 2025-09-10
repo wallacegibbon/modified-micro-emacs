@@ -17,8 +17,8 @@ short term_ncol = 80;		/* Terminal columns, update on startup */
 short term_margin = 8;		/* Min margin for extended lines */
 short term_scrsiz = 64;		/* Size of scroll region */
 
-int ttrow = HUGE;		/* Row location of HW cursor */
-int ttcol = HUGE;		/* Column location of HW cursor */
+int ttrow;			/* Row location of HW cursor */
+int ttcol;			/* Column location of HW cursor */
 int vtrow;			/* Row location of SW cursor */
 int vtcol;			/* Column location of SW cursor */
 

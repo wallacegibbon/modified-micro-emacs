@@ -56,8 +56,8 @@ extern int curgoal;		/* Goal for C-P, C-N */
 extern int thisflag;		/* Flags, this command */
 extern int lastflag;		/* Flags, last command */
 
-extern char pat[];		/* Search pattern. */
-extern char rpat[];		/* Replacement pattern. */
+extern char pat[];		/* Search pattern */
+extern char rpat[];		/* Replacement pattern */
 
 extern char exact_search;	/* Do case sensitive search */
 
