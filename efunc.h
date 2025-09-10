@@ -43,7 +43,31 @@ static inline int ensure_upper(int c)
 	return islower(c) ? c ^ DIFCASE : c;
 }
 
-static inline void wstate_restore(struct window *wp, struct buffer *bp)
+static inline void line_insert(e_Line *lp, e_Line *lp_new)
+{
+	e_Line *tmp = lp->l_bp;
+
+	lp_new->l_bp = tmp;
+	lp_new->l_fp = lp;
+	tmp->l_fp = lp_new;
+	lp->l_bp = lp_new;
+}
+
+static inline void line_replace(e_Line *lp, e_Line *lp_new)
+{
+	lp->l_bp->l_fp = lp_new;
+	lp->l_fp->l_bp = lp_new;
+	lp_new->l_fp = lp->l_fp;
+	lp_new->l_bp = lp->l_bp;
+}
+
+static inline void line_unlink(e_Line *lp)
+{
+	lp->l_bp->l_fp = lp->l_fp;
+	lp->l_fp->l_bp = lp->l_bp;
+}
+
+static inline void wstate_restore(e_Window *wp, e_Buffer *bp)
 {
 	wp->w_dotp = bp->b_dotp;
 	wp->w_doto = bp->b_doto;
@@ -51,16 +75,16 @@ static inline void wstate_restore(struct window *wp, struct buffer *bp)
 	wp->w_marko = bp->b_marko;
 }
 
-static inline void wstate_save(struct window *wp)
+static inline void wstate_save(e_Window *wp)
 {
-	struct buffer *bp = wp->w_bufp;
+	e_Buffer *bp = wp->w_bufp;
 	bp->b_dotp = wp->w_dotp;
 	bp->b_doto = wp->w_doto;
 	bp->b_markp = wp->w_markp;
 	bp->b_marko = wp->w_marko;
 }
 
-static inline void wstate_copy(struct window *wp, struct window *wp2)
+static inline void wstate_copy(e_Window *wp, e_Window *wp2)
 {
 	wp->w_dotp = wp2->w_dotp;
 	wp->w_doto = wp2->w_doto;
@@ -68,15 +92,28 @@ static inline void wstate_copy(struct window *wp, struct window *wp2)
 	wp->w_marko = wp2->w_marko;
 }
 
+/* line.c */
+e_Line *lalloc(int);
+void lfree(e_Line *lp);
+int linstr(char *instr);
+int linsert(int n, int c);
+int ldelete(long n, int kflag);
+void lchange(int flag);
+int linsert_kbuf(void);
+
+/* Kill buffer functions */
+int kinsert(int c);
+void kdelete(void);
+
 /* buffer.c */
 int nextbuffer(int f, int n);
-int swbuffer(struct buffer *bp);
-int zotbuf(struct buffer *bp);
+int swbuffer(e_Buffer *bp);
+int zotbuf(e_Buffer *bp);
 int toggle_rdonly(int f, int n);
 void e_ltoa(char *buf, int width, long num);
 int anycb(void);
-int bclear(struct buffer *bp);
-struct buffer *bfind(char *bname, int cflag);
+int bclear(e_Buffer *bp);
+e_Buffer *bfind(char *bname, int cflag);
 
 /* window.c */
 int splitwind(int f, int n);
@@ -84,7 +121,7 @@ int onlywind(int f, int n);
 int redraw(int f, int n);
 int nextwind(int f, int n);
 int prevwind(int f, int n);
-void resetwind(struct window *wp);
+void resetwind(e_Window *wp);
 
 /* command.c */
 int forwchar(int f, int n);

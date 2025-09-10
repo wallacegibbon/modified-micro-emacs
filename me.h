@@ -3,7 +3,6 @@
 
 #include "efunc.h"
 #include "edef.h"
-#include "line.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

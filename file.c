@@ -6,7 +6,7 @@ buffer, read in the text, and switch to the new buffer.
 */
 int filefind(int f, int n)
 {
-	struct buffer *bp;
+	e_Buffer *bp;
 	char filename[NFILEN];
 	int s;
 
@@ -25,8 +25,8 @@ int filefind(int f, int n)
 /* Read file into the current buffer, blowing away any existing text. */
 int readin(char *filename)
 {
-	struct window *wp;
-	struct line *lp;
+	e_Window *wp;
+	e_Line *lp;
 	int nline = 0, nbytes, s;
 	char mesg[NSTRING];
 
@@ -87,7 +87,7 @@ Update the remembered file name and clear the buffer changed flag.
 */
 int filewrite(int f, int n)
 {
-	struct window *wp;
+	e_Window *wp;
 	char filename[NFILEN];
 	int s;
 
@@ -106,7 +106,7 @@ int filewrite(int f, int n)
 
 int filesave(int f, int n)
 {
-	struct window *wp;
+	e_Window *wp;
 	int s;
 
 	if (!(curwp->w_bufp->b_flag & BFCHG))
@@ -135,7 +135,7 @@ int filesave(int f, int n)
 
 int writeout(char *fn)
 {
-	struct line *lp;
+	e_Line *lp;
 	int nline, s;
 
 	if ((s = ffwopen(fn)) != FIOSUC)

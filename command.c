@@ -1,7 +1,7 @@
 #include "me.h"
 
 /* Convert character index/offset into terminal column number of this line. */
-static int get_col(struct line *lp, int offset)
+static int get_col(e_Line *lp, int offset)
 {
 	int col = 0, i = 0;
 	while (i < offset)
@@ -10,7 +10,7 @@ static int get_col(struct line *lp, int offset)
 }
 
 /* Convert terminal column number of this line into character index/offset. */
-static int get_idx(struct line *lp, int col)
+static int get_idx(e_Line *lp, int col)
 {
 	int c = 0, i = 0, len = lp->l_used;
 	while (i < len) {
@@ -56,7 +56,7 @@ int gotoeol(int f, int n)
 
 int backchar(int f, int n)
 {
-	struct line *lp;
+	e_Line *lp;
 
 	if (n < 0)
 		return forwchar(f, -n);
@@ -115,7 +115,7 @@ int gotoline(int f, int n)
 
 int forwline(int f, int n)
 {
-	struct line *lp;
+	e_Line *lp;
 
 	if (n < 0)
 		return backline(f, -n);
@@ -139,7 +139,7 @@ int forwline(int f, int n)
 
 int backline(int f, int n)
 {
-	struct line *lp;
+	e_Line *lp;
 
 	if (n < 0)
 		return forwline(f, -n);
@@ -164,7 +164,7 @@ int backline(int f, int n)
 
 int forwpage(int f, int n)
 {
-	struct line *lp;
+	e_Line *lp;
 
 	if (f == FALSE) {
 		n = curwp->w_ntrows - 2;
@@ -188,7 +188,7 @@ int forwpage(int f, int n)
 
 int backpage(int f, int n)
 {
-	struct line *lp;
+	e_Line *lp;
 
 	if (f == FALSE) {
 		n = curwp->w_ntrows - 2;
@@ -221,7 +221,7 @@ int setmark(int f, int n)
 /* Swap the values of "." and "mark" in the current window. */
 int swapmark(int f, int n)
 {
-	struct line *odotp;
+	e_Line *odotp;
 	int odoto;
 
 	if (curwp->w_markp == NULL) {
@@ -240,7 +240,7 @@ int swapmark(int f, int n)
 
 int show_misc_info(int f, int n)
 {
-	struct line *lp;
+	e_Line *lp;
 	int curline = -1, numlines = 0;
 
 	lp = curwp->w_bufp->b_linep->l_fp;
@@ -361,7 +361,7 @@ int yank(int f, int n)
 /* Kills from dot to the end of the line */
 int killtext(int f, int n)
 {
-	struct line *nextp;
+	e_Line *nextp;
 	long chunk;
 
 	if (n <= 0)
@@ -392,13 +392,13 @@ int killtext(int f, int n)
 
 /*
 This routine figures out the bounds of the region in the current window, and
-fills in the fields of the "struct region" structure pointed to by "rp".
+fills in the fields of the "e_Region" structure pointed to by "rp".
 Because the dot and mark are usually very close together, we scan outward from
 dot looking for mark.
 */
-static int getregion(struct region *rp)
+static int getregion(e_Region *rp)
 {
-	struct line *flp, *blp, *tmplp;
+	e_Line *flp, *blp, *tmplp;
 	long fsize, bsize;
 
 	if (curwp->w_markp == NULL) {
@@ -453,7 +453,7 @@ Move "." to the start, and kill the characters.
 */
 int killregion(int f, int n)
 {
-	struct region region;
+	e_Region region;
 	int s;
 
 	if ((s = getregion(&region)) != TRUE)
@@ -474,8 +474,8 @@ Don't move dot at all.  This is a bit like a kill region followed by a yank.
 */
 int copyregion(int f, int n)
 {
-	struct line *linep;
-	struct region region;
+	e_Line *linep;
+	e_Region region;
 	int loffs, s;
 
 	if ((s = getregion(&region)) != TRUE)
@@ -505,8 +505,8 @@ int copyregion(int f, int n)
 
 static int toggle_region_case(int start, int end)
 {
-	struct line *linep;
-	struct region region;
+	e_Line *linep;
+	e_Region region;
 	int loffs, c, s;
 
 	/* linsert or ldelete is not invoked, rdonly check is necessary here */

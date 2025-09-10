@@ -3,7 +3,7 @@
 
 #include "estruct.h"
 
-extern struct key_bind bindings[];	/* key to function table */
+extern e_KeyBind bindings[];	/* key to function table */
 
 extern int kbdm[];		/* Holds keyboard macro data */
 
@@ -35,8 +35,8 @@ extern int curcol;		/* Cursor column */
 extern int lbound;		/* leftmost column of current line displayed */
 extern int taboff;		/* tab offset for display */
 
-extern struct kill *kbufp;	/* current kill buffer chunk pointer */
-extern struct kill *kbufh;	/* kill buffer header pointer */
+extern e_Kill *kbufp;	/* current kill buffer chunk pointer */
+extern e_Kill *kbufh;	/* kill buffer header pointer */
 extern int kused;		/* # of bytes used in KB */
 
 extern long envram;		/* # of bytes current in use by malloc */
@@ -46,10 +46,10 @@ extern int flen;		/* current length of fline */
 
 extern int scrollcount;		/* number of lines to scroll */
 
-extern struct window *curwp;	/* Current window */
+extern e_Window *curwp;	/* Current window */
 
-extern struct window *wheadp;	/* Head of list of windows */
-extern struct buffer *bheadp;	/* Head of list of buffers */
+extern e_Window *wheadp;	/* Head of list of windows */
+extern e_Buffer *bheadp;	/* Head of list of buffers */
 
 extern int curgoal;		/* Goal for C-P, C-N */
 

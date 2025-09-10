@@ -30,8 +30,8 @@ int curcol;			/* Cursor column */
 int lbound;			/* leftmost column of current line being displayed */
 int taboff;			/* tab offset for display */
 
-struct kill *kbufp;		/* current kill buffer chunk pointer */
-struct kill *kbufh;		/* kill buffer header pointer */
+e_Kill *kbufp;		/* current kill buffer chunk pointer */
+e_Kill *kbufh;		/* kill buffer header pointer */
 int kused = KBLOCK;		/* # of bytes used in kill buffer */
 
 long envram = 0;		/* # of bytes current in use by malloc */
@@ -41,10 +41,10 @@ int flen = 0;			/* current length of fline */
 
 int scrollcount = 1;		/* number of lines to scroll */
 
-struct window *curwp;		/* Current window */
+e_Window *curwp;		/* Current window */
 
-struct window *wheadp;		/* Head of list of windows */
-struct buffer *bheadp;		/* Head of list of buffers */
+e_Window *wheadp;		/* Head of list of windows */
+e_Buffer *bheadp;		/* Head of list of buffers */
 
 int curgoal;			/* Goal for C-P, C-N */
 

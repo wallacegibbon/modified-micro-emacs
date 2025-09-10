@@ -9,7 +9,7 @@ static void emergencyexit(int);
 
 int main(int argc, char **argv)
 {
-	struct buffer *firstbp = NULL, *bp;
+	e_Buffer *firstbp = NULL, *bp;
 	int i;
 
 	if (argc < 2)
@@ -82,8 +82,8 @@ static int get_universal_arg(int *arg)
 
 static int window_init(void)
 {
-	struct window *wp;
-	if ((wp = malloc(sizeof(struct window))) == NULL) /* First window */
+	e_Window *wp;
+	if ((wp = malloc(sizeof(e_Window))) == NULL) /* First window */
 		return 1;
 
 	memset(wp, 0, sizeof(*wp));
@@ -97,7 +97,7 @@ static int window_init(void)
 /* This function looks a key binding up in the binding table. */
 static int (*getbind(int c))(int, int)
 {
-	struct key_bind *p = bindings;
+	e_KeyBind *p = bindings;
 
 	while (p->fn != NULL) {
 		if (p->k_code == c)
@@ -154,7 +154,7 @@ static int execute(int c, int f, int n)
 
 static void save_buffers(void)
 {
-	struct buffer *bp;
+	e_Buffer *bp;
 	for_each_buff(bp) {
 		if ((bp->b_flag & BFCHG) && !(bp->b_flag & BFTRUNC)) {
 			mlwrite("Saving %s", bp->b_fname);
@@ -193,8 +193,8 @@ int quit(int f, int n)
 
 static void cleanup(void)
 {
-	struct window *wp, *tp;
-	struct buffer *bp;
+	e_Window *wp, *tp;
+	e_Buffer *bp;
 
 	while ((bp = bheadp)) {
 		/* clear b_flag to make `zotbuf` run without prompt */

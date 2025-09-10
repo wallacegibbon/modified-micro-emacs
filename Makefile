@@ -29,18 +29,18 @@ install: $(PROGRAM)
 	$(STRIP) $(BIN)/$(PROGRAM)
 	chmod 755 $(BIN)/$(PROGRAM)
 
-main.o: main.c estruct.h efunc.h edef.h line.h
-display.o: display.c estruct.h edef.h line.h
-window.o: window.c estruct.h edef.h line.h
-line.o: line.c estruct.h edef.h line.h
-buffer.o: buffer.c estruct.h edef.h line.h
+main.o: main.c estruct.h efunc.h edef.h
+display.o: display.c estruct.h edef.h
+window.o: window.c estruct.h edef.h
+line.o: line.c estruct.h edef.h
+buffer.o: buffer.c estruct.h edef.h
 input.o: input.c estruct.h edef.h
-command.o: command.c estruct.h edef.h line.h
-ebind.o: edef.h efunc.h estruct.h line.h
-file.o: file.c estruct.h edef.h line.h
+command.o: command.c estruct.h edef.h
+ebind.o: edef.h efunc.h estruct.h
+file.o: file.c estruct.h edef.h
 fileio.o: fileio.c estruct.h edef.h
-search.o: search.c estruct.h edef.h line.h
-isearch.o: isearch.c estruct.h edef.h line.h
+search.o: search.c estruct.h edef.h
+isearch.o: isearch.c estruct.h edef.h
 global.o: estruct.h edef.h
 memory.o: estruct.h edef.h
 util.o: util.c

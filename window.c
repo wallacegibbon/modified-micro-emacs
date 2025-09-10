@@ -1,8 +1,8 @@
 #include "me.h"
 
-static void insert_window_before(struct window *wp, struct window *newwp)
+static void insert_window_before(e_Window *wp, e_Window *newwp)
 {
-	struct window **wpp = &wheadp, *w;
+	e_Window **wpp = &wheadp, *w;
 	while ((w = *wpp) != wp)
 		wpp = &w->w_wndp;
 
@@ -10,7 +10,7 @@ static void insert_window_before(struct window *wp, struct window *newwp)
 	newwp->w_wndp = wp;
 }
 
-static void insert_window_after(struct window *wp, struct window *newwp)
+static void insert_window_after(e_Window *wp, e_Window *newwp)
 {
 	newwp->w_wndp = wp->w_wndp;
 	wp->w_wndp = newwp;
@@ -19,15 +19,15 @@ static void insert_window_after(struct window *wp, struct window *newwp)
 /* Split the current window.  Window smaller than 3 lines cannot be splited. */
 int splitwind(int f, int n)
 {
-	struct window *wp;
-	struct line *lp;
+	e_Window *wp;
+	e_Line *lp;
 	int ntru, ntrl, ntrd;
 
 	if (curwp->w_ntrows < 3) {
 		mlwrite("Cannot split a %d line window", curwp->w_ntrows);
 		return FALSE;
 	}
-	if ((wp = malloc(sizeof(struct window))) == NULL) {
+	if ((wp = malloc(sizeof(e_Window))) == NULL) {
 		mlwrite("Failed allocating memory for new window");
 		return FALSE;
 	}
@@ -78,8 +78,8 @@ int splitwind(int f, int n)
 /* Makes the current window the only window on the screen. */
 int onlywind(int f, int n)
 {
-	struct window *wp;
-	struct line *lp1, *lp2;
+	e_Window *wp;
+	e_Line *lp1, *lp2;
 	int i;
 
 	/* Delete all other windows except the current one */
@@ -130,7 +130,7 @@ int redraw(int f, int n)
 
 static int count_window(void)
 {
-	struct window *wp = wheadp;
+	e_Window *wp = wheadp;
 	int n = 1;
 	while ((wp = wp->w_wndp) != NULL)
 		++n;
@@ -140,7 +140,7 @@ static int count_window(void)
 /* Make the nth next window (or -nth prev window) the current window. */
 int nextwind(int f, int n)
 {
-	struct window *wp = curwp;
+	e_Window *wp = curwp;
 	int wcount;
 
 	if (wheadp->w_wndp == NULL)
@@ -169,7 +169,7 @@ int prevwind(int f, int n)
 	return nextwind(f, -n);
 }
 
-void resetwind(struct window *wp)
+void resetwind(e_Window *wp)
 {
 	wp->w_linep = wp->w_bufp->b_linep->l_fp;
 	wp->w_dotp = wp->w_linep;

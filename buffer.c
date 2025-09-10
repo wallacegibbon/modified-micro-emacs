@@ -1,9 +1,9 @@
 #include "me.h"
 
 /* Switch to buffer `bp`.  (Make buffer `bp` curwp->w_bufp) */
-int swbuffer(struct buffer *bp)
+int swbuffer(e_Buffer *bp)
 {
-	struct window *wp;
+	e_Window *wp;
 
 	if (bp == NULL || bp == curwp->w_bufp)
 		return FALSE;
@@ -45,7 +45,7 @@ int swbuffer(struct buffer *bp)
 
 int nextbuffer(int f, int n)
 {
-	struct buffer *bp = curwp->w_bufp;
+	e_Buffer *bp = curwp->w_bufp;
 
 	if (n < 1 || bp == NULL)
 		return FALSE;
@@ -68,9 +68,9 @@ int toggle_rdonly(int f, int n)
 }
 
 /* Kill the buffer pointed to by bp, and update bheadp when necessary. */
-int zotbuf(struct buffer *bp)
+int zotbuf(e_Buffer *bp)
 {
-	struct buffer **bpp = &bheadp, *b;
+	e_Buffer **bpp = &bheadp, *b;
 
 	if (bp->b_nwnd != 0) {
 		mlwrite("Buffer is being displayed");
@@ -98,7 +98,7 @@ Buffers that hold magic internal stuff are not considered.
 */
 int anycb(void)
 {
-	struct buffer *bp;
+	e_Buffer *bp;
 	for_each_buff(bp) {
 		if ((bp->b_flag & BFCHG))
 			return TRUE;
@@ -109,11 +109,11 @@ int anycb(void)
 /*
 Find a buffer by name.  Create it if buffer is not found and cflag is TRUE.
 */
-struct buffer *bfind(char *raw_filename, int cflag)
+e_Buffer *bfind(char *raw_filename, int cflag)
 {
 	char filename[NFILEN];
-	struct buffer *bp;
-	struct line *lp;
+	e_Buffer *bp;
+	e_Line *lp;
 	int trunc;
 
 	trim_spaces(filename, raw_filename, NFILEN, &trunc);
@@ -127,7 +127,7 @@ struct buffer *bfind(char *raw_filename, int cflag)
 	}
 	if (cflag == FALSE)
 		return NULL;
-	if ((bp = malloc(sizeof(struct buffer))) == NULL)
+	if ((bp = malloc(sizeof(e_Buffer))) == NULL)
 		return NULL;
 	memset(bp, 0, sizeof(*bp));
 
@@ -151,9 +151,9 @@ This routine blows away all of the text in a buffer.  The window chain is
 nearly always wrong if this gets called, the caller must arrange for the
 updates that are required.
 */
-int bclear(struct buffer *bp)
+int bclear(e_Buffer *bp)
 {
-	struct line *lp;
+	e_Line *lp;
 
 	if ((bp->b_flag & BFCHG) && mlyesno("Discard changes") != TRUE)
 		return FALSE;

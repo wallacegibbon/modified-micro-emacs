@@ -9,7 +9,7 @@ static int cmd_reexecute = -1;		/* > 0 if re-executing command */
 
 int fisearch(int f, int n)
 {
-	struct line *curline = curwp->w_dotp, *tmpline = NULL;
+	e_Line *curline = curwp->w_dotp, *tmpline = NULL;
 	int curoff = curwp->w_doto, tmpoff = 0;
 	int init_direction = n;
 	char pat_save[NPAT];

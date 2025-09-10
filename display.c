@@ -8,7 +8,9 @@ display screen the same as the virtual display screen.
 #include <errno.h>
 #include <stdarg.h>
 
-struct video {
+typedef struct e_Video e_Video;
+
+struct e_Video {
 	int v_flag;		/* Flags */
 	char v_text[];		/* Row data on screen. */
 };
@@ -18,12 +20,12 @@ struct video {
 #define VFREV	0x0004		/* reverse video status */
 #define VFREQ	0x0008		/* reverse video request */
 
-static void reframe(struct window *wp);
+static void reframe(e_Window *wp);
 static void flush_to_physcr(void);
-static void update_one(struct window *wp);
-static void update_all(struct window *wp);
-static void update_line(int row, struct video *vp1, struct video *vp2);
-static void modeline(struct window *wp);
+static void update_one(e_Window *wp);
+static void update_all(e_Window *wp);
+static void update_line(int row, e_Video *vp1, e_Video *vp2);
+static void modeline(e_Window *wp);
 
 static void update_extended(void);
 static void update_de_extend(void);
@@ -31,13 +33,13 @@ static void update_pos(void);
 
 static int mlflush(void);
 
-static struct video **vscreen;	/* Virtual screen. */
-static struct video **pscreen;	/* Physical screen. */
+static e_Video **vscreen;	/* Virtual screen. */
+static e_Video **pscreen;	/* Physical screen. */
 static char *mlbuf = NULL;	/* Message line buffer */
 
-static struct video *video_new(size_t text_size)
+static e_Video *video_new(size_t text_size)
 {
-	struct video *vp;
+	e_Video *vp;
 	if ((vp = malloc(sizeof(*vp) + text_size)) == NULL)
 		return NULL;
 
@@ -58,9 +60,9 @@ void vtinit(void)
 
 	display_ok = 0;
 
-	if ((vscreen = malloc(term_nrow * sizeof(struct video *))) == NULL)
+	if ((vscreen = malloc(term_nrow * sizeof(e_Video *))) == NULL)
 		return;
-	if ((pscreen = malloc(term_nrow * sizeof(struct video *))) == NULL)
+	if ((pscreen = malloc(term_nrow * sizeof(e_Video *))) == NULL)
 		goto fail1;
 
 	for (i = 0; i < term_nrow; ++i) {
@@ -112,7 +114,7 @@ If the line is too long put a "$" in the last column.
 */
 static void vtputc(int c)
 {
-	struct video *vp = vscreen[vtrow];
+	e_Video *vp = vscreen[vtrow];
 	if (vtcol >= term_ncol) {
 		vp->v_text[term_ncol - 1] = '$';
 		++vtcol;
@@ -153,7 +155,7 @@ static void vteeol(void)
 
 int update(int force)
 {
-	struct window *wp, *w;
+	e_Window *wp, *w;
 
 	if (!display_ok) {
 		fprintf(stderr, "Display is not ready, nothing to update.");
@@ -206,9 +208,9 @@ int update(int force)
 }
 
 /* Check to see if the cursor is in the window and re-frame it if needed. */
-static void reframe(struct window *wp)
+static void reframe(e_Window *wp)
 {
-	struct line *lp1, *lp2;
+	e_Line *lp1, *lp2;
 	int i;
 
 	if (!(wp->w_flag & WFFORCE)) {
@@ -237,7 +239,7 @@ static void reframe(struct window *wp)
 	wp->w_flag &= ~WFFORCE;
 }
 
-static void show_line(struct line *lp)
+static void show_line(e_Line *lp)
 {
 	int i, len;
 	for (i = 0, len = lp->l_used; i < len; ++i)
@@ -245,9 +247,9 @@ static void show_line(struct line *lp)
 }
 
 /* Update the current line to the virtual screen */
-static void update_one(struct window *wp)
+static void update_one(e_Window *wp)
 {
-	struct line *lp = wp->w_linep;
+	e_Line *lp = wp->w_linep;
 	int i = wp->w_toprow;
 
 	for (; lp != wp->w_dotp; lp = lp->l_fp)
@@ -262,9 +264,9 @@ static void update_one(struct window *wp)
 }
 
 /* Update all the lines in a window on the virtual screen */
-static void update_all(struct window *wp)
+static void update_all(e_Window *wp)
 {
-	struct line *lp = wp->w_linep;
+	e_Line *lp = wp->w_linep;
 	int i = wp->w_toprow, j = i + wp->w_ntrows;
 
 	for (; i < j; ++i) {
@@ -285,7 +287,7 @@ This is the only update for simple moves.
 */
 static void update_pos(void)
 {
-	struct line *lp = curwp->w_linep;
+	e_Line *lp = curwp->w_linep;
 	int i;
 
 	currow = curwp->w_toprow;
@@ -305,9 +307,9 @@ static void update_pos(void)
 	}
 }
 
-static void update_de_extend_wind(struct window *wp)
+static void update_de_extend_wind(e_Window *wp)
 {
-	struct line *lp;
+	e_Line *lp;
 	int i = wp->w_toprow;
 	int j = i + wp->w_ntrows;
 
@@ -329,7 +331,7 @@ static void update_de_extend_wind(struct window *wp)
 /* de-extend any line that derserves it */
 static void update_de_extend(void)
 {
-	struct window *wp;
+	e_Window *wp;
 	for_each_wind(wp)
 		update_de_extend_wind(wp);
 }
@@ -359,7 +361,7 @@ void update_garbage(void)
 
 static void flush_to_physcr(void)
 {
-	struct video *vp1;
+	e_Video *vp1;
 	int i;
 	for (i = 0; i < term_nrow; ++i) {
 		vp1 = vscreen[i];
@@ -375,7 +377,7 @@ user see where the cursor is.
 */
 static void update_extended(void)
 {
-	struct line *lp = curwp->w_dotp;
+	e_Line *lp = curwp->w_dotp;
 	int rcursor;
 
 	/* calculate what column the real cursor will end up in */
@@ -396,7 +398,7 @@ static void update_extended(void)
 }
 
 /* Update the line to terminal.  The physical column will be updated. */
-static void update_line(int row, struct video *vp1, struct video *vp2)
+static void update_line(int row, e_Video *vp1, e_Video *vp2)
 {
 	char *cp1, *cp2, *cp3, *cp4;
 	int rev, req, should_send_rev;
@@ -486,9 +488,9 @@ partial_update:
 Redisplay the mode line for the window pointed to by the "wp".  This is the
 only routine that has any idea of how the modeline is formatted.
 */
-static void modeline(struct window *wp)
+static void modeline(e_Window *wp)
 {
-	struct buffer *bp = wp->w_bufp;
+	e_Buffer *bp = wp->w_bufp;
 	int n = wp->w_toprow + wp->w_ntrows;
 
 	vscreen[n]->v_flag |= VFCHG | VFREQ;
@@ -512,7 +514,7 @@ static void modeline(struct window *wp)
 
 void update_modelines(void)
 {
-	struct window *wp;
+	e_Window *wp;
 	for_each_wind(wp)
 		wp->w_flag |= WFMODE;
 }

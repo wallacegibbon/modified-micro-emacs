@@ -1,7 +1,7 @@
 #include "me.h"
 
 static int readpattern(char *prompt, char *apat);
-static int nextch(struct line **pcurline, int *pcuroff, int dir);
+static int nextch(e_Line **pcurline, int *pcuroff, int dir);
 static int delins(int dlength, char *instr, int use_meta);
 
 /* "bc" comes from the buffer, "pc" from the pattern. */
@@ -16,7 +16,7 @@ static inline int eq(unsigned char bc, unsigned char pc)
 /* Switch between case-sensitive and case-insensitive. */
 int toggle_exact_search(int f, int n)
 {
-	struct window *wp;
+	e_Window *wp;
 
 	exact_search = !exact_search;
 	for_each_wind(wp)
@@ -31,7 +31,7 @@ the start or just after the match string, and (perhaps) repaint the display.
 */
 int search_next(const char *pattern, int direct, int beg_or_end)
 {
-	struct line *curline = curwp->w_dotp, *scanline, *matchline;
+	e_Line *curline = curwp->w_dotp, *scanline, *matchline;
 	int curoff = curwp->w_doto, scanoff, matchoff;
 	const char *patptr;
 	int c;
@@ -172,10 +172,10 @@ finish:
 }
 
 /* Return -1 when it hits the boundry (start of buffer or end of buffer) */
-static int nextch(struct line **pcurline, int *pcuroff, int dir)
+static int nextch(e_Line **pcurline, int *pcuroff, int dir)
 {
-	struct line *b_linep = curwp->w_bufp->b_linep;
-	struct line *curline = *pcurline;
+	e_Line *b_linep = curwp->w_bufp->b_linep;
+	e_Line *curline = *pcurline;
 	int curoff = *pcuroff, c;
 
 	if (dir == FORWARD) {

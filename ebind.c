@@ -1,6 +1,6 @@
 #include "me.h"
 
-struct key_bind bindings[] = {
+e_KeyBind bindings[] = {
 	{ NULLPROC_KEY /* should be less than 0x20 */, nullproc },
 	{ 0x7F, backdel },
 
