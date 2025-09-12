@@ -114,11 +114,13 @@ struct e_Kill {
 	char k_chunk[KBLOCK];	/* Text */
 };
 
+typedef int (*e_CommandFn)(int f, int n);
+
 typedef struct e_KeyBind e_KeyBind;
 
 struct e_KeyBind {
 	int code;
-	int (*fn)(int, int);
+	e_CommandFn fn;
 };
 
 #define CMDBUFLEN	256	/* Length of our command buffer */

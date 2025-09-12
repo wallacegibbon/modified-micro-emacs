@@ -1,6 +1,7 @@
 #include "me.h"
 
-int main(void)
+int
+main(void)
 {
 	int c;
 	ansiopen();
@@ -15,4 +16,8 @@ int main(void)
 }
 
 /* for simpler Makefile */
-int quit(int f, int n) { return TRUE; }
+int
+quit(int f, int n)
+{
+	return TRUE;
+}

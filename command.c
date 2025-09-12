@@ -1,7 +1,8 @@
 #include "me.h"
 
 /* Convert character index/offset into terminal column number of this line. */
-static int get_col(e_Line *lp, int offset)
+static int
+get_col(e_Line *lp, int offset)
 {
 	int col = 0, i = 0;
 	while (i < offset)
@@ -10,7 +11,8 @@ static int get_col(e_Line *lp, int offset)
 }
 
 /* Convert terminal column number of this line into character index/offset. */
-static int get_idx(e_Line *lp, int col)
+static int
+get_idx(e_Line *lp, int col)
 {
 	int c = 0, i = 0, len = lp->l_used;
 	while (i < len) {
@@ -23,7 +25,8 @@ static int get_idx(e_Line *lp, int col)
 }
 
 /* Goto the beginning of the buffer */
-int gotobob(int f, int n)
+int
+gotobob(int f, int n)
 {
 	curwp->w_dotp = curwp->w_bufp->b_linep->l_fp;
 	curwp->w_doto = 0;
@@ -32,7 +35,8 @@ int gotobob(int f, int n)
 }
 
 /* Move to the end of the buffer.  Dot is always put at the end of the file */
-int gotoeob(int f, int n)
+int
+gotoeob(int f, int n)
 {
 	curwp->w_dotp = curwp->w_bufp->b_linep;
 	curwp->w_doto = 0;
@@ -41,20 +45,23 @@ int gotoeob(int f, int n)
 }
 
 /* Move the cursor to the beginning of the current line. */
-int gotobol(int f, int n)
+int
+gotobol(int f, int n)
 {
 	curwp->w_doto = 0;
 	return TRUE;
 }
 
 /* Move the cursor to the end of the current line */
-int gotoeol(int f, int n)
+int
+gotoeol(int f, int n)
 {
 	curwp->w_doto = curwp->w_dotp->l_used;
 	return TRUE;
 }
 
-int backchar(int f, int n)
+int
+backchar(int f, int n)
 {
 	e_Line *lp;
 
@@ -75,7 +82,8 @@ int backchar(int f, int n)
 	return TRUE;
 }
 
-int forwchar(int f, int n)
+int
+forwchar(int f, int n)
 {
 	if (n < 0)
 		return backchar(f, -n);
@@ -93,7 +101,8 @@ int forwchar(int f, int n)
 	return TRUE;
 }
 
-int gotoline(int f, int n)
+int
+gotoline(int f, int n)
 {
 	char arg[NSTRING];
 	int status;
@@ -113,7 +122,8 @@ int gotoline(int f, int n)
 	return forwline(f, n - 1);
 }
 
-int forwline(int f, int n)
+int
+forwline(int f, int n)
 {
 	e_Line *lp;
 
@@ -137,7 +147,8 @@ int forwline(int f, int n)
 	return TRUE;
 }
 
-int backline(int f, int n)
+int
+backline(int f, int n)
 {
 	e_Line *lp;
 
@@ -162,7 +173,8 @@ int backline(int f, int n)
 	return TRUE;
 }
 
-int forwpage(int f, int n)
+int
+forwpage(int f, int n)
 {
 	e_Line *lp;
 
@@ -186,7 +198,8 @@ int forwpage(int f, int n)
 	return TRUE;
 }
 
-int backpage(int f, int n)
+int
+backpage(int f, int n)
 {
 	e_Line *lp;
 
@@ -210,7 +223,8 @@ int backpage(int f, int n)
 	return TRUE;
 }
 
-int setmark(int f, int n)
+int
+setmark(int f, int n)
 {
 	curwp->w_markp = curwp->w_dotp;
 	curwp->w_marko = curwp->w_doto;
@@ -219,7 +233,8 @@ int setmark(int f, int n)
 }
 
 /* Swap the values of "." and "mark" in the current window. */
-int swapmark(int f, int n)
+int
+swapmark(int f, int n)
 {
 	e_Line *odotp;
 	int odoto;
@@ -238,7 +253,8 @@ int swapmark(int f, int n)
 	return TRUE;
 }
 
-int show_misc_info(int f, int n)
+int
+show_misc_info(int f, int n)
 {
 	e_Line *lp;
 	int curline = -1, numlines = 0;
@@ -266,7 +282,8 @@ are taken literally, with the exception of the newline, which always has its
 line splitting meaning.  The character is always read, even if it is inserted 0
 times, for regularity.
 */
-int quote(int f, int n)
+int
+quote(int f, int n)
 {
 	int c = tgetc();
 	if (n < 0)
@@ -275,7 +292,8 @@ int quote(int f, int n)
 	return linsert(n, c);
 }
 
-int newline(int f, int n)
+int
+newline(int f, int n)
 {
 	if (n < 0)
 		return FALSE;
@@ -283,7 +301,8 @@ int newline(int f, int n)
 	return linsert(n, '\n');
 }
 
-static int newline_and_indent_one(void)
+static int
+newline_and_indent_one(void)
 {
 	int nicol = 0, c, i;
 
@@ -313,7 +332,8 @@ static int newline_and_indent_one(void)
 	return TRUE;
 }
 
-int newline_and_indent(int f, int n)
+int
+newline_and_indent(int f, int n)
 {
 	if (n < 0)
 		return FALSE;
@@ -326,7 +346,8 @@ int newline_and_indent(int f, int n)
 	return TRUE;
 }
 
-int forwdel(int f, int n)
+int
+forwdel(int f, int n)
 {
 	if (n < 0)
 		return backdel(f, -n);
@@ -334,7 +355,8 @@ int forwdel(int f, int n)
 	return ldelete((long)n, FALSE);
 }
 
-int backdel(int f, int n)
+int
+backdel(int f, int n)
 {
 	long nn = 0;
 	if (n < 0)
@@ -346,7 +368,8 @@ int backdel(int f, int n)
 }
 
 /* Yank text back from the kill buffer. */
-int yank(int f, int n)
+int
+yank(int f, int n)
 {
 	if (n < 0)
 		return FALSE;
@@ -359,7 +382,8 @@ int yank(int f, int n)
 }
 
 /* Kills from dot to the end of the line */
-int killtext(int f, int n)
+int
+killtext(int f, int n)
 {
 	e_Line *nextp;
 	long chunk;
@@ -396,7 +420,8 @@ fills in the fields of the "e_Region" structure pointed to by "rp".
 Because the dot and mark are usually very close together, we scan outward from
 dot looking for mark.
 */
-static int getregion(e_Region *rp)
+static int
+getregion(e_Region *rp)
 {
 	e_Line *flp, *blp, *tmplp;
 	long fsize, bsize;
@@ -451,7 +476,8 @@ static int getregion(e_Region *rp)
 Kill the region.  Ask "getregion" to figure out the bounds of the region.
 Move "." to the start, and kill the characters.
 */
-int killregion(int f, int n)
+int
+killregion(int f, int n)
 {
 	e_Region region;
 	int s;
@@ -472,7 +498,8 @@ int killregion(int f, int n)
 Copy all of the characters in the region to the kill buffer.
 Don't move dot at all.  This is a bit like a kill region followed by a yank.
 */
-int copyregion(int f, int n)
+int
+copyregion(int f, int n)
 {
 	e_Line *linep;
 	e_Region region;
@@ -503,7 +530,8 @@ int copyregion(int f, int n)
 	return TRUE;
 }
 
-static int toggle_region_case(int start, int end)
+static int
+toggle_region_case(int start, int end)
 {
 	e_Line *linep;
 	e_Region region;
@@ -533,19 +561,22 @@ static int toggle_region_case(int start, int end)
 }
 
 /* Zap all of the upper case characters in the region to lower case. */
-int lowerregion(int f, int n)
+int
+lowerregion(int f, int n)
 {
 	return toggle_region_case('A', 'Z');
 }
 
 /* Zap all of the lower case characters in the region to upper case. */
-int upperregion(int f, int n)
+int
+upperregion(int f, int n)
 {
 	return toggle_region_case('a', 'z');
 }
 
 /* Begin a keyboard macro. */
-int ctlxlp(int f, int n)
+int
+ctlxlp(int f, int n)
 {
 	if (kbdmode != STOP) {
 		mlwrite("Macro is already active");
@@ -559,7 +590,8 @@ int ctlxlp(int f, int n)
 }
 
 /* End keyboard macro. */
-int ctlxrp(int f, int n)
+int
+ctlxrp(int f, int n)
 {
 	if (kbdmode == STOP) {
 		mlwrite("Macro is not active");
@@ -573,7 +605,8 @@ int ctlxrp(int f, int n)
 }
 
 /* Execute a macro. */
-int ctlxe(int f, int n)
+int
+ctlxe(int f, int n)
 {
 	if (kbdmode != STOP) {
 		mlwrite("Macro already active");
@@ -591,7 +624,8 @@ int ctlxe(int f, int n)
 Abort.  Kill off any keyboard macro, etc., that is in progress.  Sometimes
 called as a routine, to do general aborting of stuff.
 */
-int ctrlg(int f, int n)
+int
+ctrlg(int f, int n)
 {
 	ansibeep();
 	kbdmode = STOP;
@@ -599,20 +633,23 @@ int ctrlg(int f, int n)
 	return ABORT;
 }
 
-int suspend(int f, int n)
+int
+suspend(int f, int n)
 {
 	suspend_self();
 	return TRUE;
 }
 
-int nullproc(int f, int n)
+int
+nullproc(int f, int n)
 {
 	return TRUE;
 }
 
 /* Non command helper functions */
 
-int rdonly(void)
+int
+rdonly(void)
 {
 	ansibeep();
 	mlwrite("Illegal in read-only mode");

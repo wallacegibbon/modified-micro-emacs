@@ -1,6 +1,7 @@
 #include "me.h"
 
-static void insert_window_before(e_Window *wp, e_Window *newwp)
+static void
+insert_window_before(e_Window *wp, e_Window *newwp)
 {
 	e_Window **wpp = &wheadp, *w;
 	while ((w = *wpp) != wp)
@@ -10,14 +11,16 @@ static void insert_window_before(e_Window *wp, e_Window *newwp)
 	newwp->w_wndp = wp;
 }
 
-static void insert_window_after(e_Window *wp, e_Window *newwp)
+static void
+insert_window_after(e_Window *wp, e_Window *newwp)
 {
 	newwp->w_wndp = wp->w_wndp;
 	wp->w_wndp = newwp;
 }
 
 /* Split the current window.  Window smaller than 3 lines cannot be splited. */
-int splitwind(int f, int n)
+int
+splitwind(int f, int n)
 {
 	e_Window *wp;
 	e_Line *lp;
@@ -76,7 +79,8 @@ int splitwind(int f, int n)
 }
 
 /* Makes the current window the only window on the screen. */
-int onlywind(int f, int n)
+int
+onlywind(int f, int n)
 {
 	e_Window *wp;
 	e_Line *lp1, *lp2;
@@ -117,7 +121,8 @@ int onlywind(int f, int n)
 With no argument, it just does the refresh.
 With an argument "n", reposition dot to line "n" of the screen.
 */
-int redraw(int f, int n)
+int
+redraw(int f, int n)
 {
 	if (f == FALSE) {
 		sgarbf = TRUE;
@@ -128,7 +133,8 @@ int redraw(int f, int n)
 	return TRUE;
 }
 
-static int count_window(void)
+static int
+count_window(void)
 {
 	e_Window *wp = wheadp;
 	int n = 1;
@@ -138,7 +144,8 @@ static int count_window(void)
 }
 
 /* Make the nth next window (or -nth prev window) the current window. */
-int nextwind(int f, int n)
+int
+nextwind(int f, int n)
 {
 	e_Window *wp = curwp;
 	int wcount;
@@ -164,12 +171,14 @@ int nextwind(int f, int n)
 	return TRUE;
 }
 
-int prevwind(int f, int n)
+int
+prevwind(int f, int n)
 {
 	return nextwind(f, -n);
 }
 
-void resetwind(e_Window *wp)
+void
+resetwind(e_Window *wp)
 {
 	wp->w_linep = wp->w_bufp->b_linep->l_fp;
 	wp->w_dotp = wp->w_linep;

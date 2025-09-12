@@ -1,7 +1,8 @@
 /* Have to include this file since TIOCGWINSZ is define in this file */
 #include <sys/ioctl.h>
 
-void getscreensize(int *widthp, int *heightp)
+void
+getscreensize(int *widthp, int *heightp)
 {
 #ifdef TIOCGWINSZ
 	struct winsize size;

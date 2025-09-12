@@ -8,7 +8,8 @@ which should be okay since functions like `ctoec` will keep it unchanged.
 int reeat_char = -1;
 
 /* Get a key from the terminal driver, resolve any keyboard macro action */
-int tgetc(void)
+int
+tgetc(void)
 {
 	int c = reeat_char;
 	if (c != -1) {
@@ -43,13 +44,15 @@ int tgetc(void)
 }
 
 /* Get one keystroke.  The only prefixs legal here are the CTL prefixes. */
-int get1key(void)
+int
+get1key(void)
 {
 	return ctoec(tgetc());
 }
 
 /* Get a command from the keyboard.  Escape key is ignored (except for CSI) */
-int getcmd(void)
+int
+getcmd(void)
 {
 	int cmask = 0, c;
 	c = get1key();
@@ -81,7 +84,8 @@ escape_loop:
 		return c;
 }
 
-int mlgetstring(char *buf, int nbuf, int eolchar, const char *fmt, ...)
+int
+mlgetstring(char *buf, int nbuf, int eolchar, const char *fmt, ...)
 {
 	int cpos = 0, c, expc;
 	va_list ap;
@@ -128,7 +132,8 @@ normal_exit:
 	return buf[0] != '\0';
 }
 
-int mlgetchar(const char *fmt, ...)
+int
+mlgetchar(const char *fmt, ...)
 {
 	va_list ap;
 	int c;
@@ -142,12 +147,14 @@ int mlgetchar(const char *fmt, ...)
 	return c;
 }
 
-int mlreply(char *prompt, char *buf, int nbuf)
+int
+mlreply(char *prompt, char *buf, int nbuf)
 {
 	return mlgetstring(buf, nbuf, ENTERC, "%s", prompt);
 }
 
-int mlyesno(char *prompt)
+int
+mlyesno(char *prompt)
 {
 	for (;;) {
 		switch (mlgetchar("%s (y/n)? ", prompt)) {
@@ -161,14 +168,16 @@ int mlyesno(char *prompt)
 	}
 }
 
-int ectoc(int c)
+int
+ectoc(int c)
 {
 	if (c & CTL)
 		c = ~CTL & (c - '@');
 	return c;
 }
 
-int ctoec(int c)
+int
+ctoec(int c)
 {
 	if (c >= 0x00 && c <= 0x1F)
 		c = CTL | (c + '@');

@@ -4,7 +4,8 @@
 #include <stdarg.h>
 
 /* Trim preceding and trailing spaces.  dest and src can be the same address */
-char *trim_spaces(char *dest, const char *src, size_t size, int *trunc)
+char*
+trim_spaces(char *dest, const char *src, size_t size, int *trunc)
 {
 	const char *start = src, *end;
 	char *cp = dest;
@@ -36,7 +37,8 @@ char *trim_spaces(char *dest, const char *src, size_t size, int *trunc)
 	return dest;
 }
 
-char *strncpy_safe(char *dest, const char *src, size_t size)
+char*
+strncpy_safe(char *dest, const char *src, size_t size)
 {
 	if (!size)
 		return dest;
@@ -45,7 +47,8 @@ char *strncpy_safe(char *dest, const char *src, size_t size)
 }
 
 /* Reverse string copy. */
-void rvstrcpy(char *rvstr, const char *str)
+void
+rvstrcpy(char *rvstr, const char *str)
 {
 	int i;
 	str += (i = strlen(str));
@@ -55,7 +58,8 @@ void rvstrcpy(char *rvstr, const char *str)
 	*rvstr = '\0';
 }
 
-void die(int code, void (*deinit)(void), const char *fmt, ...)
+void
+die(int code, void (*deinit)(void), const char *fmt, ...)
 {
 	va_list args;
 

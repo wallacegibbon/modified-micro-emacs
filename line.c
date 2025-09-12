@@ -7,7 +7,8 @@ for any good reason.
 
 #define BLOCK_SIZE	16	/* Line block chunk size. */
 
-e_Line *lalloc(int used)
+e_Line*
+lalloc(int used)
 {
 	e_Line *lp;
 	int size;
@@ -27,7 +28,8 @@ e_Line *lalloc(int used)
 }
 
 /* Delete line "lp".  Fix all of the links that might point at it. */
-void lfree(e_Line *lp)
+void
+lfree(e_Line *lp)
 {
 	e_Buffer *bp;
 	e_Window *wp;
@@ -65,7 +67,8 @@ void lfree(e_Line *lp)
 Gets called when a character is changed in place in the current buffer.
 It updates required flags in the buffer and window system.
 */
-void lchange(int flag)
+void
+lchange(int flag)
 {
 	e_Window *wp;
 
@@ -81,7 +84,8 @@ void lchange(int flag)
 	}
 }
 
-static int linsert_simple(int n, int c)
+static int
+linsert_simple(int n, int c)
 {
 	e_Line *lp;
 	int i;
@@ -101,7 +105,8 @@ static int linsert_simple(int n, int c)
 	return TRUE;
 }
 
-static int linsert_realloc(int n, int c, e_Line **lp_new)
+static int
+linsert_realloc(int n, int c, e_Line **lp_new)
 {
 	e_Line *lp1 = curwp->w_dotp, *lp2;
 	int doto = curwp->w_doto;
@@ -126,7 +131,8 @@ static int linsert_realloc(int n, int c, e_Line **lp_new)
 }
 
 /* CAUTION: Make sure that curwp->w_dotp have enough for this insertion */
-static int linsert_inplace(int n, int c)
+static int
+linsert_inplace(int n, int c)
 {
 	e_Line *lp = curwp->w_dotp;
 	int doto = curwp->w_doto;
@@ -148,7 +154,8 @@ Insert "n" copies of the character "c" at the current location of dot.
 In the easy case all that happens is the text is stored in the line.
 In the hard case, the line has to be reallocated.
 */
-static int lnonnewline(int n, int c)
+static int
+lnonnewline(int n, int c)
 {
 	e_Window *wp;
 	e_Line *lp = curwp->w_dotp, *lp_new;
@@ -193,7 +200,8 @@ static int lnonnewline(int n, int c)
 /*
 Insert a newline into the buffer at the current location in current window.
 */
-static int lnewline(void)
+static int
+lnewline(void)
 {
 	e_Window *wp;
 	e_Line *lp = curwp->w_dotp, *lp_new;
@@ -240,7 +248,8 @@ static int lnewline(void)
 	return TRUE;
 }
 
-int linsert(int n, int c)
+int
+linsert(int n, int c)
 {
 	int s = TRUE;
 
@@ -259,7 +268,8 @@ int linsert(int n, int c)
 }
 
 /* linstr -- Insert a string at the current point. */
-int linstr(char *instr)
+int
+linstr(char *instr)
 {
 	int c;
 
@@ -274,7 +284,8 @@ int linstr(char *instr)
 	return TRUE;
 }
 
-static int ljoin_nextline_try(e_Line *lp)
+static int
+ljoin_nextline_try(e_Line *lp)
 {
 	e_Window *wp;
 	e_Line *lp_next = lp->l_fp;
@@ -315,7 +326,8 @@ Delete a newline.  Join the current line with the next line.
 If the next line is the magic header line always return TRUE.
 even if nothing is done, and this makes the kill buffer work "right".
 */
-static int ldelnewline(void)
+static int
+ldelnewline(void)
 {
 	e_Window *wp;
 	e_Line *lp = curwp->w_dotp, *lp2 = lp->l_fp, *lp_new;
@@ -373,7 +385,8 @@ static int ldelnewline(void)
 	return TRUE;
 }
 
-static int ldelete_once(int n, int kflag)
+static int
+ldelete_once(int n, int kflag)
 {
 	e_Window *wp;
 	e_Line *lp = curwp->w_dotp;
@@ -436,7 +449,8 @@ static int ldelete_once(int n, int kflag)
 This function deletes "n" bytes, starting at dot.
 The "kflag" is TRUE if the text should be put in the kill buffer.
 */
-int ldelete(long n, int kflag)
+int
+ldelete(long n, int kflag)
 {
 	if (curwp->w_bufp->b_flag & BFRDONLY)
 		return rdonly();
@@ -452,7 +466,8 @@ int ldelete(long n, int kflag)
 }
 
 /* Copy contents of the kill buffer into current buffer */
-int linsert_kbuf(void)
+int
+linsert_kbuf(void)
 {
 	e_Kill *kp;
 	char *sp;
@@ -471,7 +486,8 @@ int linsert_kbuf(void)
 }
 
 /* Insert a character to the kill buffer, allocating new chunks as needed. */
-int kinsert(int c)
+int
+kinsert(int c)
 {
 	e_Kill *nchunk;
 
@@ -495,7 +511,8 @@ Delete all of the text saved in the kill buffer.  Called by commands when a new
 kill context is being created.  The kill buffer array is released, just in case
 the buffer has grown to immense size.
 */
-void kdelete(void)
+void
+kdelete(void)
 {
 	e_Kill *kp;
 

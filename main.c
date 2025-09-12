@@ -1,13 +1,14 @@
 #include "me.h"
 
-static int get_universal_arg(int *arg);
-static int command_loop(void);
-static int window_init(void);
-static int execute(int c, int f, int n);
-static void cleanup(void);
-static void emergencyexit(int);
+static int	get_universal_arg(int *arg);
+static int	command_loop(void);
+static int	window_init(void);
+static int	execute(int c, int f, int n);
+static void	cleanup(void);
+static void	emergencyexit(int);
 
-int main(int argc, char **argv)
+int
+main(int argc, char **argv)
 {
 	e_Buffer *firstbp = NULL, *bp;
 	int i;
@@ -38,7 +39,8 @@ int main(int argc, char **argv)
 		command_loop();
 }
 
-static int command_loop(void)
+static int
+command_loop(void)
 {
 	int f = FALSE, n = 1, c;
 
@@ -60,7 +62,8 @@ static int command_loop(void)
 	return execute(c, f, n);
 }
 
-static int get_universal_arg(int *arg)
+static int
+get_universal_arg(int *arg)
 {
 	int n = 4, first_flag = 1, c;
 	for (;;) {
@@ -80,7 +83,8 @@ static int get_universal_arg(int *arg)
 	}
 }
 
-static int window_init(void)
+static int
+window_init(void)
 {
 	e_Window *wp;
 	if ((wp = malloc(sizeof(e_Window))) == NULL) /* First window */
@@ -95,7 +99,8 @@ static int window_init(void)
 }
 
 /* This function looks a key binding up in the binding table. */
-static int (*getbind(int c))(int, int)
+static e_CommandFn
+getbind(int c)
 {
 	e_KeyBind *p = bindings;
 
@@ -113,7 +118,8 @@ all the keys to "self-insert".  It also clears out the "thisflag" word, and
 arranges to move it to the "lastflag", so that the next command can look at it.
 Return the status of command.
 */
-static int execute(int c, int f, int n)
+static int
+execute(int c, int f, int n)
 {
 	int status;
 	int (*execfunc)(int, int);
@@ -152,7 +158,8 @@ static int execute(int c, int f, int n)
 	return status;
 }
 
-static void save_buffers(void)
+static void
+save_buffers(void)
 {
 	e_Buffer *bp;
 	for_each_buff(bp) {
@@ -163,7 +170,8 @@ static void save_buffers(void)
 	}
 }
 
-static void emergencyexit(int unused)
+static void
+emergencyexit(int unused)
 {
 	save_buffers();
 	quit(TRUE, 0);
@@ -173,7 +181,8 @@ static void emergencyexit(int unused)
 If there is an argument, always quit.  Otherwise confirm if a buffer has been
 changed and not written out.
 */
-int quit(int f, int n)
+int
+quit(int f, int n)
 {
 	if (f != FALSE || anycb() == FALSE ||
 			mlyesno("Modified buffers exist.  Quit") == TRUE) {
@@ -185,7 +194,8 @@ int quit(int f, int n)
 	return TRUE;
 }
 
-static void cleanup(void)
+static void
+cleanup(void)
 {
 	e_Window *wp, *tp;
 	e_Buffer *bp;

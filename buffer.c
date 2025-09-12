@@ -1,7 +1,8 @@
 #include "me.h"
 
 /* Switch to buffer `bp`.  (Make buffer `bp` curwp->w_bufp) */
-int swbuffer(e_Buffer *bp)
+int
+swbuffer(e_Buffer *bp)
 {
 	e_Window *wp;
 
@@ -43,7 +44,8 @@ int swbuffer(e_Buffer *bp)
 	return FALSE;
 }
 
-int nextbuffer(int f, int n)
+int
+nextbuffer(int f, int n)
 {
 	e_Buffer *bp = curwp->w_bufp;
 
@@ -57,7 +59,8 @@ int nextbuffer(int f, int n)
 	return swbuffer(bp);
 }
 
-int toggle_rdonly(int f, int n)
+int
+toggle_rdonly(int f, int n)
 {
 	if (curwp->w_bufp->b_flag & BFRDONLY)
 		curwp->w_bufp->b_flag &= ~BFRDONLY;
@@ -68,7 +71,8 @@ int toggle_rdonly(int f, int n)
 }
 
 /* Kill the buffer pointed to by bp, and update bheadp when necessary. */
-int zotbuf(e_Buffer *bp)
+int
+zotbuf(e_Buffer *bp)
 {
 	e_Buffer **bpp = &bheadp, *b;
 
@@ -96,7 +100,8 @@ Look through the list of buffers, return TRUE if there are any changed buffers.
 Return FALSE if no buffers have been changed.
 Buffers that hold magic internal stuff are not considered.
 */
-int anycb(void)
+int
+anycb(void)
 {
 	e_Buffer *bp;
 	for_each_buff(bp) {
@@ -109,7 +114,8 @@ int anycb(void)
 /*
 Find a buffer by name.  Create it if buffer is not found and cflag is TRUE.
 */
-e_Buffer *bfind(char *raw_filename, int cflag)
+e_Buffer*
+bfind(char *raw_filename, int cflag)
 {
 	char filename[NFILEN];
 	e_Buffer *bp;
@@ -151,7 +157,8 @@ This routine blows away all of the text in a buffer.  The window chain is
 nearly always wrong if this gets called, the caller must arrange for the
 updates that are required.
 */
-int bclear(e_Buffer *bp)
+int
+bclear(e_Buffer *bp)
 {
 	e_Line *lp;
 

@@ -20,24 +20,25 @@ struct e_Video {
 #define VFREV	0x0004		/* reverse video status */
 #define VFREQ	0x0008		/* reverse video request */
 
-static void reframe(e_Window *wp);
-static void flush_to_physcr(void);
-static void update_one(e_Window *wp);
-static void update_all(e_Window *wp);
-static void update_line(int row, e_Video *vp1, e_Video *vp2);
-static void modeline(e_Window *wp);
+static void	reframe(e_Window *wp);
+static void	flush_to_physcr(void);
+static void	update_one(e_Window *wp);
+static void	update_all(e_Window *wp);
+static void	update_line(int row, e_Video *vp1, e_Video *vp2);
+static void	modeline(e_Window *wp);
 
-static void update_extended(void);
-static void update_de_extend(void);
-static void update_pos(void);
+static void	update_extended(void);
+static void	update_de_extend(void);
+static void	update_pos(void);
 
-static int mlflush(void);
+static int	mlflush(void);
 
 static e_Video **vscreen;	/* Virtual screen. */
 static e_Video **pscreen;	/* Physical screen. */
 static char *mlbuf = NULL;	/* Message line buffer */
 
-static e_Video *video_new(size_t text_size)
+static e_Video*
+video_new(size_t text_size)
 {
 	e_Video *vp;
 	if ((vp = malloc(sizeof(*vp) + text_size)) == NULL)
@@ -47,7 +48,8 @@ static e_Video *video_new(size_t text_size)
 	return vp;
 }
 
-void vtinit(void)
+void
+vtinit(void)
 {
 	int i;
 
@@ -90,7 +92,8 @@ fail1:
 	free(vscreen);
 }
 
-void vtdeinit(void)
+void
+vtdeinit(void)
 {
 	int i;
 	if (!display_ok)
@@ -112,7 +115,8 @@ void vtdeinit(void)
 Write a character to the virtual screen.
 If the line is too long put a "$" in the last column.
 */
-static void vtputc(int c)
+static void
+vtputc(int c)
 {
 	e_Video *vp = vscreen[vtrow];
 	if (vtcol >= term_ncol) {
@@ -135,7 +139,8 @@ static void vtputc(int c)
 	++vtcol;
 }
 
-static void vtputs(const char *str)
+static void
+vtputs(const char *str)
 {
 	int c;
 	while ((c = *str++) != '\0')
@@ -146,14 +151,16 @@ static void vtputs(const char *str)
 Erase from the end of the software cursor to the end of the line on which the
 software cursor is located.
 */
-static void vteeol(void)
+static void
+vteeol(void)
 {
 	char *vcp = vscreen[vtrow]->v_text;
 	while (vtcol < term_ncol)
 		vcp[vtcol++] = ' ';
 }
 
-int update(int force)
+int
+update(int force)
 {
 	e_Window *wp, *w;
 
@@ -208,7 +215,8 @@ int update(int force)
 }
 
 /* Check to see if the cursor is in the window and re-frame it if needed. */
-static void reframe(e_Window *wp)
+static void
+reframe(e_Window *wp)
 {
 	e_Line *lp1, *lp2;
 	int i;
@@ -239,7 +247,8 @@ static void reframe(e_Window *wp)
 	wp->w_flag &= ~WFFORCE;
 }
 
-static void show_line(e_Line *lp)
+static void
+show_line(e_Line *lp)
 {
 	int i, len;
 	for (i = 0, len = lp->l_used; i < len; ++i)
@@ -247,7 +256,8 @@ static void show_line(e_Line *lp)
 }
 
 /* Update the current line to the virtual screen */
-static void update_one(e_Window *wp)
+static void
+update_one(e_Window *wp)
 {
 	e_Line *lp = wp->w_linep;
 	int i = wp->w_toprow;
@@ -264,7 +274,8 @@ static void update_one(e_Window *wp)
 }
 
 /* Update all the lines in a window on the virtual screen */
-static void update_all(e_Window *wp)
+static void
+update_all(e_Window *wp)
 {
 	e_Line *lp = wp->w_linep;
 	int i = wp->w_toprow, j = i + wp->w_ntrows;
@@ -285,7 +296,8 @@ static void update_all(e_Window *wp)
 Update the position of the hardware cursor and handle extended lines.
 This is the only update for simple moves.
 */
-static void update_pos(void)
+static void
+update_pos(void)
 {
 	e_Line *lp = curwp->w_linep;
 	int i;
@@ -307,7 +319,8 @@ static void update_pos(void)
 	}
 }
 
-static void update_de_extend_wind(e_Window *wp)
+static void
+update_de_extend_wind(e_Window *wp)
 {
 	e_Line *lp;
 	int i = wp->w_toprow;
@@ -329,7 +342,8 @@ static void update_de_extend_wind(e_Window *wp)
 }
 
 /* de-extend any line that derserves it */
-static void update_de_extend(void)
+static void
+update_de_extend(void)
 {
 	e_Window *wp;
 	for_each_wind(wp)
@@ -340,7 +354,8 @@ static void update_de_extend(void)
 If the screen is garbage, clear the physical screen and the virtual screen and
 force a full update.
 */
-void update_garbage(void)
+void
+update_garbage(void)
 {
 	char *txt;
 	int i, j;
@@ -359,7 +374,8 @@ void update_garbage(void)
 	sgarbf = FALSE;
 }
 
-static void flush_to_physcr(void)
+static void
+flush_to_physcr(void)
 {
 	e_Video *vp1;
 	int i;
@@ -375,7 +391,8 @@ Update the extended line which the cursor is currently on at a column greater
 than the terminal width.  The line will be scrolled right or left to let the
 user see where the cursor is.
 */
-static void update_extended(void)
+static void
+update_extended(void)
 {
 	e_Line *lp = curwp->w_dotp;
 	int rcursor;
@@ -398,7 +415,8 @@ static void update_extended(void)
 }
 
 /* Update the line to terminal.  The physical column will be updated. */
-static void update_line(int row, e_Video *vp1, e_Video *vp2)
+static void
+update_line(int row, e_Video *vp1, e_Video *vp2)
 {
 	char *cp1, *cp2, *cp3, *cp4;
 	int rev, req, should_send_rev;
@@ -488,7 +506,8 @@ partial_update:
 Redisplay the mode line for the window pointed to by the "wp".  This is the
 only routine that has any idea of how the modeline is formatted.
 */
-static void modeline(e_Window *wp)
+static void
+modeline(e_Window *wp)
 {
 	e_Buffer *bp = wp->w_bufp;
 	int n = wp->w_toprow + wp->w_ntrows;
@@ -512,14 +531,16 @@ static void modeline(e_Window *wp)
 		vtputc(' ');
 }
 
-void update_modelines(void)
+void
+update_modelines(void)
 {
 	e_Window *wp;
 	for_each_wind(wp)
 		wp->w_flag |= WFMODE;
 }
 
-void vtmove(int row, int col)
+void
+vtmove(int row, int col)
 {
 	vtrow = row;
 	vtcol = col;
@@ -529,7 +550,8 @@ void vtmove(int row, int col)
 Send a command to the terminal to move the hardware cursor to row "row" and
 column "col".  The row and column arguments are origin 0.
 */
-void movecursor(int row, int col)
+void
+movecursor(int row, int col)
 {
 	if (row != ttrow || col != ttcol) {
 		ttrow = row;
@@ -540,7 +562,8 @@ void movecursor(int row, int col)
 
 /* The message line is not considered to be part of the virtual screen. */
 
-void mlerase(void)
+void
+mlerase(void)
 {
 	if (mlbuf != NULL)
 		mlbuf[0] = '\0';
@@ -551,7 +574,8 @@ void mlerase(void)
 	mpresf = FALSE;
 }
 
-int mlwrite(const char *fmt, ...)
+int
+mlwrite(const char *fmt, ...)
 {
 	va_list ap;
 	int n;
@@ -563,7 +587,8 @@ int mlwrite(const char *fmt, ...)
 	return n;
 }
 
-int mlvwrite(const char *fmt, va_list ap)
+int
+mlvwrite(const char *fmt, va_list ap)
 {
 	int n;
 	if (mlbuf == NULL)
@@ -576,7 +601,8 @@ int mlvwrite(const char *fmt, va_list ap)
 	return n;
 }
 
-static int mlflush(void)
+static int
+mlflush(void)
 {
 	char *s = mlbuf, c;
 
@@ -589,7 +615,8 @@ static int mlflush(void)
 	return ttcol;
 }
 
-int unput_c(unsigned char c)
+int
+unput_c(unsigned char c)
 {
 	if (c < 0x20 || c == 0x7F) {
 		ttputs("\b\b  \b\b"); return 2;
@@ -600,7 +627,8 @@ int unput_c(unsigned char c)
 	}
 }
 
-int put_c(unsigned char c, void (*p)(int))
+int
+put_c(unsigned char c, void (*p)(int))
 {
 	if (c < 0x20 || c == 0x7F) {
 		p('^'); p(c ^ 0x40); return 2;
@@ -611,7 +639,8 @@ int put_c(unsigned char c, void (*p)(int))
 	}
 }
 
-int next_col(int col, unsigned char c)
+int
+next_col(int col, unsigned char c)
 {
 	if (c == '\t')
 		return (col | TABMASK) + 1;

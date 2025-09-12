@@ -1,11 +1,12 @@
 #include "me.h"
 
-static int readpattern(char *prompt, char *apat);
-static int nextch(e_Line **pcurline, int *pcuroff, int dir);
-static int delins(int dlength, char *instr, int use_meta);
+static int	readpattern(char *prompt, char *apat);
+static int	nextch(e_Line **pcurline, int *pcuroff, int dir);
+static int	delins(int dlength, char *instr, int use_meta);
 
 /* "bc" comes from the buffer, "pc" from the pattern. */
-static inline int eq(unsigned char bc, unsigned char pc)
+static inline int
+eq(unsigned char bc, unsigned char pc)
 {
 	if (!exact_search)
 		return ensure_upper(bc) == ensure_upper(pc);
@@ -14,7 +15,8 @@ static inline int eq(unsigned char bc, unsigned char pc)
 }
 
 /* Switch between case-sensitive and case-insensitive. */
-int toggle_exact_search(int f, int n)
+int
+toggle_exact_search(int f, int n)
 {
 	e_Window *wp;
 
@@ -29,7 +31,8 @@ int toggle_exact_search(int f, int n)
 Search for a pattern in either direction.  If found, reset the "." to be at
 the start or just after the match string, and (perhaps) repaint the display.
 */
-int search_next(const char *pattern, int direct, int beg_or_end)
+int
+search_next(const char *pattern, int direct, int beg_or_end)
 {
 	e_Line *curline = curwp->w_dotp, *scanline, *matchline;
 	int curoff = curwp->w_doto, scanoff, matchoff;
@@ -72,7 +75,8 @@ loop:
 }
 
 /* If the user did not give a string, use the old one (if there is one) */
-static int readpattern(char *prompt, char *apat)
+static int
+readpattern(char *prompt, char *apat)
 {
 	char tpat[NPAT];
 	int status;
@@ -87,7 +91,8 @@ static int readpattern(char *prompt, char *apat)
 }
 
 /* Replacement buffer can be empty, which deletes the replacement content */
-int clear_rpat(int f, int n)
+int
+clear_rpat(int f, int n)
 {
 	rpat[0] = '\0';
 	mlwrite("Replacement buffer is cleared");
@@ -98,7 +103,8 @@ int clear_rpat(int f, int n)
 Delete a specified length from the current point then either insert the string
 directly, or make use of replacement meta-array.
 */
-static int delins(int dlength, char *instr, int use_meta)
+static int
+delins(int dlength, char *instr, int use_meta)
 {
 	int status;
 
@@ -109,7 +115,8 @@ static int delins(int dlength, char *instr, int use_meta)
 }
 
 /* Query search for a string and replace it with another string. */
-int qreplace(int f, int n)
+int
+qreplace(int f, int n)
 {
 	int numsub, nummatch, interactive, status, dlength, c = 0;
 
@@ -172,7 +179,8 @@ finish:
 }
 
 /* Return -1 when it hits the boundry (start of buffer or end of buffer) */
-static int nextch(e_Line **pcurline, int *pcuroff, int dir)
+static int
+nextch(e_Line **pcurline, int *pcuroff, int dir)
 {
 	e_Line *b_linep = curwp->w_bufp->b_linep;
 	e_Line *curline = *pcurline;

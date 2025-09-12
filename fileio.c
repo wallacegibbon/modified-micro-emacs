@@ -4,7 +4,8 @@ static FILE *ffp;		/* File pointer, all functions. */
 static int eofflag;		/* end-of-file flag */
 
 /* Increase the buffer (fline) by NSTRING bytes. (realloc and copy) */
-static int fline_extend(void)
+static int
+fline_extend(void)
 {
 	char *tmpline;
 	if ((tmpline = malloc(flen + NSTRING)) == NULL)
@@ -21,14 +22,16 @@ static int fline_extend(void)
 }
 
 /* The full reset contains 2 parts: Free and memory; Reset fline and flen */
-static inline void fline_reset(void)
+static inline void
+fline_reset(void)
 {
 	free(fline);
 	fline = NULL;
 	flen = 0;
 }
 
-int ffropen(char *fn)
+int
+ffropen(char *fn)
 {
 	if ((ffp = fopen(fn, "rb")) == NULL) {
 		mlwrite("Cannot open file for reading");
@@ -38,7 +41,8 @@ int ffropen(char *fn)
 	return FIOSUC;
 }
 
-int ffwopen(char *fn)
+int
+ffwopen(char *fn)
 {
 	if ((ffp = fopen(fn, "wb")) == NULL) {
 		mlwrite("Cannot open file for writing");
@@ -47,7 +51,8 @@ int ffwopen(char *fn)
 	return FIOSUC;
 }
 
-int ffclose(void)
+int
+ffclose(void)
 {
 	/* free the buffer (fline) since we do not need it anymore */
 	if (fline)
@@ -63,7 +68,8 @@ int ffclose(void)
 	return FIOSUC;
 }
 
-int ffputline(char *buf, int nbuf)
+int
+ffputline(char *buf, int nbuf)
 {
 	int i;
 	for (i = 0; i < nbuf; ++i)
@@ -79,7 +85,8 @@ int ffputline(char *buf, int nbuf)
 	return FIOSUC;
 }
 
-int ffgetline(int *count)
+int
+ffgetline(int *count)
 {
 	int c, i, s;
 

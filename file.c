@@ -4,7 +4,8 @@
 If the buffer can be found, just switch to the buffer.  Other wise create a new
 buffer, read in the text, and switch to the new buffer.
 */
-int filefind(int f, int n)
+int
+filefind(int f, int n)
 {
 	e_Buffer *bp;
 	char filename[NFILEN];
@@ -23,7 +24,8 @@ int filefind(int f, int n)
 }
 
 /* Read file into the current buffer, blowing away any existing text. */
-int readin(char *filename)
+int
+readin(char *filename)
 {
 	e_Window *wp;
 	e_Line *lp;
@@ -85,7 +87,8 @@ out:
 Ask for a file name, and write the contents of the current buffer to that file.
 Update the remembered file name and clear the buffer changed flag.
 */
-int filewrite(int f, int n)
+int
+filewrite(int f, int n)
 {
 	e_Window *wp;
 	char filename[NFILEN];
@@ -104,7 +107,8 @@ int filewrite(int f, int n)
 	return s;
 }
 
-int filesave(int f, int n)
+int
+filesave(int f, int n)
 {
 	e_Window *wp;
 	int s;
@@ -133,7 +137,8 @@ int filesave(int f, int n)
 	return s;
 }
 
-int writeout(char *fn)
+int
+writeout(char *fn)
 {
 	e_Line *lp;
 	int nline, s;
