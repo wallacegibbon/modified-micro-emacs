@@ -157,7 +157,6 @@ int	killregion(int f, int n);
 int	copyregion(int f, int n);
 int	lowerregion(int f, int n);
 int	upperregion(int f, int n);
-int	spawncli(int f, int n);
 int	ctlxlp(int f, int n);
 int	ctlxrp(int f, int n);
 int	ctlxe(int f, int n);
