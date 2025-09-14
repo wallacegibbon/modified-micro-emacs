@@ -90,14 +90,13 @@ fail2:
 
 fail1:
 	free(vscreen);
+	ansiclose();
 }
 
 void
 vtdeinit(void)
 {
 	int i;
-
-	ansiclose();
 	if (!display_ok)
 		return;
 
@@ -110,6 +109,7 @@ vtdeinit(void)
 	free(pscreen);
 	free(vscreen);
 	free(mlbuf);
+	ansiclose();
 }
 
 /*
