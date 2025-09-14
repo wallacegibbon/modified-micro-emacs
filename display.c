@@ -87,7 +87,6 @@ fail2:
 		free(vscreen[i]);
 	}
 	free(pscreen);
-
 fail1:
 	free(vscreen);
 	ansiclose();
@@ -101,14 +100,14 @@ vtdeinit(void)
 		return;
 
 	display_ok = 0;
+
+	free(mlbuf);
 	for (i = 0; i < term_nrow; ++i) {
 		free(pscreen[i]);
 		free(vscreen[i]);
 	}
-
 	free(pscreen);
 	free(vscreen);
-	free(mlbuf);
 	ansiclose();
 }
 
