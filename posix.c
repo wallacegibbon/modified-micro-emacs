@@ -116,7 +116,7 @@ ttflush(void)
 static void
 window_change_handler(int signum)
 {
-	static const int resizecmd = CTLX | CTL | 'R';
+	static const int resizecmd = CUSTOMKEY | 254;
 	if (write(command_pipe[1], &resizecmd, sizeof(int)) < 0)
 		mlwrite("failed writing to command pipe");
 

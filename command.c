@@ -576,11 +576,11 @@ upperregion(int f, int n)
 
 /* This command will be generated on terminal window resize */
 int
-terminal_resize(int f, int n)
+terminal_reinit(int f, int n)
 {
 	vtdeinit();
 	vtinit();
-	mlwrite("New terminal size: %dx%d", term_ncol, term_nrow);
+	mlwrite("Terminal size: %dx%d", term_ncol, term_nrow);
 	sgarbf = TRUE;
 	rebuild_windows();
 	return TRUE;

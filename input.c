@@ -64,7 +64,7 @@ CSI_map(int c)
 				return CSI_input_map[count][1];
 		}
 	}
-	return NULLPROC_KEY;
+	return CUSTOMKEY | 255;	/* bound to nullproc */
 }
 
 /* Get a command from the keyboard.  CSI input sequence is handled here */

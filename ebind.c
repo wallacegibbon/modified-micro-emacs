@@ -1,8 +1,7 @@
 #include "me.h"
 
 e_KeyBind bindings[] = {
-	{ NULLPROC_KEY /* should be less than 0x20 */, nullproc },
-	{ 0x7F, backdel },
+	{ 0x7F, backdel },	/* Backspace key is bound to 0x7F */
 
 	{ CTL | 'A', gotobol },
 	{ CTL | 'B', backchar },
@@ -49,13 +48,15 @@ e_KeyBind bindings[] = {
 	{ CTLX | CTL | 'F', filefind },
 	{ CTLX | CTL | 'Q', toggle_rdonly },
 
-	/* Do not change this, it's hardcoded in signal handler */
-	{ CTLX | CTL | 'R', terminal_resize },
+	{ CTLX | CTL | 'R', terminal_reinit },
 
 	{ CTLX | CTL | 'S', filesave },
 	{ CTLX | CTL | 'W', filewrite },
 	{ CTLX | CTL | 'X', swapmark },
 	{ CTLX | CTL | 'Z', suspend },
+
+	{ CUSTOMKEY | 254, terminal_reinit },
+	{ CUSTOMKEY | 255, nullproc },
 
 	{ 0, NULL }
 };

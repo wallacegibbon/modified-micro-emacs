@@ -10,8 +10,9 @@
 
 #define KBLOCK		256	/* Size of kill buffer chunks */
 
-#define CTLX		0x8000	/* ^X flag, or'ed in */
-#define CTL		0x4000	/* Control flag, or'ed in */
+#define CUSTOMKEY	0x8000	/* Custom flag */
+#define CTLX		0x4000	/* ^X flag */
+#define CTL		0x2000	/* Control flag */
 
 #define CTLXC		(CTL | 'X')	/* CTL-X prefix char */
 #define ESCAPEC		(CTL | '[')	/* ESCAPE character */
@@ -132,7 +133,5 @@ struct e_KeyBind {
 #define SCR_MIN_COLS	8
 
 #define TABMASK		0x07
-
-#define NULLPROC_KEY	1	/* Should be less than 0x20 */
 
 #endif
