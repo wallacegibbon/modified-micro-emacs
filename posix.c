@@ -11,7 +11,7 @@ and write characters in a barely buffered fashion on the display.
 #include <signal.h>
 
 static struct termios otermios, ntermios;
-static int command_pipe[2];
+static int cmdpipe[2];
 
 static void	window_change_handler(int signum);
 
@@ -39,7 +39,7 @@ ttopen(void)
 
 	tcsetattr(0, TCSADRAIN, &ntermios);
 
-	if (pipe(command_pipe) < 0) {
+	if (pipe(cmdpipe) < 0) {
 		fprintf(stderr, "failed creating command pipe\n");
 		return;
 	}
@@ -53,8 +53,8 @@ This function gets called just before we go back to the command interpreter.
 void
 ttclose(void)
 {
-	close(command_pipe[0]);
-	close(command_pipe[1]);
+	close(cmdpipe[0]);
+	close(cmdpipe[1]);
 	tcsetattr(0, TCSADRAIN, &otermios);
 }
 
@@ -77,27 +77,25 @@ ttgetc(void)
 {
 	static unsigned char buf[32];
 	static int cursor = 0, len = 0;
-	struct pollfd fds[2] = {
-		{ 0, POLLIN, 0 }, { command_pipe[0], POLLIN, 0 },
-	};
-	int cmd_in_pipe;
+	struct pollfd fds[2] = {{ 0, POLLIN, 0 }, { cmdpipe[0], POLLIN, 0 }};
+	int fd;
+
+	/* Check whether there are buffered keys */
+	if (cursor < len)
+		goto ret;
 
 	if (poll(fds, 2, -1 /* wait forever */) < 0)
 		return 0;
 
-	if (fds[1].revents & POLLIN) {
-		if (read(command_pipe[0], &cmd_in_pipe, sizeof(int)) < 0)
-			return 0;
-		return cmd_in_pipe;
-	}
+	/* Keys from stdin have higher priority */
+	fd = fds[0].revents & POLLIN ? fds[0].fd : fds[1].fd;
 
-	if (cursor >= len) {
-		len = read(0, buf, sizeof(buf));
-		if (len <= 0)
-			return 0;
-		cursor = 0;
-	}
+	len = read(fd, buf, sizeof(buf));
+	if (len <= 0)
+		return 0;
 
+	cursor = 0;
+ret:
 	return buf[cursor++];
 }
 
@@ -116,8 +114,8 @@ ttflush(void)
 static void
 window_change_handler(int signum)
 {
-	static const int resizecmd = CUSTOMKEY | 254;
-	if (write(command_pipe[1], &resizecmd, sizeof(int)) < 0)
+	static const unsigned char cmd = TERM_REINIT;
+	if (write(cmdpipe[1], &cmd, sizeof(cmd)) < 0)
 		mlwrite("failed writing to command pipe");
 
 	signal(SIGWINCH, window_change_handler);

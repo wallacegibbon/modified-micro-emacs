@@ -133,5 +133,6 @@ struct e_KeyBind {
 #define SCR_MIN_COLS	8
 
 #define TABMASK		0x07
+#define TERM_REINIT	0x80	/* Byte beyond ASCII. (0x80 ~ 0xFF) */
 
 #endif
