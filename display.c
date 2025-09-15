@@ -251,7 +251,7 @@ void
 rebuild_windows(void)
 {
 	e_Window *wp = wheadp, *wp0 = wheadp, *wp1;
-	while ((wp != NULL) && (wp->w_toprow < term_nrow - 1)) {
+	while ((wp != NULL) && (wp->w_toprow <= term_nrow - 1)) {
 		wp->w_flag |= WFMODE | WFHARD;
 		wp0 = wp;
 		wp = wp->w_wndp;

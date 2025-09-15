@@ -6,10 +6,14 @@ and write characters in a barely buffered fashion on the display.
 #include "me.h"
 #include <errno.h>
 #include <termios.h>
-#include <signal.h>
+#include <poll.h>
 #include <unistd.h>
+#include <signal.h>
 
 static struct termios otermios, ntermios;
+static int command_pipe[2];
+
+static void	window_change_handler(int signum);
 
 /* This function is called once to set up the terminal device streams. */
 void
@@ -34,6 +38,13 @@ ttopen(void)
 	ntermios.c_cc[VTIME] = 0;
 
 	tcsetattr(0, TCSADRAIN, &ntermios);
+
+	if (pipe(command_pipe) < 0) {
+		fprintf(stderr, "failed creating command pipe\n");
+		return;
+	}
+
+	signal(SIGWINCH, window_change_handler);
 }
 
 /*
@@ -42,6 +53,8 @@ This function gets called just before we go back to the command interpreter.
 void
 ttclose(void)
 {
+	close(command_pipe[0]);
+	close(command_pipe[1]);
 	tcsetattr(0, TCSADRAIN, &otermios);
 }
 
@@ -64,6 +77,19 @@ ttgetc(void)
 {
 	static unsigned char buf[32];
 	static int cursor = 0, len = 0;
+	struct pollfd fds[2] = {
+		{ 0, POLLIN, 0 }, { command_pipe[0], POLLIN, 0 },
+	};
+	int cmd_in_pipe;
+
+	if (poll(fds, 2, -1 /* wait forever */) < 0)
+		return 0;
+
+	if (fds[1].revents & POLLIN) {
+		if (read(command_pipe[0], &cmd_in_pipe, sizeof(int)) < 0)
+			return 0;
+		return cmd_in_pipe;
+	}
 
 	if (cursor >= len) {
 		len = read(0, buf, sizeof(buf));
@@ -85,6 +111,16 @@ ttflush(void)
 		sleep(1);
 		status = fflush(stdout);
 	}
+}
+
+static void
+window_change_handler(int signum)
+{
+	static const int resizecmd = CTLX | CTL | 'R';
+	if (write(command_pipe[1], &resizecmd, sizeof(int)) < 0)
+		mlwrite("failed writing to command pipe");
+
+	signal(SIGWINCH, window_change_handler);
 }
 
 static char is_suspended = 0;
