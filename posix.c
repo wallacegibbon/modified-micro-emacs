@@ -24,7 +24,7 @@ ttopen(void)
 
 	/* Input: disable all processing except keep 7-bit characters */
 	ntermios.c_iflag &= ~(IGNBRK | BRKINT | IGNPAR | PARMRK | INPCK |
-				INLCR | IGNCR | ICRNL);
+				INLCR | IGNCR | ICRNL | IXON);
 
 	/* Output: Disables all output processing */
 	ntermios.c_oflag &= ~OPOST;
