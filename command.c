@@ -580,7 +580,7 @@ terminal_reinit(int f, int n)
 {
 	vtdeinit();
 	vtinit();
-	mlwrite("Terminal size: %dx%d", term_ncol, term_nrow);
+	mlwrite("Terminal size: %dx%d", term_ncol, term_nrow + 1);
 	sgarbf = TRUE;
 	rebuild_windows();
 	return TRUE;
