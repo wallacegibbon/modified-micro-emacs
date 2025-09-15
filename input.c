@@ -50,14 +50,34 @@ get1key(void)
 	return ctoec(tgetc());
 }
 
-/* Get a command from the keyboard.  Escape key is ignored (except for CSI) */
+static int CSI_input_map[][2] = {
+	{ 'A', CTL | 'P' }, { 'B', CTL | 'N' },
+};
+
+static int
+CSI_map(int c)
+{
+	int count = sizeof(CSI_input_map) / sizeof(CSI_input_map[0]);
+	if (count > 0) {
+		while (count--) {
+			if (CSI_input_map[count][0] == c)
+				return CSI_input_map[count][1];
+		}
+	}
+	return NULLPROC_KEY;
+}
+
+/* Get a command from the keyboard.  CSI input sequence is handled here */
 int
 getcmd(void)
 {
 	int cmask = 0, c;
 	c = get1key();
 
-	/* What we want to do with ESCAPE (and CSI, SS3) is ignoring it. */
+	/*
+	ESCAPE is not used directly, But escape sequences like CSI and SS3
+	should be handled here even if we do not use them.
+	*/
 	if (c == ESCAPEC) {
 escape_loop:
 		c = get1key();
@@ -66,7 +86,7 @@ escape_loop:
 		if (c == '[' || c == 'O') {
 			do { c = get1key(); }
 			while (isdigit(c) || c == ';');
-			return NULLPROC_KEY;
+			return CSI_map(c);
 		}
 	}
 	if (c == CTLXC && cmask == 0) {
