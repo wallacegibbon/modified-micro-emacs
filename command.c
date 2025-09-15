@@ -574,14 +574,13 @@ upperregion(int f, int n)
 	return toggle_region_case('a', 'z');
 }
 
-/* This command will be generated on terminal window resize */
+/* This command will be executed when terminal window is resized */
 int
 terminal_reinit(int f, int n)
 {
 	vtdeinit();
 	vtinit();
 	mlwrite("Terminal size: %dx%d", term_ncol, term_nrow + 1);
-	sgarbf = TRUE;
 	rebuild_windows();
 	return TRUE;
 }
