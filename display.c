@@ -247,6 +247,34 @@ reframe(e_Window *wp)
 	wp->w_flag &= ~WFFORCE;
 }
 
+void
+rebuild_windows(void)
+{
+	e_Window *wp = wheadp, *wp0 = wheadp, *wp1;
+	while ((wp != NULL) && (wp->w_toprow < term_nrow - 1)) {
+		wp->w_flag |= WFMODE | WFHARD;
+		wp0 = wp;
+		wp = wp->w_wndp;
+	}
+
+	/* wp0 will be the last window anyway after this function */
+	wp0->w_ntrows = term_nrow - 1 - wp0->w_toprow;
+
+	if (wp == NULL)
+		return;
+
+	wp0->w_wndp = NULL;
+
+	/* Those windows that will not be shown should be removed */
+	while (wp != NULL) {
+		if (wp == curwp)
+			curwp = wp0;
+		wp1 = wp;
+		wp = wp->w_wndp;
+		free(wp1);
+	}
+}
+
 static void
 show_line(e_Line *lp)
 {

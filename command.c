@@ -574,6 +574,16 @@ upperregion(int f, int n)
 	return toggle_region_case('a', 'z');
 }
 
+int
+terminal_resize(int f, int n)
+{
+	vtdeinit();
+	vtinit();
+	sgarbf = TRUE;
+	rebuild_windows();
+	return TRUE;
+}
+
 /* Begin a keyboard macro. */
 int
 ctlxlp(int f, int n)

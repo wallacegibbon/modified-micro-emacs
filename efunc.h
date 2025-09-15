@@ -157,6 +157,7 @@ int	killregion(int f, int n);
 int	copyregion(int f, int n);
 int	lowerregion(int f, int n);
 int	upperregion(int f, int n);
+int	terminal_resize(int f, int n);
 int	ctlxlp(int f, int n);
 int	ctlxrp(int f, int n);
 int	ctlxe(int f, int n);
@@ -182,6 +183,7 @@ int	mlvwrite(const char *fmt, va_list ap);
 int	unput_c(unsigned char c);
 int	put_c(unsigned char c, void (*p)(int));
 int	next_col(int col, unsigned char c);
+void	rebuild_windows(void);
 
 /* posix.c */
 void	ttopen(void);

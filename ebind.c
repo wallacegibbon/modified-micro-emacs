@@ -48,6 +48,7 @@ e_KeyBind bindings[] = {
 	{ CTLX | CTL | 'D', clear_rpat },
 	{ CTLX | CTL | 'F', filefind },
 	{ CTLX | CTL | 'Q', toggle_rdonly },
+	{ CTLX | CTL | 'R', terminal_resize },
 	{ CTLX | CTL | 'S', filesave },
 	{ CTLX | CTL | 'W', filewrite },
 	{ CTLX | CTL | 'X', swapmark },
