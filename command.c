@@ -129,6 +129,8 @@ forwline(int f, int n)
 
 	if (n < 0)
 		return backline(f, -n);
+
+	thisflag |= CFCPCN;
 	if (curwp->w_dotp == curwp->w_bufp->b_linep)
 		return FALSE;
 
@@ -136,7 +138,6 @@ forwline(int f, int n)
 	if (!(lastflag & CFCPCN))
 		curgoal = get_col(curwp->w_dotp, curwp->w_doto);
 
-	thisflag |= CFCPCN;
 	lp = curwp->w_dotp;
 	while (n-- && lp != curwp->w_bufp->b_linep)
 		lp = lp->l_fp;
@@ -155,6 +156,7 @@ backline(int f, int n)
 	if (n < 0)
 		return forwline(f, -n);
 
+	thisflag |= CFCPCN;
 	if (curwp->w_dotp->l_bp == curwp->w_bufp->b_linep)
 		return FALSE;
 
@@ -162,7 +164,6 @@ backline(int f, int n)
 	if (!(lastflag & CFCPCN))
 		curgoal = get_col(curwp->w_dotp, curwp->w_doto);
 
-	thisflag |= CFCPCN;
 	lp = curwp->w_dotp;
 	while (n-- && lp->l_bp != curwp->w_bufp->b_linep)
 		lp = lp->l_bp;
