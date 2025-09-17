@@ -87,7 +87,7 @@ static int
 window_init(void)
 {
 	e_Window *wp;
-	if ((wp = malloc(sizeof(e_Window))) == NULL) /* First window */
+	if ((wp = malloc(sizeof(e_Window))) == NULL)	/* First window */
 		return 1;
 
 	memset(wp, 0, sizeof(*wp));

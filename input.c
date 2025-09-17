@@ -114,8 +114,10 @@ mlgetstring(char *buf, int nbuf, int eolchar, const char *fmt, ...)
 	mlvwrite(fmt, ap);
 	va_end(ap);
 
-	/* Init buf so that we can tell whether user have input something. */
-	/* fmt and buf can be the same address, so we do this after mlwrite */
+	/*
+	Initialize buf so that we can tell whether user have input something.
+	fmt and buf can be the same address, so we do this after mlwrite.
+	*/
 	buf[0] = '\0';
 
 char_loop:

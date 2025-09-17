@@ -153,7 +153,7 @@ qprompt:
 	case 'n':
 		forwchar(FALSE, 1);
 		goto replace_loop;
-	case 0x07: /* ASCII code of ^G is 0x07 ('\a') */
+	case 0x07:	/* ASCII code of ^G is 0x07 ('\a') */
 		goto finish;
 	default:
 		ansibeep();

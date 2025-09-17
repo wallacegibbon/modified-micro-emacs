@@ -57,7 +57,7 @@ readin(char *filename)
 		memcpy(lp->l_text, fline, nbytes);
 		++nline;
 	}
-	ffclose();		/* Ignore errors. */
+	ffclose();	/* Ignore errors. */
 	mesg[0] = '\0';
 	if (s == FIOERR) {
 		strcat(mesg, "I/O ERROR, ");

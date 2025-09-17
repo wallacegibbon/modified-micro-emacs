@@ -11,14 +11,14 @@ display screen the same as the virtual display screen.
 typedef struct e_Video e_Video;
 
 struct e_Video {
-	int v_flag;		/* Flags */
-	char v_text[];		/* Row data on screen. */
+	int v_flag;	/* Flags */
+	char v_text[];	/* Row data on screen. */
 };
 
-#define VFCHG   0x0001		/* Changed flag */
-#define VFEXT	0x0002		/* extended (beyond max column) */
-#define VFREV	0x0004		/* reverse video status */
-#define VFREQ	0x0008		/* reverse video request */
+#define VFCHG   0x0001	/* Changed flag */
+#define VFEXT	0x0002	/* extended (beyond max column) */
+#define VFREV	0x0004	/* reverse video status */
+#define VFREQ	0x0008	/* reverse video request */
 
 static void	reframe(e_Window *wp);
 static void	flush_to_physcr(void);
@@ -429,8 +429,10 @@ update_extended(void)
 	rcursor = ((curcol - term_ncol) % term_scrsiz) + term_margin;
 	taboff = lbound = curcol - rcursor + 1;
 
-	/* scan through the line outputing characters to the virtual screen */
-	/* once we reach the left edge */
+	/*
+	scan through the line outputing characters to the virtual screen once
+	we reach the left edge.
+	*/
 	vtmove(currow, -lbound);	/* start scanning offscreen */
 	show_line(lp);
 

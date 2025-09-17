@@ -1,13 +1,13 @@
 #include "me.h"
 
 static inline void
-ascr_init(void) /* Not ANSI, but widely supported */
+ascr_init(void)	/* Not ANSI, but widely supported */
 {
 	ttputs("\033[?1049h");
 }
 
 static inline void
-ascr_end(void) /* Not ANSI, but widely supported */
+ascr_end(void)	/* Not ANSI, but widely supported */
 {
 	ttputs("\033[?1049l");
 }

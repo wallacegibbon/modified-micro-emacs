@@ -4,8 +4,8 @@ static int	search_next_dispatch(char *pattern, int dir);
 static int	get_char(void);
 
 static int cmd_buff[NCMDBUFLEN];	/* Save the command args here */
-static int cmd_offset;			/* Current offset into command buff */
-static int cmd_reexecute = -1;		/* > 0 if re-executing command */
+static int cmd_offset;	/* Current offset into command buff */
+static int cmd_reexecute = -1;	/* > 0 if re-executing command */
 
 int
 fisearch(int f, int n)
@@ -78,7 +78,7 @@ char_loop:
 			strcpy(pat, pat_save);
 			return TRUE;
 		}
-		--cmd_offset;			/* Ignore the '\b' or 0x7F */
+		--cmd_offset;	/* Ignore the '\b' or 0x7F */
 		cmd_buff[--cmd_offset] = '\0';	/* Delete last char */
 		cmd_reexecute = 0;
 		curwp->w_dotp = curline;

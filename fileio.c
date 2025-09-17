@@ -1,7 +1,7 @@
 #include "me.h"
 
-static FILE *ffp;		/* File pointer, all functions. */
-static int eofflag;		/* end-of-file flag */
+static FILE *ffp;	/* File pointer, all functions. */
+static int eofflag;	/* end-of-file flag */
 
 /* Increase the buffer (fline) by NSTRING bytes. (realloc and copy) */
 static int
