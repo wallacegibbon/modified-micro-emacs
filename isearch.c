@@ -24,7 +24,7 @@ fisearch(int f, int n)
 	strncpy_safe(pat_save, pat, NPAT);
 
 start_over:
-	col = mlwrite("ISearch: (%s): ", pat_save);
+	col = mlwrite("Search (%s): ", pat_save);
 
 	/* Restore n for a new loop */
 	n = init_direction;

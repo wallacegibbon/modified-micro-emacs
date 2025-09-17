@@ -1,10 +1,14 @@
 ## Introduction
 
-This is a tiny terminal editor modified from [uEmacs/PK 4.0][uemacs/pk],
+This is a tiny terminal text editor modified from [uEmacs/PK 4.0][uemacs/pk],
 I call it **M**dified Micro **E**macs (`me`).
 
 The script engine is removed.  Concepts like `paragraph` and `word` are also
-removed.
+removed.  Serious bugs in increamental search and keyboard macro got fixed.
+
+> The incremental search of uEmacs/PK 4.0 have some problems:
+> 1. It goes wrong on reverse search in certain situations.
+> 2. It does not work well with keyboard macros.
 
 ANSI CSI control sequences is used directly.  We don't need extra libraries
 (like `libncurses`) to run this program.
@@ -13,22 +17,24 @@ Meta prefixed key bindings are removed.  Ctrl is enough for everything.
 
 UTF-8 support got removed and binary data is supported.
 
+> uEmacs/PK 4.0 will lost data when there is `\0` in the file.
+
 A keyboard remapper like [this one][key remapper] is recommended to map `Space`
 to `Ctrl` when holding it.
 
 
 ## Build and Install
 
-Build:
+Build this program with a POSIX-compliant `make`.
 
 ```sh
-make -j
+make
 ```
 
-To build on non-POSIX systems: (not supported yet)
+To build on non-POSIX systems: (program is not supported yet)
 
 ```sh
-make -j PLATFORM_OBJS=nonposix.o
+make PLATFORM_OBJS=nonposix.o
 ```
 
 Install:
