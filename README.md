@@ -19,9 +19,6 @@ UTF-8 support got removed and binary data is supported.
 
 > uEmacs/PK 4.0 will lost data when there is `\0` in the file.
 
-A keyboard remapper like [this one][key remapper] is recommended to map `Space`
-to `Ctrl` when holding it.
-
 
 ## Build and Install
 
@@ -84,6 +81,14 @@ Run:
 ```sh
 ./showkey
 ```
+
+
+## Tips
+
+A keyboard remapper like [this one][key remapper] is recommended to map `Space`
+to `Ctrl` on holding.  This may be the most ergonomic way to use an Emacs-like
+editor with a Qwerty keyboard.
+
 
 [uemacs/pk]: https://github.com/torvalds/uemacs
 [key remapper]: https://github.com/wallacegibbon/simple-keyboard-remapper
