@@ -114,7 +114,7 @@ ttflush(void)
 static void
 window_change_handler(int signum)
 {
-	static const unsigned char cmd = TERM_REINIT;
+	static const unsigned char cmd = TERM_REINIT_KEY;
 	if (write(cmdpipe[1], &cmd, sizeof(cmd)) < 0)
 		mlwrite("failed writing to command pipe");
 

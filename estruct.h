@@ -3,6 +3,7 @@
 
 #define VISMAC		0	/* Update display during keyboard macros */
 
+#define NCMDBUFLEN	256	/* Length of our command buffer */
 #define NFILEN		256	/* # of bytes, file name */
 #define NSTRING		128	/* # of bytes, string buffers */
 #define NKBDM		256	/* # of strokes, keyboard macro */
@@ -10,7 +11,7 @@
 
 #define KBLOCK		256	/* Size of kill buffer chunks */
 
-#define CUSTOMKEY	0x8000	/* Custom flag */
+#define CUSTOMFLAG	0x8000	/* Custom flag */
 #define CTLX		0x4000	/* ^X flag */
 #define CTL		0x2000	/* Control flag */
 
@@ -50,6 +51,13 @@
 #define DIFCASE		0x20	/* 'a' - 'A' */
 
 typedef struct e_Line e_Line;
+typedef struct e_Buffer e_Buffer;
+typedef struct e_Window e_Window;
+typedef struct e_Region e_Region;
+typedef struct e_Kill e_Kill;
+typedef struct e_KeyBind e_KeyBind;
+
+typedef int (*e_CommandFn)(int f, int n);
 
 struct e_Line {
 	e_Line *l_fp;		/* Link to the next line */
@@ -58,8 +66,6 @@ struct e_Line {
 	int l_used;		/* Used size */
 	char l_text[];		/* A bunch of characters */
 };
-
-typedef struct e_Buffer e_Buffer;
 
 struct e_Buffer {
 	e_Buffer *b_bufp;	/* Link to the next buffer */
@@ -77,8 +83,6 @@ struct e_Buffer {
 #define BFCHG   	0x02	/* Changed since last write */
 #define BFTRUNC		0x04	/* Buffer was truncated when read */
 #define BFRDONLY	0x08	/* Buffer is readonly */
-
-typedef struct e_Window e_Window;
 
 struct e_Window {
 	e_Window *w_wndp;	/* Link to the next window */
@@ -100,31 +104,21 @@ struct e_Window {
 #define WFHARD		0x08	/* Better to a full display */
 #define WFMODE		0x10	/* Update mode line */
 
-typedef struct e_Region e_Region;
-
 struct e_Region {
 	e_Line *r_linep;	/* Origin line address */
 	int r_offset;		/* Origin line offset */
 	long r_size;		/* Length in characters */
 };
 
-typedef struct e_Kill e_Kill;
-
 struct e_Kill {
 	e_Kill *k_next;		/* Link to next chunk, NULL if last */
 	char k_chunk[KBLOCK];	/* Text */
 };
 
-typedef int (*e_CommandFn)(int f, int n);
-
-typedef struct e_KeyBind e_KeyBind;
-
 struct e_KeyBind {
 	int code;
 	e_CommandFn fn;
 };
-
-#define CMDBUFLEN	256	/* Length of our command buffer */
 
 #define IS_REVERSE	0x12	/* Incremental search backward */
 #define IS_FORWARD	0x13	/* Incremental search forward */
@@ -134,6 +128,6 @@ struct e_KeyBind {
 
 #define TABMASK		0x07
 
-#define TERM_REINIT	0xF8	/* Use 0xF8 ~ 0xFF to avoid UTF-8 */
+#define TERM_REINIT_KEY	0xF8	/* Use 0xF8 ~ 0xFF to bypass UTF-8 */
 
 #endif

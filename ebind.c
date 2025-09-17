@@ -2,7 +2,7 @@
 
 e_KeyBind bindings[] = {
 	{ 0x7F			, backdel },	/* Backspace */
-	{ TERM_REINIT		, terminal_reinit },
+	{ TERM_REINIT_KEY	, terminal_reinit },
 
 	{ CTL | 'A'		, gotobol },
 	{ CTL | 'B'		, backchar },
@@ -53,6 +53,6 @@ e_KeyBind bindings[] = {
 	{ CTLX | CTL | 'X'	, swapmark },
 	{ CTLX | CTL | 'Z'	, suspend },
 
-	{ CUSTOMKEY | 255	, nullproc },
+	{ CUSTOMFLAG | 255	, nullproc },
 	{ 0			, NULL }
 };

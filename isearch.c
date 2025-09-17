@@ -3,7 +3,7 @@
 static int	search_next_dispatch(char *pattern, int dir);
 static int	get_char(void);
 
-static int cmd_buff[CMDBUFLEN];		/* Save the command args here */
+static int cmd_buff[NCMDBUFLEN];	/* Save the command args here */
 static int cmd_offset;			/* Current offset into command buff */
 static int cmd_reexecute = -1;		/* > 0 if re-executing command */
 
@@ -166,7 +166,7 @@ get_char(void)
 
 	cmd_reexecute = -1;
 	update(FALSE);
-	if (cmd_offset >= CMDBUFLEN - 1) {
+	if (cmd_offset >= NCMDBUFLEN - 1) {
 		mlwrite("Command too long");
 		return ABORTC;
 	}
