@@ -1,4 +1,4 @@
-## Keep this Makefile ANSI-compliant.
+## Keep this Makefile POSIX-compliant.
 PROGRAM = me
 BIN = /usr/bin
 CC = cc
@@ -10,24 +10,24 @@ PLATFORM_OBJS = posix.o unix.o
 
 OBJS = display.o window.o line.o buffer.o input.o command.o ebind.o global.o \
 	file.o fileio.o search.o isearch.o memory.o util.o ansi.o \
-	$(PLATFORM_OBJS)
+	${PLATFORM_OBJS}
 
-$(PROGRAM): main.o $(OBJS)
-	$(CC) -o $@ main.o $(OBJS)
+${PROGRAM}: main.o ${OBJS}
+	${CC} -o $@ main.o ${OBJS}
 
-showkey: showkey.o $(OBJS)
-	$(CC) -o $@ showkey.o $(OBJS)
+showkey: showkey.o ${OBJS}
+	${CC} -o $@ showkey.o ${OBJS}
 
 .c.o:
-	$(CC) $(CFLAGS) -c $<
+	${CC} ${CFLAGS} -c $<
 
 clean:
-	rm -f $(PROGRAM) showkey core *.o
+	rm -f ${PROGRAM} showkey core *.o
 
-install: $(PROGRAM)
-	cp $(PROGRAM) $(BIN)
-	$(STRIP) $(BIN)/$(PROGRAM)
-	chmod 755 $(BIN)/$(PROGRAM)
+install: ${PROGRAM}
+	cp ${PROGRAM} ${BIN}
+	${STRIP} ${BIN}/${PROGRAM}
+	chmod 755 ${BIN}/${PROGRAM}
 
 main.o: main.c estruct.h efunc.h edef.h
 display.o: display.c estruct.h edef.h
