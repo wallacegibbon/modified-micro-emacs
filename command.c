@@ -1,6 +1,6 @@
 #include "me.h"
 
-/* Convert character index/offset into terminal column number of this line. */
+/* Converts character index/offset into terminal column number of this line. */
 static int
 get_col(e_Line *lp, int offset)
 {
@@ -10,7 +10,7 @@ get_col(e_Line *lp, int offset)
 	return col;
 }
 
-/* Convert terminal column number of this line into character index/offset. */
+/* Converts terminal column number of this line into character index/offset. */
 static int
 get_idx(e_Line *lp, int col)
 {
@@ -24,7 +24,7 @@ get_idx(e_Line *lp, int col)
 	return i;
 }
 
-/* Goto the beginning of the buffer */
+/* Moves to the beginning of the buffer */
 int
 gotobob(int f, int n)
 {
@@ -34,7 +34,7 @@ gotobob(int f, int n)
 	return TRUE;
 }
 
-/* Move to the end of the buffer.  Dot is always put at the end of the file */
+/* Moves to the end of the buffer.  Dot is always put at the end of the file */
 int
 gotoeob(int f, int n)
 {
@@ -44,7 +44,7 @@ gotoeob(int f, int n)
 	return TRUE;
 }
 
-/* Move the cursor to the beginning of the current line. */
+/* Moves the cursor to the beginning of the current line. */
 int
 gotobol(int f, int n)
 {
@@ -52,7 +52,7 @@ gotobol(int f, int n)
 	return TRUE;
 }
 
-/* Move the cursor to the end of the current line */
+/* Moves the cursor to the end of the current line */
 int
 gotoeol(int f, int n)
 {
@@ -233,7 +233,7 @@ setmark(int f, int n)
 	return TRUE;
 }
 
-/* Swap the values of "." and "mark" in the current window. */
+/* Swaps the values of "." and "mark" in the current window. */
 int
 swapmark(int f, int n)
 {
@@ -278,7 +278,7 @@ show_misc_info(int f, int n)
 }
 
 /*
-Quote the next character, and insert it into the buffer.  All the characters
+Quotes the next character, and insert it into the buffer.  All the characters
 are taken literally, with the exception of the newline, which always has its
 line splitting meaning.  The character is always read, even if it is inserted 0
 times, for regularity.
@@ -368,7 +368,7 @@ backdel(int f, int n)
 	return ldelete(nn, FALSE);
 }
 
-/* Yank text back from the kill buffer. */
+/* Yanks the text back from the kill buffer. */
 int
 yank(int f, int n)
 {
@@ -416,8 +416,8 @@ killtext(int f, int n)
 }
 
 /*
-This routine figures out the bounds of the region in the current window, and
-fills in the fields of the "e_Region" structure pointed to by "rp".
+Figures out the bounds of the region in the current window, and fills in the
+fields of the "e_Region" structure pointed to by "rp".
 Because the dot and mark are usually very close together, we scan outward from
 dot looking for mark.
 */
@@ -474,8 +474,8 @@ getregion(e_Region *rp)
 }
 
 /*
-Kill the region.  Ask "getregion" to figure out the bounds of the region.
-Move "." to the start, and kill the characters.
+Kills the region.  Asks "getregion" to figure out the bounds of the region.
+Moves "." to the start, and kills the characters.
 */
 int
 killregion(int f, int n)
@@ -486,7 +486,7 @@ killregion(int f, int n)
 	if ((s = getregion(&region)) != TRUE)
 		return s;
 
-	/* Always clear kbuf, we don't want to mess up region copying */
+	/* Always clears kbuf, we don't want to mess up region copying */
 	kdelete();
 	thisflag |= CFKILL;
 
@@ -496,7 +496,7 @@ killregion(int f, int n)
 }
 
 /*
-Copy all of the characters in the region to the kill buffer.
+Copies all of the characters in the region to the kill buffer.
 Don't move dot at all.  This is a bit like a kill region followed by a yank.
 */
 int
@@ -509,7 +509,7 @@ copyregion(int f, int n)
 	if ((s = getregion(&region)) != TRUE)
 		return s;
 
-	/* Always clear kbuf, we don't want to mess up region copying */
+	/* Always clears bkbuf, we don't want to mess up region copying */
 	kdelete();
 	thisflag |= CFKILL;
 
@@ -541,12 +541,13 @@ toggle_region_case(int start, int end)
 	/* linsert or ldelete is not invoked, rdonly check is necessary here */
 	if (curwp->w_bufp->b_flag & BFRDONLY)
 		return rdonly();
-
 	if ((s = getregion(&region)) != TRUE)
 		return s;
+
 	lchange(WFHARD);
 	linep = region.r_linep;
 	loffs = region.r_offset;
+
 	while (region.r_size--) {
 		if (loffs == linep->l_used) {
 			linep = linep->l_fp;
@@ -561,21 +562,21 @@ toggle_region_case(int start, int end)
 	return TRUE;
 }
 
-/* Zap all of the upper case characters in the region to lower case. */
+/* Zaps all of the upper case characters in the region to lower case. */
 int
 lowerregion(int f, int n)
 {
 	return toggle_region_case('A', 'Z');
 }
 
-/* Zap all of the lower case characters in the region to upper case. */
+/* Zaps all of the lower case characters in the region to upper case. */
 int
 upperregion(int f, int n)
 {
 	return toggle_region_case('a', 'z');
 }
 
-/* This command will be executed when terminal window is resized */
+/* Gets executed when terminal window is resized */
 int
 terminal_reinit(int f, int n)
 {
@@ -586,7 +587,7 @@ terminal_reinit(int f, int n)
 	return TRUE;
 }
 
-/* Begin a keyboard macro. */
+/* Begins a keyboard macro. */
 int
 ctlxlp(int f, int n)
 {
@@ -601,7 +602,7 @@ ctlxlp(int f, int n)
 	return TRUE;
 }
 
-/* End keyboard macro. */
+/* Ends a keyboard macro. */
 int
 ctlxrp(int f, int n)
 {
@@ -616,7 +617,7 @@ ctlxrp(int f, int n)
 	return TRUE;
 }
 
-/* Execute a macro. */
+/* Executes a keyboard macro. */
 int
 ctlxe(int f, int n)
 {
@@ -633,8 +634,8 @@ ctlxe(int f, int n)
 }
 
 /*
-Abort.  Kill off any keyboard macro, etc., that is in progress.  Sometimes
-called as a routine, to do general aborting of stuff.
+Kills off any keyboard macro, etc., that is in progress.  Sometimes called as a
+routine, to do general aborting of stuff.
 */
 int
 ctrlg(int f, int n)

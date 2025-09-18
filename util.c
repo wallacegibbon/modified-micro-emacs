@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdarg.h>
 
-/* Trim preceding and trailing spaces.  dest and src can be the same address */
+/* Trims preceding and trailing spaces.  dest and src can be the same address */
 char*
 trim_spaces(char *dest, const char *src, size_t size, int *trunc)
 {
@@ -13,20 +13,20 @@ trim_spaces(char *dest, const char *src, size_t size, int *trunc)
 	if (dest == NULL || src == NULL)
 		return NULL;
 
-	/* Find the first non-space starting position of src */
+	/* Finds the first non-space starting position of src */
 	while (*start == ' ')
 		++start;
 
-	/* Move to the end of the source string */
+	/* Moves to the end of the source string */
 	end = start;
 	while (*end)
 		++end;
 
-	/* Find the first non-space ending position of src */
+	/* Finds the first non-space ending position of src */
 	while (end[-1] == ' ')
 		--end;
 
-	/* Copy the source string to destination */
+	/* Copies the source string to destination */
 	while (start < end && size-- > 1)
 		*cp++ = *start++;
 	*cp = '\0';
@@ -46,7 +46,7 @@ strncpy_safe(char *dest, const char *src, size_t size)
 	return strncpy(dest, src, size);
 }
 
-/* Reverse string copy. */
+/* Reversed string copy. */
 void
 rvstrcpy(char *rvstr, const char *str)
 {

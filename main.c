@@ -113,10 +113,7 @@ getbind(int c)
 }
 
 /*
-This is the general command execution routine.  It handles the fake binding of
-all the keys to "self-insert".  It also clears out the "thisflag" word, and
-arranges to move it to the "lastflag", so that the next command can look at it.
-Return the status of command.
+Executes a command, updates flags and returns status of the command execution.
 */
 static int
 execute(int c, int f, int n)

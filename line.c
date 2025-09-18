@@ -27,7 +27,7 @@ lalloc(int used)
 	return lp;
 }
 
-/* Delete line "lp".  Fix all of the links that might point at it. */
+/* Deletes line "lp".  Fixes all of the links that might point at it. */
 void
 lfree(e_Line *lp)
 {
@@ -65,7 +65,7 @@ lfree(e_Line *lp)
 
 /*
 Gets called when a character is changed in place in the current buffer.
-It updates required flags in the buffer and window system.
+Updates required flags in the buffer and window system.
 */
 void
 lchange(int flag)
@@ -130,7 +130,7 @@ linsert_realloc(int n, int c, e_Line **lp_new)
 	return TRUE;
 }
 
-/* CAUTION: Make sure that curwp->w_dotp have enough for this insertion */
+/* CAUTION: Makes sure that curwp->w_dotp have enough for this insertion */
 static int
 linsert_inplace(int n, int c)
 {
@@ -150,7 +150,7 @@ linsert_inplace(int n, int c)
 }
 
 /*
-Insert "n" copies of the character "c" at the current location of dot.
+Inserts "n" copies of the character "c" at the current location of dot.
 In the easy case all that happens is the text is stored in the line.
 In the hard case, the line has to be reallocated.
 */
@@ -167,7 +167,7 @@ lnonnewline(int n, int c)
 	if (lp == curwp->w_bufp->b_linep)
 		return linsert_simple(n, c);
 
-	/* Set the default value for lp_new forlinsert_inplace */
+	/* Sets the default value for lp_new forlinsert_inplace */
 	lp_new = lp;
 
 	if (lp->l_used + n > lp->l_size) {
@@ -198,7 +198,7 @@ lnonnewline(int n, int c)
 }
 
 /*
-Insert a newline into the buffer at the current location in current window.
+Inserts a newline into the buffer at the current location in current window.
 */
 static int
 lnewline(void)
@@ -267,7 +267,7 @@ linsert(int n, int c)
 	}
 }
 
-/* linstr -- Insert a string at the current point. */
+/* Inserts a string at the current point. */
 int
 linstr(char *instr)
 {
@@ -322,9 +322,9 @@ ljoin_nextline_try(e_Line *lp)
 }
 
 /*
-Delete a newline.  Join the current line with the next line.
-If the next line is the magic header line always return TRUE.
-even if nothing is done, and this makes the kill buffer work "right".
+Deletes a newline and joins the current line with the next line.
+If the next line is the magic header line always return TRUE even if nothing
+is done, and this makes the kill buffer work "right".
 */
 static int
 ldelnewline(void)
@@ -446,8 +446,8 @@ ldelete_once(int n, int kflag)
 }
 
 /*
-This function deletes "n" bytes, starting at dot.
-The "kflag" is TRUE if the text should be put in the kill buffer.
+Deletes "n" bytes, starting at dot.  The "kflag" is TRUE if the text should
+be put in the kill buffer.
 */
 int
 ldelete(long n, int kflag)
@@ -465,7 +465,7 @@ ldelete(long n, int kflag)
 	return TRUE;
 }
 
-/* Copy contents of the kill buffer into current buffer */
+/* Copies contents of the kill buffer into current buffer */
 int
 linsert_kbuf(void)
 {
@@ -485,7 +485,7 @@ linsert_kbuf(void)
 	return TRUE;
 }
 
-/* Insert a character to the kill buffer, allocating new chunks as needed. */
+/* Inserts a character to the kill buffer, allocates new chunks as needed. */
 int
 kinsert(int c)
 {
@@ -507,9 +507,9 @@ kinsert(int c)
 }
 
 /*
-Delete all of the text saved in the kill buffer.  Called by commands when a new
-kill context is being created.  The kill buffer array is released, just in case
-the buffer has grown to immense size.
+Deletes all of the text saved in the kill buffer.  Gets called by commands when
+a new kill context is being created.  The kill buffer array is released just
+in case the buffer has grown to immense size.
 */
 void
 kdelete(void)
@@ -524,7 +524,7 @@ kdelete(void)
 		free(kbufp);
 	}
 
-	/* Reset all the kill buffer pointers */
+	/* Resets all the kill buffer pointers */
 	kheadp = NULL;
 	kbufp = NULL;
 	kused = KBLOCK;

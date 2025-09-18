@@ -1,9 +1,6 @@
 #include "me.h"
 
-/*
-If the buffer can be found, just switch to the buffer.  Other wise create a new
-buffer, read in the text, and switch to the new buffer.
-*/
+/* Creates a buffer and read file, or switches to a existing buffer. */
 int
 filefind(int f, int n)
 {
@@ -23,7 +20,7 @@ filefind(int f, int n)
 	return swbuffer(bp);
 }
 
-/* Read file into the current buffer, blowing away any existing text. */
+/* Reads file into the current buffer, blows away any existing text. */
 int
 readin(char *filename)
 {
@@ -84,8 +81,8 @@ out:
 }
 
 /*
-Ask for a file name, and write the contents of the current buffer to that file.
-Update the remembered file name and clear the buffer changed flag.
+Askes for a file name, and writes the contents of the current buffer to that
+file.  Updates the remembered file name and clears the buffer changed flag.
 */
 int
 filewrite(int f, int n)

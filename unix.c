@@ -1,5 +1,13 @@
-/* Have to include this file since TIOCGWINSZ is define in this file */
+/* We have to include this file since TIOCGWINSZ is define in this file */
 #include <sys/ioctl.h>
+#include <stdlib.h>
+
+static inline int
+getenv_num(const char *envvar)
+{
+	const char *v = getenv(envvar);
+	return v != NULL ? atoi(v) : 0;
+}
 
 void
 getscreensize(int *widthp, int *heightp)
@@ -11,8 +19,8 @@ getscreensize(int *widthp, int *heightp)
 		*heightp = size.ws_row;
 	} else {
 #endif
-		*widthp = 80;
-		*heightp = 24;
+		*widthp = getenv_num("COLUMNS");
+		*heightp = getenv_num("LINES");
 #ifdef TIOCGWINSZ
 	}
 #endif

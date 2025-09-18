@@ -1,6 +1,6 @@
 #include "me.h"
 
-/* Switch to buffer `bp`.  (Make buffer `bp` curwp->w_bufp) */
+/* Switches to buffer `bp`.  (Makes buffer `bp` curwp->w_bufp) */
 int
 swbuffer(e_Buffer *bp)
 {
@@ -70,7 +70,7 @@ toggle_rdonly(int f, int n)
 	return TRUE;
 }
 
-/* Kill the buffer pointed to by bp, and update bheadp when necessary. */
+/* Kills the buffer pointed to by bp, and update bheadp when necessary. */
 int
 zotbuf(e_Buffer *bp)
 {
@@ -95,11 +95,7 @@ zotbuf(e_Buffer *bp)
 	return TRUE;
 }
 
-/*
-Look through the list of buffers, return TRUE if there are any changed buffers.
-Return FALSE if no buffers have been changed.
-Buffers that hold magic internal stuff are not considered.
-*/
+/* Returns TRUE if there are any changed buffers and FALSE otherwise. */
 int
 anycb(void)
 {
@@ -112,7 +108,7 @@ anycb(void)
 }
 
 /*
-Find a buffer by name.  Create it if buffer is not found and cflag is TRUE.
+Finds a buffer by name; create it if the buffer is not found and cflag is TRUE.
 */
 e_Buffer*
 bfind(char *raw_filename, int cflag)
@@ -153,9 +149,9 @@ bfind(char *raw_filename, int cflag)
 }
 
 /*
-This routine blows away all of the text in a buffer.  The window chain is
-nearly always wrong if this gets called, the caller must arrange for the
-updates that are required.
+Blows away all of the text in a buffer.  The window chain is nearly always
+wrong if this gets called, the caller must arrange for the updates that are
+required.
 */
 int
 bclear(e_Buffer *bp)

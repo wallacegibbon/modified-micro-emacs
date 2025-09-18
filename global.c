@@ -12,8 +12,9 @@ int kbdrep;	/* Number of repetitions */
 int sgarbf = TRUE;	/* TRUE if screen is garbage */
 int mpresf = FALSE;	/* TRUE if message in last line */
 
-short term_nrow = 24;	/* Terminal rows, update on startup */
-short term_ncol = 80;	/* Terminal columns, update on startup */
+short term_nrow;	/* Terminal rows, update on startup */
+short term_ncol;	/* Terminal columns, update on startup */
+
 short term_margin = 8;	/* Min margin for extended lines */
 short term_scrsiz = 64;	/* Size of scroll region */
 

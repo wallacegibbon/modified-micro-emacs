@@ -18,7 +18,7 @@ insert_window_after(e_Window *wp, e_Window *newwp)
 	wp->w_wndp = newwp;
 }
 
-/* Split the current window.  Window smaller than 3 lines cannot be splited. */
+/* Splits the current window.  Window smaller than 3 lines can't be splited. */
 int
 splitwind(int f, int n)
 {
@@ -118,8 +118,8 @@ onlywind(int f, int n)
 }
 
 /*
-With no argument, it just does the refresh.
-With an argument "n", reposition dot to line "n" of the screen.
+With no argument, just does the refresh.
+With an argument "n", repositions dot to line "n" of the screen.
 */
 int
 redraw(int f, int n)
@@ -143,7 +143,7 @@ count_window(void)
 	return n;
 }
 
-/* Make the nth next window (or -nth prev window) the current window. */
+/* Makes the nth next window (or -nth prev window) the current window. */
 int
 nextwind(int f, int n)
 {

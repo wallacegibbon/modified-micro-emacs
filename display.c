@@ -112,8 +112,8 @@ vtdeinit(void)
 }
 
 /*
-Write a character to the virtual screen.
-If the line is too long put a "$" in the last column.
+Writes a character to the virtual screen.  If the line is too long put a "$"
+in the last column.
 */
 static void
 vtputc(int c)
@@ -148,7 +148,7 @@ vtputs(const char *str)
 }
 
 /*
-Erase from the end of the software cursor to the end of the line on which the
+Erases from the end of the software cursor to the end of the line on which the
 software cursor is located.
 */
 static void
@@ -214,7 +214,7 @@ update(int force)
 	return TRUE;
 }
 
-/* Check to see if the cursor is in the window and re-frame it if needed. */
+/* Checks to see if the cursor is in the window and re-frames it if needed. */
 static void
 reframe(e_Window *wp)
 {
@@ -283,7 +283,7 @@ show_line(e_Line *lp)
 		vtputc(lp->l_text[i]);
 }
 
-/* Update the current line to the virtual screen */
+/* Updates the current line to the virtual screen */
 static void
 update_one(e_Window *wp)
 {
@@ -301,7 +301,7 @@ update_one(e_Window *wp)
 	vteeol();
 }
 
-/* Update all the lines in a window on the virtual screen */
+/* Updates all the lines in a window on the virtual screen */
 static void
 update_all(e_Window *wp)
 {
@@ -321,7 +321,7 @@ update_all(e_Window *wp)
 }
 
 /*
-Update the position of the hardware cursor and handle extended lines.
+Updates the position of the hardware cursor and handles extended lines.
 This is the only update for simple moves.
 */
 static void
@@ -360,7 +360,7 @@ update_de_extend_wind(e_Window *wp)
 		if ((lp == wp->w_dotp) && (curcol >= term_ncol - 1))
 			continue;
 
-		/* Have VFEXT flag, and curcol is small, de-extend */
+		/* Has VFEXT flag, and curcol is small, de-extend */
 		vtmove(i, 0);
 		show_line(lp);
 		vteeol();
@@ -369,7 +369,7 @@ update_de_extend_wind(e_Window *wp)
 	}
 }
 
-/* de-extend any line that derserves it */
+/* De-extends any line that derserves it */
 static void
 update_de_extend(void)
 {
@@ -379,8 +379,8 @@ update_de_extend(void)
 }
 
 /*
-If the screen is garbage, clear the physical screen and the virtual screen and
-force a full update.
+If the screen is garbage, clears the physical screen and the virtual screen and
+forces a full update.
 */
 void
 update_garbage(void)
@@ -415,7 +415,7 @@ flush_to_physcr(void)
 }
 
 /*
-Update the extended line which the cursor is currently on at a column greater
+Updates the extended line which the cursor is currently on at a column greater
 than the terminal width.  The line will be scrolled right or left to let the
 user see where the cursor is.
 */
@@ -425,26 +425,26 @@ update_extended(void)
 	e_Line *lp = curwp->w_dotp;
 	int rcursor;
 
-	/* calculate what column the real cursor will end up in */
+	/* Calculates what column the real cursor will end up in. */
 	rcursor = ((curcol - term_ncol) % term_scrsiz) + term_margin;
 	taboff = lbound = curcol - rcursor + 1;
 
 	/*
-	scan through the line outputing characters to the virtual screen once
+	Scans through the line outputing characters to the virtual screen once
 	we reach the left edge.
 	*/
 	vtmove(currow, -lbound);	/* start scanning offscreen */
 	show_line(lp);
 
-	/* truncate the virtual line, restore tab offset */
+	/* Truncates the virtual line, restores tab offset. */
 	vteeol();
 	taboff = 0;
 
-	/* and put a '$' in column 1 */
+	/* and puts a '$' in column 1 */
 	vscreen[currow]->v_text[0] = '$';
 }
 
-/* Update the line to terminal.  The physical column will be updated. */
+/* Updates the line to terminal.  The physical column will be updated. */
 static void
 update_line(int row, e_Video *vp1, e_Video *vp2)
 {
@@ -486,7 +486,7 @@ full_update:
 	if (should_send_rev)
 		ansirev(TRUE);
 
-	/* Dump virtual line to both physical line and the terminal */
+	/* Dumps virtual line to both physical line and the terminal */
 	while (cp1 < cp3) {
 		ttputc(*cp1);
 		++ttcol;
@@ -513,7 +513,7 @@ partial_update:
 		vp1->v_flag &= ~VFCHG;
 		return;
 	}
-	/* Ignore common chars on the right */
+	/* Ignores common chars on the right */
 	while (cp3[-1] == cp4[-1]) {
 		--cp3;
 		--cp4;
@@ -533,7 +533,7 @@ partial_update:
 }
 
 /*
-Redisplay the mode line for the window pointed to by the "wp".  This is the
+Redisplays the mode line for the window pointed to by the "wp".  This is the
 only routine that has any idea of how the modeline is formatted.
 */
 static void
@@ -577,7 +577,7 @@ vtmove(int row, int col)
 }
 
 /*
-Send a command to the terminal to move the hardware cursor to row "row" and
+Sends a command to the terminal to move the hardware cursor to row "row" and
 column "col".  The row and column arguments are origin 0.
 */
 void

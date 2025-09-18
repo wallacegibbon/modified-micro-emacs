@@ -4,7 +4,7 @@ static int	readpattern(char *prompt, char *apat);
 static int	nextch(e_Line **pcurline, int *pcuroff, int dir);
 static int	delins(int dlength, char *instr, int use_meta);
 
-/* "bc" comes from the buffer, "pc" from the pattern. */
+/* The argument "bc" comes from the buffer, and "pc" comes from the pattern. */
 static inline int
 eq(unsigned char bc, unsigned char pc)
 {
@@ -14,7 +14,7 @@ eq(unsigned char bc, unsigned char pc)
 		return bc == pc;
 }
 
-/* Switch between case-sensitive and case-insensitive. */
+/* Switches between case-sensitive and case-insensitive. */
 int
 toggle_exact_search(int f, int n)
 {
@@ -28,7 +28,7 @@ toggle_exact_search(int f, int n)
 }
 
 /*
-Search for a pattern in either direction.  If found, reset the "." to be at
+Searches for a pattern in either direction.  If found, reset the "." to be at
 the start or just after the match string, and (perhaps) repaint the display.
 */
 int
@@ -100,8 +100,8 @@ clear_rpat(int f, int n)
 }
 
 /*
-Delete a specified length from the current point then either insert the string
-directly, or make use of replacement meta-array.
+Deletes a specified length from the current point then either insert the string
+directly or make use of replacement meta-array.
 */
 static int
 delins(int dlength, char *instr, int use_meta)
@@ -114,7 +114,7 @@ delins(int dlength, char *instr, int use_meta)
 	return status;
 }
 
-/* Query search for a string and replace it with another string. */
+/* Queries and searches for a string and replace it with another string. */
 int
 qreplace(int f, int n)
 {
@@ -178,7 +178,7 @@ finish:
 	return TRUE;
 }
 
-/* Return -1 when it hits the boundry (start of buffer or end of buffer) */
+/* Returns -1 when it hits the boundry (start of buffer or end of buffer) */
 static int
 nextch(e_Line **pcurline, int *pcuroff, int dir)
 {

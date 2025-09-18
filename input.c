@@ -7,7 +7,7 @@ which should be okay since functions like `ctoec` will keep it unchanged.
 
 int reeat_char = -1;
 
-/* Get a key from the terminal driver, resolve any keyboard macro action */
+/* Gets a key from the terminal driver, resolve any keyboard macro action */
 int
 tgetc(void)
 {
@@ -43,7 +43,7 @@ tgetc(void)
 	return c;
 }
 
-/* Get one keystroke.  The only prefixs legal here are the CTL prefixes. */
+/* Gets one keystroke.  The only prefixs legal here are the CTL prefixes. */
 int
 get1key(void)
 {
@@ -67,7 +67,7 @@ CSI_map(int c)
 	return CUSTOMFLAG | 255;	/* bound to nullproc */
 }
 
-/* Get a command from the keyboard.  CSI input sequence is handled here */
+/* Gets a command from the keyboard.  CSI input sequence is handled here */
 int
 getcmd(void)
 {

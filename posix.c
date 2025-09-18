@@ -15,7 +15,7 @@ static int cmdpipe[2];
 
 static void	window_change_handler(int signum);
 
-/* This function is called once to set up the terminal device streams. */
+/* Gets called once to set up the terminal device streams. */
 void
 ttopen(void)
 {
@@ -47,9 +47,7 @@ ttopen(void)
 	signal(SIGWINCH, window_change_handler);
 }
 
-/*
-This function gets called just before we go back to the command interpreter.
-*/
+/* Gets called just before we go back to the command interpreter. */
 void
 ttclose(void)
 {

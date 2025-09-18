@@ -3,7 +3,7 @@
 static FILE *ffp;	/* File pointer, all functions. */
 static int eofflag;	/* end-of-file flag */
 
-/* Increase the buffer (fline) by NSTRING bytes. (realloc and copy) */
+/* Increases the buffer (fline) by NSTRING bytes. (realloc and copy) */
 static int
 fline_extend(void)
 {
