@@ -71,14 +71,18 @@ int ttgetc(void)
 	static unsigned char buf[32];
 	static int cursor = 0, len = 0;
 	struct pollfd fds[2] = {{ 0, POLLIN, 0 }, { cmdpipe[0], POLLIN, 0 }};
-	int fd;
+	int fd, r;
 
 	/* Check whether there are buffered keys */
 	if (cursor < len)
 		goto ret;
-
-	if (poll(fds, 2, -1 /* wait forever */) < 0)
+poll_loop:
+	/* Since we pass -1 as timeout, poll will never return 0 */
+	if ((r = poll(fds, 2, -1)) < 0) {
+		if (errno == EINTR)
+			goto poll_loop;
 		return 0;
+	}
 
 	/* Keys from stdin have higher priority */
 	fd = fds[0].revents & POLLIN ? fds[0].fd : fds[1].fd;
