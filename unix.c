@@ -2,15 +2,13 @@
 #include <sys/ioctl.h>
 #include <stdlib.h>
 
-static inline int
-getenv_num(const char *envvar)
+static inline int getenv_num(const char *envvar)
 {
 	const char *v = getenv(envvar);
 	return v != NULL ? atoi(v) : 0;
 }
 
-void
-getscreensize(int *widthp, int *heightp)
+void getscreensize(int *widthp, int *heightp)
 {
 #ifdef TIOCGWINSZ
 	struct winsize size;

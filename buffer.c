@@ -1,10 +1,9 @@
 #include "me.h"
 
 /* Switches to buffer `bp`.  (Makes buffer `bp` curwp->w_bufp) */
-int
-swbuffer(e_Buffer *bp)
+int swbuffer(struct buffer *bp)
 {
-	e_Window *wp;
+	struct window *wp;
 
 	if (bp == NULL || bp == curwp->w_bufp)
 		return FALSE;
@@ -44,10 +43,9 @@ swbuffer(e_Buffer *bp)
 	return FALSE;
 }
 
-int
-nextbuffer(int f, int n)
+int nextbuffer(int f, int n)
 {
-	e_Buffer *bp = curwp->w_bufp;
+	struct buffer *bp = curwp->w_bufp;
 
 	if (n < 1 || bp == NULL)
 		return FALSE;
@@ -59,8 +57,7 @@ nextbuffer(int f, int n)
 	return swbuffer(bp);
 }
 
-int
-toggle_rdonly(int f, int n)
+int toggle_rdonly(int f, int n)
 {
 	if (curwp->w_bufp->b_flag & BFRDONLY)
 		curwp->w_bufp->b_flag &= ~BFRDONLY;
@@ -71,10 +68,9 @@ toggle_rdonly(int f, int n)
 }
 
 /* Kills the buffer pointed to by bp, and update bheadp when necessary. */
-int
-zotbuf(e_Buffer *bp)
+int zotbuf(struct buffer *bp)
 {
-	e_Buffer **bpp = &bheadp, *b;
+	struct buffer **bpp = &bheadp, *b;
 
 	if (bp->b_nwnd != 0) {
 		mlwrite("Buffer is being displayed");
@@ -96,10 +92,9 @@ zotbuf(e_Buffer *bp)
 }
 
 /* Returns TRUE if there are any changed buffers and FALSE otherwise. */
-int
-anycb(void)
+int anycb(void)
 {
-	e_Buffer *bp;
+	struct buffer *bp;
 	for_each_buff(bp) {
 		if ((bp->b_flag & BFCHG))
 			return TRUE;
@@ -110,12 +105,11 @@ anycb(void)
 /*
 Finds a buffer by name; create it if the buffer is not found and cflag is TRUE.
 */
-e_Buffer*
-bfind(char *raw_filename, int cflag)
+struct buffer *bfind(char *raw_filename, int cflag)
 {
 	char filename[NFILEN];
-	e_Buffer *bp;
-	e_Line *lp;
+	struct buffer *bp;
+	struct line *lp;
 	int trunc;
 
 	trim_spaces(filename, raw_filename, NFILEN, &trunc);
@@ -129,7 +123,7 @@ bfind(char *raw_filename, int cflag)
 	}
 	if (cflag == FALSE)
 		return NULL;
-	if ((bp = malloc(sizeof(e_Buffer))) == NULL)
+	if ((bp = malloc(sizeof(struct buffer))) == NULL)
 		return NULL;
 	memset(bp, 0, sizeof(*bp));
 
@@ -153,10 +147,9 @@ Blows away all of the text in a buffer.  The window chain is nearly always
 wrong if this gets called, the caller must arrange for the updates that are
 required.
 */
-int
-bclear(e_Buffer *bp)
+int bclear(struct buffer *bp)
 {
-	e_Line *lp;
+	struct line *lp;
 
 	if ((bp->b_flag & BFCHG) && mlyesno("Discard changes") != TRUE)
 		return FALSE;

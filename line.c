@@ -7,17 +7,16 @@ for any good reason.
 
 #define BLOCK_SIZE	16	/* Line block chunk size. */
 
-e_Line*
-lalloc(int used)
+struct line *lalloc(int used)
 {
-	e_Line *lp;
+	struct line *lp;
 	int size;
 
 	size = (used + BLOCK_SIZE - 1) & ~(BLOCK_SIZE - 1);
 	if (size == 0)
 		size = BLOCK_SIZE;
 
-	if ((lp = malloc(sizeof(e_Line) + size)) == NULL) {
+	if ((lp = malloc(sizeof(struct line) + size)) == NULL) {
 		mlwrite("OUT OF MEMORY");
 		return NULL;
 	}
@@ -28,11 +27,10 @@ lalloc(int used)
 }
 
 /* Deletes line "lp".  Fixes all of the links that might point at it. */
-void
-lfree(e_Line *lp)
+void lfree(struct line *lp)
 {
-	e_Buffer *bp;
-	e_Window *wp;
+	struct buffer *bp;
+	struct window *wp;
 
 	for_each_wind(wp) {
 		if (wp->w_linep == lp)
@@ -67,10 +65,9 @@ lfree(e_Line *lp)
 Gets called when a character is changed in place in the current buffer.
 Updates required flags in the buffer and window system.
 */
-void
-lchange(int flag)
+void lchange(int flag)
 {
-	e_Window *wp;
+	struct window *wp;
 
 	if (curwp->w_bufp->b_nwnd != 1)	/* Ensure hard. */
 		flag = WFHARD;
@@ -84,10 +81,9 @@ lchange(int flag)
 	}
 }
 
-static int
-linsert_simple(int n, int c)
+static int linsert_simple(int n, int c)
 {
-	e_Line *lp;
+	struct line *lp;
 	int i;
 
 	if (curwp->w_doto != 0) {
@@ -105,10 +101,9 @@ linsert_simple(int n, int c)
 	return TRUE;
 }
 
-static int
-linsert_realloc(int n, int c, e_Line **lp_new)
+static int linsert_realloc(int n, int c, struct line **lp_new)
 {
-	e_Line *lp1 = curwp->w_dotp, *lp2;
+	struct line *lp1 = curwp->w_dotp, *lp2;
 	int doto = curwp->w_doto;
 	char *cp1, *cp2;
 
@@ -131,10 +126,9 @@ linsert_realloc(int n, int c, e_Line **lp_new)
 }
 
 /* CAUTION: Makes sure that curwp->w_dotp have enough for this insertion */
-static int
-linsert_inplace(int n, int c)
+static int linsert_inplace(int n, int c)
 {
-	e_Line *lp = curwp->w_dotp;
+	struct line *lp = curwp->w_dotp;
 	int doto = curwp->w_doto;
 	char *cp1, *cp2;
 
@@ -154,11 +148,10 @@ Inserts "n" copies of the character "c" at the current location of dot.
 In the easy case all that happens is the text is stored in the line.
 In the hard case, the line has to be reallocated.
 */
-static int
-lnonnewline(int n, int c)
+static int lnonnewline(int n, int c)
 {
-	e_Window *wp;
-	e_Line *lp = curwp->w_dotp, *lp_new;
+	struct window *wp;
+	struct line *lp = curwp->w_dotp, *lp_new;
 	int doto = curwp->w_doto;
 
 	lchange(WFEDIT);
@@ -200,11 +193,10 @@ lnonnewline(int n, int c)
 /*
 Inserts a newline into the buffer at the current location in current window.
 */
-static int
-lnewline(void)
+static int lnewline(void)
 {
-	e_Window *wp;
-	e_Line *lp = curwp->w_dotp, *lp_new;
+	struct window *wp;
+	struct line *lp = curwp->w_dotp, *lp_new;
 	int doto = curwp->w_doto;
 	char *cp1, *cp2;
 
@@ -248,8 +240,7 @@ lnewline(void)
 	return TRUE;
 }
 
-int
-linsert(int n, int c)
+int linsert(int n, int c)
 {
 	int s = TRUE;
 
@@ -268,8 +259,7 @@ linsert(int n, int c)
 }
 
 /* Inserts a string at the current point. */
-int
-linstr(char *instr)
+int linstr(char *instr)
 {
 	int c;
 
@@ -284,11 +274,10 @@ linstr(char *instr)
 	return TRUE;
 }
 
-static int
-ljoin_nextline_try(e_Line *lp)
+static int ljoin_nextline_try(struct line *lp)
 {
-	e_Window *wp;
-	e_Line *lp_next = lp->l_fp;
+	struct window *wp;
+	struct line *lp_next = lp->l_fp;
 	char *cp1, *cp2;
 
 	/* If the rest size of lp is not enough to hold next line */
@@ -326,11 +315,10 @@ Deletes a newline and joins the current line with the next line.
 If the next line is the magic header line always return TRUE even if nothing
 is done, and this makes the kill buffer work "right".
 */
-static int
-ldelnewline(void)
+static int ldelnewline(void)
 {
-	e_Window *wp;
-	e_Line *lp = curwp->w_dotp, *lp2 = lp->l_fp, *lp_new;
+	struct window *wp;
+	struct line *lp = curwp->w_dotp, *lp2 = lp->l_fp, *lp_new;
 	char *cp1, *cp2;
 	int total_used;
 
@@ -385,11 +373,10 @@ ldelnewline(void)
 	return TRUE;
 }
 
-static int
-ldelete_once(int n, int kflag)
+static int ldelete_once(int n, int kflag)
 {
-	e_Window *wp;
-	e_Line *lp = curwp->w_dotp;
+	struct window *wp;
+	struct line *lp = curwp->w_dotp;
 	int doto = curwp->w_doto, chunk;
 	char *cp1, *cp2;
 
@@ -449,8 +436,7 @@ ldelete_once(int n, int kflag)
 Deletes "n" bytes, starting at dot.  The "kflag" is TRUE if the text should
 be put in the kill buffer.
 */
-int
-ldelete(long n, int kflag)
+int ldelete(long n, int kflag)
 {
 	if (curwp->w_bufp->b_flag & BFRDONLY)
 		return rdonly();
@@ -466,10 +452,9 @@ ldelete(long n, int kflag)
 }
 
 /* Copies contents of the kill buffer into current buffer */
-int
-linsert_kbuf(void)
+int linsert_kbuf(void)
 {
-	e_Kill *kp;
+	struct kill *kp;
 	char *sp;
 	int n;
 
@@ -486,13 +471,12 @@ linsert_kbuf(void)
 }
 
 /* Inserts a character to the kill buffer, allocates new chunks as needed. */
-int
-kinsert(int c)
+int kinsert(int c)
 {
-	e_Kill *nchunk;
+	struct kill *nchunk;
 
 	if (kused >= KBLOCK) {
-		if ((nchunk = malloc(sizeof(e_Kill))) == NULL)
+		if ((nchunk = malloc(sizeof(struct kill))) == NULL)
 			return FALSE;
 		if (kheadp == NULL)
 			kheadp = nchunk;
@@ -511,10 +495,9 @@ Deletes all of the text saved in the kill buffer.  Gets called by commands when
 a new kill context is being created.  The kill buffer array is released just
 in case the buffer has grown to immense size.
 */
-void
-kdelete(void)
+void kdelete(void)
 {
-	e_Kill *kp;
+	struct kill *kp;
 
 	if (kheadp == NULL)
 		return;

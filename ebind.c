@@ -1,6 +1,6 @@
 #include "me.h"
 
-e_KeyBind bindings[] = {
+struct keybind bindings[] = {
 	{ 0x7F, backdel },	/* Backspace is usually bound to 0x7F */
 	{ TERM_REINIT_KEY, terminal_reinit },
 

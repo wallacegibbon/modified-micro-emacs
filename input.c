@@ -8,8 +8,7 @@ which should be okay since functions like `ctoec` will keep it unchanged.
 int reeat_char = -1;
 
 /* Gets a key from the terminal driver, resolve any keyboard macro action */
-int
-tgetc(void)
+int tgetc(void)
 {
 	int c = reeat_char;
 	if (c != -1) {
@@ -44,32 +43,29 @@ tgetc(void)
 }
 
 /* Gets one keystroke.  The only prefixs legal here are the CTL prefixes. */
-int
-get1key(void)
+int get1key(void)
 {
 	return ctoec(tgetc());
 }
 
-static int CSI_input_map[][2] = {
+static int csi_input_map[][2] = {
 	{ 'A', CTL | 'P' }, { 'B', CTL | 'N' },
 };
 
-static int
-CSI_map(int c)
+static int csi_map(int c)
 {
-	int count = sizeof(CSI_input_map) / sizeof(CSI_input_map[0]);
+	int count = sizeof(csi_input_map) / sizeof(csi_input_map[0]);
 	if (count > 0) {
 		while (count--) {
-			if (CSI_input_map[count][0] == c)
-				return CSI_input_map[count][1];
+			if (csi_input_map[count][0] == c)
+				return csi_input_map[count][1];
 		}
 	}
 	return CUSTOMFLAG | 255;	/* bound to nullproc */
 }
 
 /* Gets a command from the keyboard.  CSI input sequence is handled here */
-int
-getcmd(void)
+int getcmd(void)
 {
 	int cmask = 0, c;
 	c = get1key();
@@ -86,7 +82,7 @@ escape_loop:
 		if (c == '[' || c == 'O') {
 			do { c = get1key(); }
 			while (isdigit(c) || c == ';');
-			return CSI_map(c);
+			return csi_map(c);
 		}
 	}
 	if (c == CTLXC && cmask == 0) {
@@ -104,8 +100,7 @@ escape_loop:
 		return c;
 }
 
-int
-mlgetstring(char *buf, int nbuf, int eolchar, const char *fmt, ...)
+int mlgetstring(char *buf, int nbuf, int eolchar, const char *fmt, ...)
 {
 	int cpos = 0, c, expc;
 	va_list ap;
@@ -154,8 +149,7 @@ normal_exit:
 	return buf[0] != '\0';
 }
 
-int
-mlgetchar(const char *fmt, ...)
+int mlgetchar(const char *fmt, ...)
 {
 	va_list ap;
 	int c;
@@ -169,14 +163,12 @@ mlgetchar(const char *fmt, ...)
 	return c;
 }
 
-int
-mlreply(char *prompt, char *buf, int nbuf)
+int mlreply(char *prompt, char *buf, int nbuf)
 {
 	return mlgetstring(buf, nbuf, ENTERC, "%s", prompt);
 }
 
-int
-mlyesno(char *prompt)
+int mlyesno(char *prompt)
 {
 	for (;;) {
 		switch (mlgetchar("%s (y/n)? ", prompt)) {
@@ -190,16 +182,14 @@ mlyesno(char *prompt)
 	}
 }
 
-int
-ectoc(int c)
+int ectoc(int c)
 {
 	if (c & CTL)
 		c = ~CTL & (c - '@');
 	return c;
 }
 
-int
-ctoec(int c)
+int ctoec(int c)
 {
 	if (c >= 0x00 && c <= 0x1F)
 		c = CTL | (c + '@');

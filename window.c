@@ -1,9 +1,8 @@
 #include "me.h"
 
-static void
-insert_window_before(e_Window *wp, e_Window *newwp)
+static void insert_window_before(struct window *wp, struct window *newwp)
 {
-	e_Window **wpp = &wheadp, *w;
+	struct window **wpp = &wheadp, *w;
 	while ((w = *wpp) != wp)
 		wpp = &w->w_wndp;
 
@@ -11,26 +10,24 @@ insert_window_before(e_Window *wp, e_Window *newwp)
 	newwp->w_wndp = wp;
 }
 
-static void
-insert_window_after(e_Window *wp, e_Window *newwp)
+static void insert_window_after(struct window *wp, struct window *newwp)
 {
 	newwp->w_wndp = wp->w_wndp;
 	wp->w_wndp = newwp;
 }
 
 /* Splits the current window.  Window smaller than 3 lines can't be splited. */
-int
-splitwind(int f, int n)
+int splitwind(int f, int n)
 {
-	e_Window *wp;
-	e_Line *lp;
+	struct window *wp;
+	struct line *lp;
 	int ntru, ntrl, ntrd;
 
 	if (curwp->w_ntrows < 3) {
 		mlwrite("Cannot split a %d line window", curwp->w_ntrows);
 		return FALSE;
 	}
-	if ((wp = malloc(sizeof(e_Window))) == NULL) {
+	if ((wp = malloc(sizeof(struct window))) == NULL) {
 		mlwrite("Failed allocating memory for new window");
 		return FALSE;
 	}
@@ -79,11 +76,10 @@ splitwind(int f, int n)
 }
 
 /* Makes the current window the only window on the screen. */
-int
-onlywind(int f, int n)
+int onlywind(int f, int n)
 {
-	e_Window *wp;
-	e_Line *lp1, *lp2;
+	struct window *wp;
+	struct line *lp1, *lp2;
 	int i;
 
 	/* Delete all other windows except the current one */
@@ -121,8 +117,7 @@ onlywind(int f, int n)
 With no argument, just does the refresh.
 With an argument "n", repositions dot to line "n" of the screen.
 */
-int
-redraw(int f, int n)
+int redraw(int f, int n)
 {
 	if (f == FALSE) {
 		sgarbf = TRUE;
@@ -133,10 +128,9 @@ redraw(int f, int n)
 	return TRUE;
 }
 
-static int
-count_window(void)
+static int count_window(void)
 {
-	e_Window *wp = wheadp;
+	struct window *wp = wheadp;
 	int n = 1;
 	while ((wp = wp->w_wndp) != NULL)
 		++n;
@@ -144,10 +138,9 @@ count_window(void)
 }
 
 /* Makes the nth next window (or -nth prev window) the current window. */
-int
-nextwind(int f, int n)
+int nextwind(int f, int n)
 {
-	e_Window *wp = curwp;
+	struct window *wp = curwp;
 	int wcount;
 
 	if (wheadp->w_wndp == NULL)
@@ -171,14 +164,12 @@ nextwind(int f, int n)
 	return TRUE;
 }
 
-int
-prevwind(int f, int n)
+int prevwind(int f, int n)
 {
 	return nextwind(f, -n);
 }
 
-void
-resetwind(e_Window *wp)
+void resetwind(struct window *wp)
 {
 	wp->w_linep = wp->w_bufp->b_linep->l_fp;
 	wp->w_dotp = wp->w_linep;

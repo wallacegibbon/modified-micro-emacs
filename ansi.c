@@ -1,19 +1,16 @@
 #include "me.h"
 
-static inline void
-ascr_init(void)	/* Not ANSI, but widely supported */
+static inline void ascr_init(void)	/* Not ANSI, but widely supported */
 {
 	ttputs("\033[?1049h");
 }
 
-static inline void
-ascr_end(void)	/* Not ANSI, but widely supported */
+static inline void ascr_end(void)	/* Not ANSI, but widely supported */
 {
 	ttputs("\033[?1049l");
 }
 
-void
-ansiopen(void)
+void ansiopen(void)
 {
 	int cols, rows;
 
@@ -27,8 +24,7 @@ ansiopen(void)
 	sgarbf = TRUE;
 }
 
-void
-ansiclose(void)
+void ansiclose(void)
 {
 	/* Move cursor to bottom in case that ascr is not supported. */
 	ansimove(term_nrow, 0);
@@ -37,35 +33,30 @@ ansiclose(void)
 	ttclose();
 }
 
-void
-ansimove(int row, int col)
+void ansimove(int row, int col)
 {
 	char buf[32];
 	snprintf(buf, 32, "\033[%d;%dH", row + 1, col + 1);
 	ttputs(buf);
 }
 
-void
-ansirev(int is_rev)
+void ansirev(int is_rev)
 {
 	ttputs(is_rev ? "\033[7m" : "\033[0m");
 }
 
-void
-ansibeep(void)
+void ansibeep(void)
 {
 	ttputc(BELL);
 	ttflush();
 }
 
-void
-ansieeol(void)
+void ansieeol(void)
 {
 	ttputs("\033[K");
 }
 
-void
-ansieeop(void)
+void ansieeop(void)
 {
 	ttputs("\033[J");
 }

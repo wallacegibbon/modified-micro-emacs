@@ -1,10 +1,9 @@
 #include "me.h"
 
 /* Creates a buffer and read file, or switches to a existing buffer. */
-int
-filefind(int f, int n)
+int filefind(int f, int n)
 {
-	e_Buffer *bp;
+	struct buffer *bp;
 	char filename[NFILEN];
 	int s;
 
@@ -21,11 +20,10 @@ filefind(int f, int n)
 }
 
 /* Reads file into the current buffer, blows away any existing text. */
-int
-readin(char *filename)
+int readin(char *filename)
 {
-	e_Window *wp;
-	e_Line *lp;
+	struct window *wp;
+	struct line *lp;
 	int nline = 0, nbytes, s;
 	char mesg[NSTRING];
 
@@ -84,10 +82,9 @@ out:
 Askes for a file name, and writes the contents of the current buffer to that
 file.  Updates the remembered file name and clears the buffer changed flag.
 */
-int
-filewrite(int f, int n)
+int filewrite(int f, int n)
 {
-	e_Window *wp;
+	struct window *wp;
 	char filename[NFILEN];
 	int s;
 
@@ -104,10 +101,9 @@ filewrite(int f, int n)
 	return s;
 }
 
-int
-filesave(int f, int n)
+int filesave(int f, int n)
 {
-	e_Window *wp;
+	struct window *wp;
 	int s;
 
 	if (!(curwp->w_bufp->b_flag & BFCHG))
@@ -134,10 +130,9 @@ filesave(int f, int n)
 	return s;
 }
 
-int
-writeout(char *fn)
+int writeout(char *fn)
 {
-	e_Line *lp;
+	struct line *lp;
 	int nline, s;
 
 	if ((s = ffwopen(fn)) != FIOSUC)

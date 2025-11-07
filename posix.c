@@ -13,11 +13,10 @@ and write characters in a barely buffered fashion on the display.
 static struct termios otermios, ntermios;
 static int cmdpipe[2];
 
-static void	window_change_handler(int signum);
+static void window_change_handler(int signum);
 
 /* Gets called once to set up the terminal device streams. */
-void
-ttopen(void)
+void ttopen(void)
 {
 	tcgetattr(0, &otermios);
 	ntermios = otermios;
@@ -48,30 +47,26 @@ ttopen(void)
 }
 
 /* Gets called just before we go back to the command interpreter. */
-void
-ttclose(void)
+void ttclose(void)
 {
 	close(cmdpipe[0]);
 	close(cmdpipe[1]);
 	tcsetattr(0, TCSADRAIN, &otermios);
 }
 
-void
-ttputc(int c)
+void ttputc(int c)
 {
 	fputc(c, stdout);
 }
 
-void
-ttputs(const char *str)
+void ttputs(const char *str)
 {
 	int c;
 	while ((c = *str++) != '\0')
 		ttputc(c);
 }
 
-int
-ttgetc(void)
+int ttgetc(void)
 {
 	static unsigned char buf[32];
 	static int cursor = 0, len = 0;
@@ -97,8 +92,7 @@ ret:
 	return buf[cursor++];
 }
 
-void
-ttflush(void)
+void ttflush(void)
 {
 	int status;
 
@@ -109,8 +103,7 @@ ttflush(void)
 	}
 }
 
-static void
-window_change_handler(int signum)
+static void window_change_handler(int signum)
 {
 	static const unsigned char cmd = TERM_REINIT_KEY;
 	if (write(cmdpipe[1], &cmd, sizeof(cmd)) < 0)
@@ -122,8 +115,7 @@ window_change_handler(int signum)
 static char is_suspended = 0;
 
 /* CONT signal is catchable, but we can not call `ansiopen` twice. */
-static void
-continue_handler(int signum)
+static void continue_handler(int signum)
 {
 	if (!is_suspended)
 		return;
@@ -132,22 +124,19 @@ continue_handler(int signum)
 	update(TRUE);
 }
 
-static void
-suspend_handler(int signum)
+static void suspend_handler(int signum)
 {
 	is_suspended = 1;
 	ansiclose();
 	kill(0, SIGSTOP);
 }
 
-void
-suspend_self(void)
+void suspend_self(void)
 {
 	kill(0, SIGTSTP);
 }
 
-void
-bind_exithandler(void (*fn)(int))
+void bind_exithandler(void (*fn)(int))
 {
 	signal(SIGHUP, fn);
 	signal(SIGTERM, fn);

@@ -1,16 +1,15 @@
 #include "me.h"
 
-static int	get_universal_arg(int *arg);
-static int	command_loop(void);
-static int	window_init(void);
-static int	execute(int c, int f, int n);
-static void	cleanup(void);
-static void	emergencyexit(int);
+static int get_universal_arg(int *arg);
+static int command_loop(void);
+static int window_init(void);
+static int execute(int c, int f, int n);
+static void cleanup(void);
+static void emergencyexit(int);
 
-int
-main(int argc, char **argv)
+int main(int argc, char **argv)
 {
-	e_Buffer *firstbp = NULL, *bp;
+	struct buffer *firstbp = NULL, *bp;
 	int i;
 
 	if (argc < 2)
@@ -39,8 +38,7 @@ main(int argc, char **argv)
 		command_loop();
 }
 
-static int
-command_loop(void)
+static int command_loop(void)
 {
 	int f = FALSE, n = 1, c;
 
@@ -62,8 +60,7 @@ command_loop(void)
 	return execute(c, f, n);
 }
 
-static int
-get_universal_arg(int *arg)
+static int get_universal_arg(int *arg)
 {
 	int n = 4, first_flag = 1, c;
 	for (;;) {
@@ -83,11 +80,10 @@ get_universal_arg(int *arg)
 	}
 }
 
-static int
-window_init(void)
+static int window_init(void)
 {
-	e_Window *wp;
-	if ((wp = malloc(sizeof(e_Window))) == NULL)	/* First window */
+	struct window *wp;
+	if ((wp = malloc(sizeof(struct window))) == NULL) /* First window */
 		return 1;
 
 	memset(wp, 0, sizeof(*wp));
@@ -99,10 +95,9 @@ window_init(void)
 }
 
 /* This function looks a key binding up in the binding table. */
-static e_CommandFn
-getbind(int c)
+static commandfn_t getbind(int c)
 {
-	e_KeyBind *p = bindings;
+	struct keybind *p = bindings;
 
 	while (p->fn != NULL) {
 		if (p->code == c)
@@ -115,8 +110,7 @@ getbind(int c)
 /*
 Executes a command, updates flags and returns status of the command execution.
 */
-static int
-execute(int c, int f, int n)
+static int execute(int c, int f, int n)
 {
 	int status;
 	int (*execfunc)(int, int);
@@ -155,10 +149,9 @@ execute(int c, int f, int n)
 	return status;
 }
 
-static void
-save_buffers(void)
+static void save_buffers(void)
 {
-	e_Buffer *bp;
+	struct buffer *bp;
 	for_each_buff(bp) {
 		if ((bp->b_flag & BFCHG) && !(bp->b_flag & BFTRUNC)) {
 			mlwrite("Saving %s", bp->b_fname);
@@ -167,8 +160,7 @@ save_buffers(void)
 	}
 }
 
-static void
-emergencyexit(int unused)
+static void emergencyexit(int unused)
 {
 	save_buffers();
 	quit(TRUE, 0);
@@ -178,8 +170,7 @@ emergencyexit(int unused)
 If there is an argument, always quit.  Otherwise confirm if a buffer has been
 changed and not written out.
 */
-int
-quit(int f, int n)
+int quit(int f, int n)
 {
 	if (f != FALSE || anycb() == FALSE ||
 			mlyesno("Modified buffers exist.  Quit") == TRUE) {
@@ -191,11 +182,10 @@ quit(int f, int n)
 	return TRUE;
 }
 
-static void
-cleanup(void)
+static void cleanup(void)
 {
-	e_Window *wp, *tp;
-	e_Buffer *bp;
+	struct window *wp, *tp;
+	struct buffer *bp;
 
 	while ((bp = bheadp)) {
 		/* clear b_flag to make `zotbuf` run without prompt */

@@ -1,16 +1,15 @@
 #include "me.h"
 
-static int	search_next_dispatch(char *pattern, int dir);
-static int	get_char(void);
+static int search_next_dispatch(char *pattern, int dir);
+static int get_char(void);
 
 static int cmd_buff[NCMDBUFLEN];	/* Save the command args here */
-static int cmd_offset;	/* Current offset into command buff */
-static int cmd_reexecute = -1;	/* > 0 if re-executing command */
+static int cmd_offset;			/* Current offset into command buff */
+static int cmd_reexecute = -1;		/* > 0 if re-executing command */
 
-int
-fisearch(int f, int n)
+int fisearch(int f, int n)
 {
-	e_Line *curline = curwp->w_dotp, *tmpline = NULL;
+	struct line *curline = curwp->w_dotp, *tmpline = NULL;
 	int curoff = curwp->w_doto, tmpoff = 0;
 	int init_direction = n;
 	char pat_save[NPAT];
@@ -128,14 +127,12 @@ pat_append:
 	goto char_loop;
 }
 
-int
-risearch(int f, int n)
+int risearch(int f, int n)
 {
 	return fisearch(f, -n);
 }
 
-static int
-search_next_dispatch(char *pattern, int dir)
+static int search_next_dispatch(char *pattern, int dir)
 {
 	char reversed_pattern[NPAT];
 	int status;
@@ -153,8 +150,7 @@ search_next_dispatch(char *pattern, int dir)
 	return status;
 }
 
-static int
-get_char(void)
+static int get_char(void)
 {
 	int c;
 	if (cmd_reexecute >= 0)	{

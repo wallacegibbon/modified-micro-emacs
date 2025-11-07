@@ -1,8 +1,7 @@
 #include "me.h"
 
 /* Converts character index/offset into terminal column number of this line. */
-static int
-get_col(e_Line *lp, int offset)
+static int get_col(struct line *lp, int offset)
 {
 	int col = 0, i = 0;
 	while (i < offset)
@@ -11,8 +10,7 @@ get_col(e_Line *lp, int offset)
 }
 
 /* Converts terminal column number of this line into character index/offset. */
-static int
-get_idx(e_Line *lp, int col)
+static int get_idx(struct line *lp, int col)
 {
 	int c = 0, i = 0, len = lp->l_used;
 	while (i < len) {
@@ -25,8 +23,7 @@ get_idx(e_Line *lp, int col)
 }
 
 /* Moves to the beginning of the buffer */
-int
-gotobob(int f, int n)
+int gotobob(int f, int n)
 {
 	curwp->w_dotp = curwp->w_bufp->b_linep->l_fp;
 	curwp->w_doto = 0;
@@ -35,8 +32,7 @@ gotobob(int f, int n)
 }
 
 /* Moves to the end of the buffer.  Dot is always put at the end of the file */
-int
-gotoeob(int f, int n)
+int gotoeob(int f, int n)
 {
 	curwp->w_dotp = curwp->w_bufp->b_linep;
 	curwp->w_doto = 0;
@@ -45,25 +41,22 @@ gotoeob(int f, int n)
 }
 
 /* Moves the cursor to the beginning of the current line. */
-int
-gotobol(int f, int n)
+int gotobol(int f, int n)
 {
 	curwp->w_doto = 0;
 	return TRUE;
 }
 
 /* Moves the cursor to the end of the current line */
-int
-gotoeol(int f, int n)
+int gotoeol(int f, int n)
 {
 	curwp->w_doto = curwp->w_dotp->l_used;
 	return TRUE;
 }
 
-int
-backchar(int f, int n)
+int backchar(int f, int n)
 {
-	e_Line *lp;
+	struct line *lp;
 
 	if (n < 0)
 		return forwchar(f, -n);
@@ -82,8 +75,7 @@ backchar(int f, int n)
 	return TRUE;
 }
 
-int
-forwchar(int f, int n)
+int forwchar(int f, int n)
 {
 	if (n < 0)
 		return backchar(f, -n);
@@ -101,8 +93,7 @@ forwchar(int f, int n)
 	return TRUE;
 }
 
-int
-gotoline(int f, int n)
+int gotoline(int f, int n)
 {
 	char arg[NSTRING];
 	int status;
@@ -122,10 +113,9 @@ gotoline(int f, int n)
 	return forwline(f, n - 1);
 }
 
-int
-forwline(int f, int n)
+int forwline(int f, int n)
 {
-	e_Line *lp;
+	struct line *lp;
 
 	if (n < 0)
 		return backline(f, -n);
@@ -148,10 +138,9 @@ forwline(int f, int n)
 	return TRUE;
 }
 
-int
-backline(int f, int n)
+int backline(int f, int n)
 {
-	e_Line *lp;
+	struct line *lp;
 
 	if (n < 0)
 		return forwline(f, -n);
@@ -174,10 +163,9 @@ backline(int f, int n)
 	return TRUE;
 }
 
-int
-forwpage(int f, int n)
+int forwpage(int f, int n)
 {
-	e_Line *lp;
+	struct line *lp;
 
 	if (f == FALSE) {
 		n = curwp->w_ntrows - 2;
@@ -199,10 +187,9 @@ forwpage(int f, int n)
 	return TRUE;
 }
 
-int
-backpage(int f, int n)
+int backpage(int f, int n)
 {
-	e_Line *lp;
+	struct line *lp;
 
 	if (f == FALSE) {
 		n = curwp->w_ntrows - 2;
@@ -224,8 +211,7 @@ backpage(int f, int n)
 	return TRUE;
 }
 
-int
-setmark(int f, int n)
+int setmark(int f, int n)
 {
 	curwp->w_markp = curwp->w_dotp;
 	curwp->w_marko = curwp->w_doto;
@@ -234,10 +220,9 @@ setmark(int f, int n)
 }
 
 /* Swaps the values of "." and "mark" in the current window. */
-int
-swapmark(int f, int n)
+int swapmark(int f, int n)
 {
-	e_Line *odotp;
+	struct line *odotp;
 	int odoto;
 
 	if (curwp->w_markp == NULL) {
@@ -254,10 +239,9 @@ swapmark(int f, int n)
 	return TRUE;
 }
 
-int
-show_misc_info(int f, int n)
+int show_misc_info(int f, int n)
 {
-	e_Line *lp;
+	struct line *lp;
 	int curline = -1, numlines = 0;
 
 	lp = curwp->w_bufp->b_linep->l_fp;
@@ -283,8 +267,7 @@ are taken literally, with the exception of the newline, which always has its
 line splitting meaning.  The character is always read, even if it is inserted 0
 times, for regularity.
 */
-int
-quote(int f, int n)
+int quote(int f, int n)
 {
 	int c = tgetc();
 	if (n < 0)
@@ -293,8 +276,7 @@ quote(int f, int n)
 	return linsert(n, c);
 }
 
-int
-newline(int f, int n)
+int newline(int f, int n)
 {
 	if (n < 0)
 		return FALSE;
@@ -302,8 +284,7 @@ newline(int f, int n)
 	return linsert(n, '\n');
 }
 
-static int
-newline_and_indent_one(void)
+static int newline_and_indent_one(void)
 {
 	int nicol = 0, c, i;
 
@@ -333,8 +314,7 @@ newline_and_indent_one(void)
 	return TRUE;
 }
 
-int
-newline_and_indent(int f, int n)
+int newline_and_indent(int f, int n)
 {
 	if (n < 0)
 		return FALSE;
@@ -347,8 +327,7 @@ newline_and_indent(int f, int n)
 	return TRUE;
 }
 
-int
-forwdel(int f, int n)
+int forwdel(int f, int n)
 {
 	if (n < 0)
 		return backdel(f, -n);
@@ -356,8 +335,7 @@ forwdel(int f, int n)
 	return ldelete((long)n, FALSE);
 }
 
-int
-backdel(int f, int n)
+int backdel(int f, int n)
 {
 	long nn = 0;
 	if (n < 0)
@@ -369,8 +347,7 @@ backdel(int f, int n)
 }
 
 /* Yanks the text back from the kill buffer. */
-int
-yank(int f, int n)
+int yank(int f, int n)
 {
 	if (n < 0)
 		return FALSE;
@@ -383,10 +360,9 @@ yank(int f, int n)
 }
 
 /* Kills from dot to the end of the line */
-int
-killtext(int f, int n)
+int killtext(int f, int n)
 {
-	e_Line *nextp;
+	struct line *nextp;
 	long chunk;
 
 	if (n <= 0)
@@ -417,14 +393,13 @@ killtext(int f, int n)
 
 /*
 Figures out the bounds of the region in the current window, and fills in the
-fields of the "e_Region" structure pointed to by "rp".
+fields of the "struct region" structure pointed to by "rp".
 Because the dot and mark are usually very close together, we scan outward from
 dot looking for mark.
 */
-static int
-getregion(e_Region *rp)
+static int getregion(struct region *rp)
 {
-	e_Line *flp, *blp, *tmplp;
+	struct line *flp, *blp, *tmplp;
 	long fsize, bsize;
 
 	if (curwp->w_markp == NULL) {
@@ -477,10 +452,9 @@ getregion(e_Region *rp)
 Kills the region.  Asks "getregion" to figure out the bounds of the region.
 Moves "." to the start, and kills the characters.
 */
-int
-killregion(int f, int n)
+int killregion(int f, int n)
 {
-	e_Region region;
+	struct region region;
 	int s;
 
 	if ((s = getregion(&region)) != TRUE)
@@ -499,11 +473,10 @@ killregion(int f, int n)
 Copies all of the characters in the region to the kill buffer.
 Don't move dot at all.  This is a bit like a kill region followed by a yank.
 */
-int
-copyregion(int f, int n)
+int copyregion(int f, int n)
 {
-	e_Line *linep;
-	e_Region region;
+	struct line *linep;
+	struct region region;
 	int loffs, s;
 
 	if ((s = getregion(&region)) != TRUE)
@@ -531,11 +504,10 @@ copyregion(int f, int n)
 	return TRUE;
 }
 
-static int
-toggle_region_case(int start, int end)
+static int toggle_region_case(int start, int end)
 {
-	e_Line *linep;
-	e_Region region;
+	struct line *linep;
+	struct region region;
 	int loffs, c, s;
 
 	/* linsert or ldelete is not invoked, rdonly check is necessary here */
@@ -563,22 +535,19 @@ toggle_region_case(int start, int end)
 }
 
 /* Zaps all of the upper case characters in the region to lower case. */
-int
-lowerregion(int f, int n)
+int lowerregion(int f, int n)
 {
 	return toggle_region_case('A', 'Z');
 }
 
 /* Zaps all of the lower case characters in the region to upper case. */
-int
-upperregion(int f, int n)
+int upperregion(int f, int n)
 {
 	return toggle_region_case('a', 'z');
 }
 
 /* Gets executed when terminal window is resized */
-int
-terminal_reinit(int f, int n)
+int terminal_reinit(int f, int n)
 {
 	vtdeinit();
 	vtinit();
@@ -588,8 +557,7 @@ terminal_reinit(int f, int n)
 }
 
 /* Begins a keyboard macro. */
-int
-ctlxlp(int f, int n)
+int ctlxlp(int f, int n)
 {
 	if (kbdmode != STOP) {
 		mlwrite("Macro is already active");
@@ -603,8 +571,7 @@ ctlxlp(int f, int n)
 }
 
 /* Ends a keyboard macro. */
-int
-ctlxrp(int f, int n)
+int ctlxrp(int f, int n)
 {
 	if (kbdmode == STOP) {
 		mlwrite("Macro is not active");
@@ -618,8 +585,7 @@ ctlxrp(int f, int n)
 }
 
 /* Executes a keyboard macro. */
-int
-ctlxe(int f, int n)
+int ctlxe(int f, int n)
 {
 	if (kbdmode != STOP) {
 		mlwrite("Macro already active");
@@ -637,8 +603,7 @@ ctlxe(int f, int n)
 Kills off any keyboard macro, etc., that is in progress.  Sometimes called as a
 routine, to do general aborting of stuff.
 */
-int
-ctrlg(int f, int n)
+int ctrlg(int f, int n)
 {
 	ansibeep();
 	kbdmode = STOP;
@@ -646,23 +611,20 @@ ctrlg(int f, int n)
 	return ABORT;
 }
 
-int
-suspend(int f, int n)
+int suspend(int f, int n)
 {
 	suspend_self();
 	return TRUE;
 }
 
-int
-nullproc(int f, int n)
+int nullproc(int f, int n)
 {
 	return TRUE;
 }
 
 /* Non command helper functions */
 
-int
-rdonly(void)
+int rdonly(void)
 {
 	ansibeep();
 	mlwrite("Illegal in read-only mode");
