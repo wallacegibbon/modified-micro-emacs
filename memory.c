@@ -16,10 +16,9 @@ void free(void *);
 
 static inline size_t allocated_size(void *p)
 {
-	if (p)
-		return *((size_t *)p - 1) & ~1;	/* LSB -> 0 after `free` */
-	else
+	if (p == NULL)
 		return 0;
+	return *((size_t *)p - 1) & ~1;	/* LSB -> 0 after `free` */
 }
 
 #pragma GCC diagnostic ignored "-Warray-bounds"

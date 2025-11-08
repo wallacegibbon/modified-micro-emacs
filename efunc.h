@@ -46,7 +46,6 @@ static inline int ensure_upper(int c)
 static inline void line_insert(struct line *lp, struct line *lp_new)
 {
 	struct line *tmp = lp->l_bp;
-
 	lp_new->l_bp = tmp;
 	lp_new->l_fp = lp;
 	tmp->l_fp = lp_new;

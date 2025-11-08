@@ -4,14 +4,12 @@
 int swbuffer(struct buffer *bp)
 {
 	struct window *wp;
-
 	if (bp == NULL || bp == curwp->w_bufp)
 		return FALSE;
 	if (curwp->w_bufp != NULL) {
 		if (--curwp->w_bufp->b_nwnd == 0)
 			wstate_save(curwp);
 	}
-
 	curwp->w_bufp = bp;
 	if (!(curwp->w_bufp->b_flag & BFACTIVE)) {
 		readin(curwp->w_bufp->b_fname);
@@ -19,17 +17,14 @@ int swbuffer(struct buffer *bp)
 		curwp->w_bufp->b_doto = 0;
 		curwp->w_bufp->b_flag |= BFACTIVE;
 	}
-
 	curwp->w_bufp = bp;
 	curwp->w_linep = bp->b_linep;
 	curwp->w_flag |= WFMODE | WFFORCE | WFHARD;
 	curwp->w_force = curwp->w_ntrows / 2;
-
 	if (bp->b_nwnd++ == 0) {
 		wstate_restore(curwp, bp);
 		return TRUE;
 	}
-
 	/* If bp->b_nwnd was not 0, there must be window(s) displaying bp. */
 	for_each_wind(wp) {
 		if (wp != curwp && wp->w_bufp == bp) {
@@ -37,7 +32,6 @@ int swbuffer(struct buffer *bp)
 			return TRUE;
 		}
 	}
-
 	/* Code should not reach here */
 	mlwrite("Internal Error");
 	return FALSE;
@@ -46,14 +40,12 @@ int swbuffer(struct buffer *bp)
 int nextbuffer(int f, int n)
 {
 	struct buffer *bp = curwp->w_bufp;
-
 	if (n < 1 || bp == NULL)
 		return FALSE;
 	while (n-- > 0) {
 		if ((bp = bp->b_bufp) == NULL)
 			bp = bheadp;
 	}
-
 	return swbuffer(bp);
 }
 
@@ -71,7 +63,6 @@ int toggle_rdonly(int f, int n)
 int zotbuf(struct buffer *bp)
 {
 	struct buffer **bpp = &bheadp, *b;
-
 	if (bp->b_nwnd != 0) {
 		mlwrite("Buffer is being displayed");
 		return FALSE;
@@ -80,13 +71,11 @@ int zotbuf(struct buffer *bp)
 		return FALSE;
 
 	free(bp->b_linep);
-
 	/* Unlink bp from the buffer chain */
 	while ((b = *bpp) != bp)
 		bpp = &b->b_bufp;
 
 	*bpp = bp->b_bufp;
-
 	free(bp);
 	return TRUE;
 }
@@ -111,7 +100,6 @@ struct buffer *bfind(char *raw_filename, int cflag)
 	struct buffer *bp;
 	struct line *lp;
 	int trunc;
-
 	trim_spaces(filename, raw_filename, NFILEN, &trunc);
 	if (trunc) {
 		mlwrite("Filename too long");
@@ -150,7 +138,6 @@ required.
 int bclear(struct buffer *bp)
 {
 	struct line *lp;
-
 	if ((bp->b_flag & BFCHG) && mlyesno("Discard changes") != TRUE)
 		return FALSE;
 

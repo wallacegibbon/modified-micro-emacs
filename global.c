@@ -1,8 +1,6 @@
 #include "estruct.h"
 #include <stddef.h>
 
-char hex[] = "0123456789ABCDEF";
-
 int kbdm[NKBDM];	/* Keyboard Macro */
 int *kbdptr;		/* Current position in keyboard buf */
 int *kbdend = kbdm;	/* Ptr to end of the keyboard */
@@ -31,8 +29,8 @@ int curcol;		/* Cursor column */
 int lbound;		/* Leftmost column of current line being displayed */
 int taboff;		/* Tab offset for display */
 
-struct kill *kbufp;		/* Current kill buffer chunk pointer */
-struct kill *kheadp;		/* Head of kill buffer chunks */
+struct kill *kbufp;	/* Current kill buffer chunk pointer */
+struct kill *kheadp;	/* Head of kill buffer chunks */
 int kused = KBLOCK;	/* # of bytes used in kill buffer */
 
 long envram = 0;	/* # of bytes current in use by malloc */
@@ -43,7 +41,6 @@ int flen = 0;		/* Current length of fline */
 int scrollcount = 1;	/* Number of lines to scroll */
 
 struct window *curwp;	/* Current window */
-
 struct window *wheadp;	/* Head of list of windows */
 struct buffer *bheadp;	/* Head of list of buffers */
 
@@ -56,3 +53,5 @@ char pat[NPAT];		/* Search pattern */
 char rpat[NPAT];	/* Replacement pattern */
 
 char exact_search = 0;	/* Do case sensitive search */
+
+char hex[] = "0123456789ABCDEF";

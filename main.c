@@ -11,7 +11,6 @@ int main(int argc, char **argv)
 {
 	struct buffer *firstbp = NULL, *bp;
 	int i;
-
 	if (argc < 2)
 		die(1, NULL, "Please give me at least one file\n");
 
@@ -33,7 +32,6 @@ int main(int argc, char **argv)
 		die(3, cleanup, "Failed initializing window\n");
 
 	swbuffer(firstbp);
-
 	for (;;)
 		command_loop();
 }
@@ -41,7 +39,6 @@ int main(int argc, char **argv)
 static int command_loop(void)
 {
 	int f = FALSE, n = 1, c;
-
 	/* The `update` should be called in each command loop. */
 	update(FALSE);
 
@@ -56,7 +53,6 @@ static int command_loop(void)
 		c = get_universal_arg(&n);
 		f = TRUE;
 	}
-
 	return execute(c, f, n);
 }
 
@@ -88,7 +84,6 @@ static int window_init(void)
 
 	memset(wp, 0, sizeof(*wp));
 	wp->w_ntrows = term_nrow - 1;	/* "-1" for mode line. */
-
 	wheadp = wp;
 	curwp = wp;
 	return 0;
@@ -97,12 +92,10 @@ static int window_init(void)
 /* This function looks a key binding up in the binding table. */
 static commandfn_t getbind(int c)
 {
-	struct keybind *p = bindings;
-
-	while (p->fn != NULL) {
+	struct keybind *p;
+	for (p = bindings; p->fn != NULL; ++p) {
 		if (p->code == c)
 			return p->fn;
-		++p;
 	}
 	return NULL;
 }
@@ -112,9 +105,8 @@ Executes a command, updates flags and returns status of the command execution.
 */
 static int execute(int c, int f, int n)
 {
+	commandfn_t execfunc;
 	int status;
-	int (*execfunc)(int, int);
-
 	/* If the keystroke is a bound function.  Do it. */
 	execfunc = getbind(c);
 	if (execfunc != NULL) {
@@ -129,7 +121,6 @@ static int execute(int c, int f, int n)
 	/* If C-I is not bound, turn it into untagged value */
 	if (c == (CTL | 'I'))
 		c = '\t';
-
 	if (c > 0xFF) {
 		ansibeep();
 		mlwrite("Key not bound");
@@ -142,7 +133,6 @@ static int execute(int c, int f, int n)
 		lastflag = 0;
 		return n == 0 ? TRUE : FALSE;
 	}
-
 	thisflag = 0;
 	status = linsert(n, c);
 	lastflag = thisflag;
@@ -186,7 +176,6 @@ static void cleanup(void)
 {
 	struct window *wp, *tp;
 	struct buffer *bp;
-
 	while ((bp = bheadp)) {
 		/* clear b_flag to make `zotbuf` run without prompt */
 		bp->b_flag = 0;

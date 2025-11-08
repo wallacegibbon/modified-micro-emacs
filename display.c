@@ -9,7 +9,7 @@ display screen the same as the virtual display screen.
 #include <stdarg.h>
 
 struct video {
-	int v_flag;	/* Flags */
+	int v_flag;	/* Flags (Combinations of VFXXX macros) */
 	char v_text[];	/* Row data on screen. */
 };
 
@@ -48,14 +48,8 @@ static struct video *video_new(size_t text_size)
 void vtinit(void)
 {
 	int i;
-
-	/*
-	ansiopen is not related to this file directly. it is called here simply
-	because vtinit handles all terminal initialization related stuff.
-	*/
-	ansiopen();
+	ansiopen();	/* We need term_nrow and term_ncol initialized */
 	ansirev(FALSE);
-
 	display_ok = 0;
 
 	if ((vscreen = malloc(term_nrow * sizeof(struct video *))) == NULL)
@@ -76,7 +70,6 @@ void vtinit(void)
 	mlbuf[0] = '\0';
 	display_ok = 1;
 	return;
-
 fail2:
 	for (i = 0; i < term_nrow; ++i) {
 		free(pscreen[i]);
@@ -95,7 +88,6 @@ void vtdeinit(void)
 		return;
 
 	display_ok = 0;
-
 	free(mlbuf);
 	for (i = 0; i < term_nrow; ++i) {
 		free(pscreen[i]);
@@ -154,17 +146,14 @@ static void vteeol(void)
 int update(int force)
 {
 	struct window *wp, *w;
-
 	if (!display_ok) {
 		fprintf(stderr, "Display is not ready, nothing to update.");
 		return FALSE;
 	}
-
 #if VISMAC == 0
 	if (force == FALSE && kbdmode == PLAY)
 		return TRUE;
 #endif
-
 	/* Modeline changes should be propagated to all related windows. */
 	for_each_wind(wp) {
 		if (wp->w_flag & WFMODE) {
@@ -176,7 +165,6 @@ int update(int force)
 			}
 		}
 	}
-
 	/* Update any windows that need refreshing */
 	for_each_wind(wp) {
 		if (wp->w_flag) {
@@ -191,10 +179,8 @@ int update(int force)
 			wp->w_force = 0;
 		}
 	}
-
 	update_pos();
 	update_de_extend();
-
 	if (sgarbf)
 		update_garbage();
 
@@ -210,7 +196,6 @@ static void reframe(struct window *wp)
 {
 	struct line *lp1, *lp2;
 	int i;
-
 	if (!(wp->w_flag & WFFORCE)) {
 		lp1 = wp->w_linep;
 		for (i = wp->w_ntrows; i && lp1 != wp->w_bufp->b_linep; --i) {
@@ -221,7 +206,6 @@ static void reframe(struct window *wp)
 		if (i > 0 && lp1 == wp->w_dotp)	/* w_dotp == b_linep */
 			return;
 	}
-
 	if (wp->w_flag & WFFORCE)
 		i = inside(wp->w_force - 1, 0, wp->w_ntrows - 1);
 	else
@@ -245,7 +229,6 @@ void rebuild_windows(void)
 		wp0 = wp;
 		wp = wp->w_wndp;
 	}
-
 	/* wp0 will be the last window anyway after this function */
 	wp0->w_ntrows = term_nrow - 1 - wp0->w_toprow;
 
@@ -253,7 +236,6 @@ void rebuild_windows(void)
 		return;
 
 	wp0->w_wndp = NULL;
-
 	/* Those windows that will not be shown should be removed */
 	while (wp != NULL) {
 		if (wp == curwp)
@@ -276,11 +258,9 @@ static void update_one(struct window *wp)
 {
 	struct line *lp = wp->w_linep;
 	int i = wp->w_toprow;
-
 	for (; lp != wp->w_dotp; lp = lp->l_fp)
 		++i;
 
-	/* and update the virtual line */
 	vscreen[i]->v_flag |= VFCHG;
 	vscreen[i]->v_flag &= ~VFREQ;
 	vtmove(i, 0);
@@ -293,7 +273,6 @@ static void update_all(struct window *wp)
 {
 	struct line *lp = wp->w_linep;
 	int i = wp->w_toprow, j = i + wp->w_ntrows;
-
 	for (; i < j; ++i) {
 		vscreen[i]->v_flag |= VFCHG;
 		vscreen[i]->v_flag &= ~VFREQ;
@@ -369,7 +348,6 @@ void update_garbage(void)
 {
 	char *txt;
 	int i, j;
-
 	for (i = 0; i < term_nrow; ++i) {
 		vscreen[i]->v_flag |= VFCHG;
 		vscreen[i]->v_flag &= ~VFREV;
@@ -377,7 +355,6 @@ void update_garbage(void)
 		for (j = 0; j < term_ncol; ++j)
 			txt[j] = ' ';
 	}
-
 	movecursor(0, 0);
 	ansieeop();
 	mlflush();
@@ -606,7 +583,6 @@ int mlvwrite(const char *fmt, va_list ap)
 static int mlflush(void)
 {
 	char *s = mlbuf, c;
-
 	movecursor(term_nrow, 0);
 	while ((c = *s++))
 		ttcol += put_c(c, ttputc);

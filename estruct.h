@@ -47,7 +47,7 @@
 #define CFKILL		0x0002	/* Last command was a kill */
 
 #define BELL		0x07	/* BELL character */
-
+#define TABMASK		0x07
 #define DIFCASE		0x20	/* 'a' - 'A' */
 
 typedef int (*commandfn_t)(int f, int n);
@@ -118,8 +118,6 @@ struct keybind {
 
 #define SCR_MIN_ROWS	3
 #define SCR_MIN_COLS	8
-
-#define TABMASK		0x07
 
 #define TERM_REINIT_KEY	0xF8	/* Use 0xF8 ~ 0xFF to bypass UTF-8 */
 

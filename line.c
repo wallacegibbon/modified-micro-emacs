@@ -11,16 +11,13 @@ struct line *lalloc(int used)
 {
 	struct line *lp;
 	int size;
-
 	size = (used + BLOCK_SIZE - 1) & ~(BLOCK_SIZE - 1);
 	if (size == 0)
 		size = BLOCK_SIZE;
-
 	if ((lp = malloc(sizeof(struct line) + size)) == NULL) {
 		mlwrite("OUT OF MEMORY");
 		return NULL;
 	}
-
 	lp->l_size = size;
 	lp->l_used = used;
 	return lp;
@@ -31,7 +28,6 @@ void lfree(struct line *lp)
 {
 	struct buffer *bp;
 	struct window *wp;
-
 	for_each_wind(wp) {
 		if (wp->w_linep == lp)
 			wp->w_linep = lp->l_fp;
@@ -68,7 +64,6 @@ Updates required flags in the buffer and window system.
 void lchange(int flag)
 {
 	struct window *wp;
-
 	if (curwp->w_bufp->b_nwnd != 1)	/* Ensure hard. */
 		flag = WFHARD;
 	if (!(curwp->w_bufp->b_flag & BFCHG)) {
@@ -85,7 +80,6 @@ static int linsert_simple(int n, int c)
 {
 	struct line *lp;
 	int i;
-
 	if (curwp->w_doto != 0) {
 		mlwrite("bug: linsert, w_doto of end is not 0");
 		return FALSE;
@@ -217,9 +211,7 @@ static int lnewline(void)
 		*cp2++ = *cp1++;
 
 	lp->l_used -= doto;
-
 	line_insert(lp, lp_new);
-
 	for_each_wind(wp) {
 		if (wp->w_linep == lp)
 			wp->w_linep = lp_new;
@@ -236,19 +228,16 @@ static int lnewline(void)
 				wp->w_marko -= doto;
 		}
 	}
-
 	return TRUE;
 }
 
 int linsert(int n, int c)
 {
 	int s = TRUE;
-
 	if (curwp->w_bufp->b_flag & BFRDONLY)
 		return rdonly();
 	if (n == 0)
 		return TRUE;
-
 	if (c == '\n') {
 		while (s && n--)
 			s = lnewline();
@@ -262,15 +251,12 @@ int linsert(int n, int c)
 int linstr(char *instr)
 {
 	int c;
-
 	if (instr == NULL)
 		return TRUE;
-
 	while ((c = *instr++)) {
 		if (linsert(1, c) != TRUE)
 			return FALSE;
 	}
-
 	return TRUE;
 }
 
@@ -286,7 +272,6 @@ static int ljoin_nextline_try(struct line *lp)
 
 	cp1 = &lp->l_text[lp->l_used];
 	cp2 = &lp_next->l_text[0];
-
 	while (cp2 != &lp_next->l_text[lp_next->l_used])
 		*cp1++ = *cp2++;
 
@@ -302,9 +287,7 @@ static int ljoin_nextline_try(struct line *lp)
 			wp->w_marko += lp->l_used;
 		}
 	}
-
 	lp->l_used += lp_next->l_used;
-
 	line_unlink(lp_next);
 	free(lp_next);
 	return TRUE;
@@ -328,12 +311,10 @@ static int ldelnewline(void)
 			lfree(lp);
 		return TRUE;
 	}
-
 	if (ljoin_nextline_try(lp))
 		return TRUE;
 
 	/* For simplicity, we create a new line to hold lp and lp2 */
-
 	total_used = lp->l_used + lp2->l_used;
 	if ((lp_new = lalloc(total_used)) == NULL)
 		return FALSE;
@@ -350,7 +331,6 @@ static int ldelnewline(void)
 	lp_new->l_used = total_used;
 	line_unlink(lp2);
 	line_replace(lp, lp_new);
-
 	for_each_wind(wp) {
 		if (wp->w_linep == lp || wp->w_linep == lp2)
 			wp->w_linep = lp_new;
@@ -367,7 +347,6 @@ static int ldelnewline(void)
 			wp->w_marko += lp->l_used;
 		}
 	}
-
 	free(lp);
 	free(lp2);
 	return TRUE;
@@ -410,12 +389,10 @@ static int ldelete_once(int n, int kflag)
 		}
 		cp1 = &lp->l_text[doto];
 	}
-
 	while (cp2 != &lp->l_text[lp->l_used])
 		*cp1++ = *cp2++;
 
 	lp->l_used -= chunk;
-
 	for_each_wind(wp) {
 		if (wp->w_dotp == lp && wp->w_doto >= doto) {
 			wp->w_doto -= chunk;
@@ -428,7 +405,6 @@ static int ldelete_once(int n, int kflag)
 				wp->w_marko = doto;
 		}
 	}
-
 	return n - chunk;
 }
 
@@ -442,12 +418,10 @@ int ldelete(long n, int kflag)
 		return rdonly();
 	if (n == 0)
 		return TRUE;
-
 	while (n > 0) {
 		if ((n = ldelete_once(n, kflag)) < 0)
 			return FALSE;
 	}
-
 	return TRUE;
 }
 
@@ -457,7 +431,6 @@ int linsert_kbuf(void)
 	struct kill *kp;
 	char *sp;
 	int n;
-
 	for_each_kbuf(kp) {
 		n = kp->k_next == NULL ? kused : KBLOCK;
 		sp = kp->k_chunk;
@@ -466,7 +439,6 @@ int linsert_kbuf(void)
 				return FALSE;
 		}
 	}
-
 	return TRUE;
 }
 
@@ -474,7 +446,6 @@ int linsert_kbuf(void)
 int kinsert(int c)
 {
 	struct kill *nchunk;
-
 	if (kused >= KBLOCK) {
 		if ((nchunk = malloc(sizeof(struct kill))) == NULL)
 			return FALSE;
@@ -498,15 +469,12 @@ in case the buffer has grown to immense size.
 void kdelete(void)
 {
 	struct kill *kp;
-
 	if (kheadp == NULL)
 		return;
-
 	for (kbufp = kheadp; kbufp != NULL; kbufp = kp) {
 		kp = kbufp->k_next;
 		free(kbufp);
 	}
-
 	/* Resets all the kill buffer pointers */
 	kheadp = NULL;
 	kbufp = NULL;

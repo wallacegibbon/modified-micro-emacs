@@ -1,10 +1,6 @@
 #include "me.h"
 
-/*
-CAUTION: Prefixed chars (e.g. `CTL | 'A'`) may be stored in this variable,
-which should be okay since functions like `ctoec` will keep it unchanged.
-*/
-
+/* CAUTION: Prefixed chars (e.g. `CTL | 'A'`) may be stored in this variable */
 int reeat_char = -1;
 
 /* Gets a key from the terminal driver, resolve any keyboard macro action */
@@ -114,7 +110,6 @@ int mlgetstring(char *buf, int nbuf, int eolchar, const char *fmt, ...)
 	fmt and buf can be the same address, so we do this after mlwrite.
 	*/
 	buf[0] = '\0';
-
 char_loop:
 	ttflush();
 	c = ectoc(expc = get1key());
@@ -134,7 +129,6 @@ char_loop:
 		buf[cpos] = '\0';
 		goto char_loop;
 	}
-
 char_append:
 	buf[cpos++] = c;
 	buf[cpos] = '\0';
@@ -143,7 +137,6 @@ char_append:
 		goto char_loop;
 
 	mlwrite("Input too long");
-
 normal_exit:
 	mlerase();
 	return buf[0] != '\0';

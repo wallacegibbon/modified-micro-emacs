@@ -9,15 +9,13 @@ static inline int eq(unsigned char bc, unsigned char pc)
 {
 	if (!exact_search)
 		return ensure_upper(bc) == ensure_upper(pc);
-	else
-		return bc == pc;
+	return bc == pc;
 }
 
 /* Switches between case-sensitive and case-insensitive. */
 int toggle_exact_search(int f, int n)
 {
 	struct window *wp;
-
 	exact_search = !exact_search;
 	for_each_wind(wp)
 		curwp->w_flag |= WFMODE;
@@ -35,12 +33,10 @@ int search_next(const char *pattern, int direct, int beg_or_end)
 	int curoff = curwp->w_doto, scanoff, matchoff;
 	const char *patptr;
 	int c;
-
 	beg_or_end ^= direct;
 loop:
 	matchline = curline;
 	matchoff = curoff;
-
 	if ((c = nextch(&curline, &curoff, direct)) == -1)
 		return FALSE;
 	if (!eq(c, pattern[0]))
@@ -49,7 +45,6 @@ loop:
 	scanline = curline;
 	scanoff = curoff;
 	patptr = pattern;
-
 	while (*++patptr != '\0') {
 		if ((c = nextch(&scanline, &scanoff, direct)) == -1)
 			return FALSE;
@@ -58,7 +53,6 @@ loop:
 	}
 
 	/* A SUCCESSFULL MATCH!!! */
-
 	if (beg_or_end == PTEND) {
 		curwp->w_dotp = scanline;
 		curwp->w_doto = scanoff;
@@ -66,7 +60,6 @@ loop:
 		curwp->w_dotp = matchline;
 		curwp->w_doto = matchoff;
 	}
-
 	curwp->w_flag |= WFMOVE;
 	return TRUE;
 }
@@ -76,7 +69,6 @@ static int readpattern(char *prompt, char *apat)
 {
 	char tpat[NPAT];
 	int status;
-
 	status = mlgetstring(tpat, NPAT, ENTERC, "%s (%s): ", prompt, apat);
 	if (status == TRUE)
 		strcpy(apat, tpat);
@@ -101,7 +93,6 @@ directly or make use of replacement meta-array.
 static int delins(int dlength, char *instr, int use_meta)
 {
 	int status;
-
 	if ((status = ldelete((long)dlength, FALSE)) == TRUE)
 		status = linstr(instr);
 
@@ -112,7 +103,6 @@ static int delins(int dlength, char *instr, int use_meta)
 int qreplace(int f, int n)
 {
 	int numsub, nummatch, interactive, status, dlength, c = 0;
-
 	if ((status = readpattern("Query replace", pat)) != TRUE)
 		return status;
 	if ((status = readpattern("with", rpat)) == ABORT)
@@ -134,7 +124,6 @@ replace_loop:
 		goto do_replace;
 
 	mlwrite("Replace (%s) with (%s)? ", pat, rpat);
-
 qprompt:
 	update(TRUE);
 	switch ((c = tgetc())) {
@@ -153,7 +142,6 @@ qprompt:
 		mlwrite("(SPACE)Ok, (N)ext, (!)All, (^G)Done");
 		goto qprompt;
 	}
-
 do_replace:
 	if ((status = delins(dlength, rpat, TRUE)) != TRUE)
 		return status;
@@ -177,7 +165,6 @@ static int nextch(struct line **pcurline, int *pcuroff, int dir)
 	struct line *b_linep = curwp->w_bufp->b_linep;
 	struct line *curline = *pcurline;
 	int curoff = *pcuroff, c;
-
 	if (dir == FORWARD) {
 		if (curline == b_linep)
 			return -1;

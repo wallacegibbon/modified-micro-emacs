@@ -31,16 +31,13 @@ int splitwind(int f, int n)
 		mlwrite("Failed allocating memory for new window");
 		return FALSE;
 	}
-
 	++curwp->w_bufp->b_nwnd;
 	wp->w_bufp = curwp->w_bufp;
 	wstate_copy(wp, curwp);
 	wp->w_flag = 0;
 	wp->w_force = 0;
-
 	ntru = (curwp->w_ntrows - 1) / 2;	/* Upper */
 	ntrl = (curwp->w_ntrows - 1) - ntru;	/* Lower */
-
 	lp = curwp->w_linep;
 	ntrd = 0;
 	while (lp != curwp->w_dotp) {
@@ -50,7 +47,6 @@ int splitwind(int f, int n)
 	lp = curwp->w_linep;
 
 	/* Keep the cursor unmoving when it is possible. */
-
 	if (ntrd > ntru) {
 		insert_window_before(curwp, wp);
 		wp->w_ntrows = ntru;
@@ -67,7 +63,6 @@ int splitwind(int f, int n)
 		wp->w_ntrows = ntrl;
 		wp->w_toprow = curwp->w_toprow + ntru + 1;
 	}
-
 	curwp->w_linep = lp;
 	wp->w_linep = lp;
 	curwp->w_flag |= WFMODE | WFHARD;
@@ -99,7 +94,6 @@ int onlywind(int f, int n)
 	}
 
 	/* Keep the cursor unmoving when it is possible. */
-
 	lp1 = curwp->w_linep;
 	lp2 = curwp->w_bufp->b_linep;
 	i = curwp->w_toprow;
@@ -150,7 +144,6 @@ int nextwind(int f, int n)
 	n %= wcount;
 	if (n < 0)
 		n += wcount;
-
 	while (n--) {
 		if ((wp = wp->w_wndp) == NULL)
 			wp = wheadp;

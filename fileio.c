@@ -11,7 +11,6 @@ static int fline_extend(void)
 		return FIOMEM;
 	if (flen > 0)
 		memcpy(tmpline, fline, flen);
-
 	if (fline != NULL)
 		free(fline);
 
@@ -54,12 +53,10 @@ int ffclose(void)
 		fline_reset();
 
 	eofflag = FALSE;
-
 	if (fclose(ffp) != 0) {
 		mlwrite("Error closing file");
 		return FIOERR;
 	}
-
 	return FIOSUC;
 }
 
@@ -82,14 +79,12 @@ int ffputline(char *buf, int nbuf)
 int ffgetline(int *count)
 {
 	int c, i, s;
-
 	if (eofflag)
 		return FIOEOF;
 	if (fline == NULL) {
 		if ((s = fline_extend()))
 			return s;
 	}
-
 	i = 0;
 	while ((c = fgetc(ffp)) != EOF && c != '\n') {
 		fline[i++] = c;
@@ -98,7 +93,6 @@ int ffgetline(int *count)
 				return s;
 		}
 	}
-
 	if (c == EOF) {
 		if (ferror(ffp)) {
 			mlwrite("File read error");
@@ -108,7 +102,6 @@ int ffgetline(int *count)
 			return FIOEOF;
 		eofflag = TRUE;
 	}
-
 	*count = i;
 	return FIOSUC;
 }

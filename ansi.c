@@ -13,11 +13,9 @@ static inline void ascr_end(void)	/* Not ANSI, but widely supported */
 void ansiopen(void)
 {
 	int cols, rows;
-
 	getscreensize(&cols, &rows);
 	term_nrow = atleast(rows - 1, SCR_MIN_ROWS - 1);
 	term_ncol = atleast(cols, SCR_MIN_COLS);
-
 	ttopen();
 	ascr_init();
 	ttflush();

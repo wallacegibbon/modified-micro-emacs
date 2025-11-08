@@ -57,7 +57,6 @@ int gotoeol(int f, int n)
 int backchar(int f, int n)
 {
 	struct line *lp;
-
 	if (n < 0)
 		return forwchar(f, -n);
 	while (n--) {
@@ -116,18 +115,15 @@ int gotoline(int f, int n)
 int forwline(int f, int n)
 {
 	struct line *lp;
-
 	if (n < 0)
 		return backline(f, -n);
 
 	thisflag |= CFCPCN;
 	if (curwp->w_dotp == curwp->w_bufp->b_linep)
 		return FALSE;
-
 	/* If the last command was not a line move, update the goal */
 	if (!(lastflag & CFCPCN))
 		curgoal = get_col(curwp->w_dotp, curwp->w_doto);
-
 	lp = curwp->w_dotp;
 	while (n-- && lp != curwp->w_bufp->b_linep)
 		lp = lp->l_fp;
@@ -141,22 +137,18 @@ int forwline(int f, int n)
 int backline(int f, int n)
 {
 	struct line *lp;
-
 	if (n < 0)
 		return forwline(f, -n);
 
 	thisflag |= CFCPCN;
 	if (curwp->w_dotp->l_bp == curwp->w_bufp->b_linep)
 		return FALSE;
-
 	/* If the last command was not a line move, update the goal */
 	if (!(lastflag & CFCPCN))
 		curgoal = get_col(curwp->w_dotp, curwp->w_doto);
-
 	lp = curwp->w_dotp;
 	while (n-- && lp->l_bp != curwp->w_bufp->b_linep)
 		lp = lp->l_bp;
-
 	curwp->w_dotp = lp;
 	curwp->w_doto = get_idx(lp, curgoal);
 	curwp->w_flag |= WFMOVE;
@@ -166,7 +158,6 @@ int backline(int f, int n)
 int forwpage(int f, int n)
 {
 	struct line *lp;
-
 	if (f == FALSE) {
 		n = curwp->w_ntrows - 2;
 		if (n <= 0)	/* Forget the overlap on tiny window. */
@@ -176,7 +167,6 @@ int forwpage(int f, int n)
 	} else {
 		n *= curwp->w_ntrows;
 	}
-
 	lp = curwp->w_linep;
 	while (n-- && lp != curwp->w_bufp->b_linep)
 		lp = lp->l_fp;
@@ -190,7 +180,6 @@ int forwpage(int f, int n)
 int backpage(int f, int n)
 {
 	struct line *lp;
-
 	if (f == FALSE) {
 		n = curwp->w_ntrows - 2;
 		if (n <= 0)	/* Don't blow up on tiny window. */
@@ -200,7 +189,6 @@ int backpage(int f, int n)
 	} else {
 		n *= curwp->w_ntrows;
 	}
-
 	lp = curwp->w_linep;
 	while (n-- && lp->l_bp != curwp->w_bufp->b_linep)
 		lp = lp->l_bp;
@@ -224,7 +212,6 @@ int swapmark(int f, int n)
 {
 	struct line *odotp;
 	int odoto;
-
 	if (curwp->w_markp == NULL) {
 		mlwrite("No mark in this window");
 		return FALSE;
@@ -297,20 +284,15 @@ static int newline_and_indent_one(void)
 			nicol |= TABMASK;
 		++nicol;
 	}
-
 	if (linsert(1, '\n') == FALSE)
 		return FALSE;
-
 	/* Insert leading TABs (and white spaces) */
-
 	if ((i = nicol / 8) != 0) {
 		if ((linsert(i, '\t') == FALSE))
 			return FALSE;
 	}
-
 	if ((i = nicol % 8) != 0)
 		return linsert(i, ' ');
-
 	return TRUE;
 }
 
@@ -318,12 +300,10 @@ int newline_and_indent(int f, int n)
 {
 	if (n < 0)
 		return FALSE;
-
 	while (n--) {
 		if (newline_and_indent_one() == FALSE)
 			return FALSE;
 	}
-
 	return TRUE;
 }
 
@@ -331,7 +311,6 @@ int forwdel(int f, int n)
 {
 	if (n < 0)
 		return backdel(f, -n);
-
 	return ldelete((long)n, FALSE);
 }
 
@@ -355,7 +334,6 @@ int yank(int f, int n)
 		if (linsert_kbuf() == FALSE)
 			return FALSE;
 	}
-
 	return TRUE;
 }
 
@@ -373,7 +351,6 @@ int killtext(int f, int n)
 		kdelete();
 
 	thisflag |= CFKILL;
-
 	if (f == FALSE) {
 		chunk = curwp->w_dotp->l_used - curwp->w_doto;
 		if (chunk == 0)
@@ -485,7 +462,6 @@ int copyregion(int f, int n)
 	/* Always clears bkbuf, we don't want to mess up region copying */
 	kdelete();
 	thisflag |= CFKILL;
-
 	linep = region.r_linep;
 	loffs = region.r_offset;
 	while (region.r_size--) {
@@ -519,7 +495,6 @@ static int toggle_region_case(int start, int end)
 	lchange(WFHARD);
 	linep = region.r_linep;
 	loffs = region.r_offset;
-
 	while (region.r_size--) {
 		if (loffs == linep->l_used) {
 			linep = linep->l_fp;
@@ -621,8 +596,6 @@ int nullproc(int f, int n)
 {
 	return TRUE;
 }
-
-/* Non command helper functions */
 
 int rdonly(void)
 {
